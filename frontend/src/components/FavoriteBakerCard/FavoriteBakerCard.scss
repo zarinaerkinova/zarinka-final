@@ -1,0 +1,91 @@
+.favorite-baker-card {
+    background: var(--white);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow);
+    padding: 1.5rem;
+    transition: var(--transition);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    height: 100%;
+
+    &:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--shadow-lg);
+    }
+
+    .like-btn {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        font-size: 1.5rem;
+        color: var(--text-secondary);
+        transition: var(--transition);
+
+        &:hover {
+            color: var(--primary-color);
+        }
+    }
+
+    .baker-photo {
+        width: 120px;
+        height: 120px;
+        margin: 0 auto 1rem;
+        border-radius: 50%;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: var(--surface);
+        border: 4px solid var(--white);
+        box-shadow: var(--shadow-md);
+
+        img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .baker-initials {
+            font-size: 3rem;
+            color: var(--primary-color);
+            font-weight: bold;
+        }
+    }
+
+    .baker-info {
+        h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+            color: var(--text-primary);
+        }
+
+        p {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.75rem;
+        }
+
+        .baker-details {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+
+            .rate {
+                color: var(--secondary-color);
+                font-weight: 600;
+            }
+
+            .city {
+                color: var(--text-secondary);
+            }
+        }
+    }
+}

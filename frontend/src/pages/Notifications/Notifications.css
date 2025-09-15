@@ -1,0 +1,37 @@
+.notifications-page {
+    padding: 2rem;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.notifications-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.notification-item {
+    background-color: #fff;
+    border-radius: 8px;
+    padding: 1rem;
+    border-left: 5px solid #8b1538;
+}
+
+.notification-item.read {
+    border-left-color: #ccc;
+}
+
+.notification-title {
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.notification-description {
+    margin-bottom: 0.5rem;
+}
+
+.notification-time {
+    font-size: 0.8rem;
+    color: #666;
+}

@@ -1,0 +1,78 @@
+.dashboard-order-card {
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    padding: 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+
+    .card-main-info {
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+
+        img {
+            width: 80px;
+            height: 80px;
+            border-radius: 8px;
+            object-fit: cover;
+        }
+
+        .order-details {
+            h4 {
+                margin: 0;
+                font-size: 1.2rem;
+                font-weight: 600;
+            }
+            .customer-name, .price, .order-id {
+                margin: 0.25rem 0 0;
+                color: #666;
+            }
+            .price {
+                font-weight: 700;
+                color: #333;
+            }
+        }
+    }
+
+    .order-status-management {
+        width: 300px;
+
+        .status-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.75rem;
+
+            .status-btn {
+                padding: 0.5rem 1rem;
+                border: 1px solid #ddd;
+                border-radius: 20px;
+                background-color: transparent;
+                cursor: pointer;
+                transition: all 0.3s;
+
+                &.active {
+                    background-color: #9C0746;
+                    color: white;
+                    border-color: #9C0746;
+                }
+            }
+        }
+
+        .progress-bar-container {
+            background-color: #eee;
+            border-radius: 5px;
+            height: 10px;
+            overflow: hidden;
+
+            .progress-bar {
+                background-color: #9C0746;
+                height: 100%;
+                border-radius: 5px;
+                transition: width 0.5s;
+            }
+        }
+    }
+}

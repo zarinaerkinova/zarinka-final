@@ -1,0 +1,110 @@
+.edit-profile-page {
+    max-width: 800px;
+    margin: 2rem auto;
+    background: #fff;
+    padding: 2rem 3rem;
+    border-radius: 16px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+
+    h2 {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #a11040;
+        margin-bottom: 1.5rem;
+        text-align: center;
+    }
+
+    .edit-profile-form {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+
+    .profile-header-group {
+        display: flex;
+        gap: 2rem; /* Adjust gap as needed */
+        align-items: flex-start; /* Align items to the top */
+
+        .form-group {
+            flex: 1; /* Allow form groups to take equal space */
+        }
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    
+      label {
+        font-weight: 600;
+        color: #333;
+      }
+    
+      input,
+      textarea {
+        padding: 0.75rem 1rem;
+        border: 1px solid #ddd;
+        border-radius: 10px;
+        font-size: 1rem;
+        transition: border 0.2s, box-shadow 0.2s;
+    
+        &:focus {
+          border-color: #a11040;
+          box-shadow: 0 0 0 3px rgba(161, 16, 64, 0.2);
+          outline: none;
+        }
+      }
+    
+      textarea {
+        resize: vertical;
+        min-height: 120px;
+      }
+    }
+
+    .file-input-container {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+
+        .hidden-file-input {
+            display: none;
+        }
+
+        .custom-file-upload-button {
+            background: #a11040;
+            color: #fff;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s;
+
+            &:hover {
+                background: #8b0c3c;
+            }
+        }
+
+        .file-name {
+            font-size: 0.9rem;
+            color: #555;
+        }
+    }
+
+    .btn-primary {
+        background: #a11040;
+        color: #fff;
+        border: none;
+        padding: 0.9rem 2rem;
+        border-radius: 12px;
+        font-weight: 600;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: background 0.3s;
+        align-self: center;
+
+        &:hover {
+            background: #8b0c3c;
+        }
+    }
+}

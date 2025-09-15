@@ -1,0 +1,101 @@
+.review-submission-page {
+    padding: 2rem;
+    max-width: 800px;
+    margin: 0 auto;
+    background-color: #f9f9f9;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+
+    h1 {
+        text-align: center;
+        color: #333;
+        margin-bottom: 2rem;
+    }
+
+    .error-message {
+        color: #dc3545;
+        background-color: #f8d7da;
+        border: 1px solid #f5c6cb;
+        padding: 10px;
+        border-radius: 5px;
+        margin-bottom: 1rem;
+        text-align: center;
+    }
+
+    .success-message {
+        color: #28a745;
+        background-color: #d4edda;
+        border: 1px solid #c3e6cb;
+        padding: 10px;
+        border-radius: 5px;
+        margin-bottom: 1rem;
+        text-align: center;
+    }
+
+    .review-form {
+        background-color: #fff;
+        padding: 2rem;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+
+        h2 {
+            text-align: center;
+            color: #555;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+
+            label {
+                display: block;
+                margin-bottom: 0.5rem;
+                color: #333;
+                font-weight: bold;
+            }
+
+            .star-rating {
+                font-size: 2rem;
+                color: #ccc;
+                cursor: pointer;
+
+                .star {
+                    display: inline-block;
+                    margin-right: 5px;
+                    transition: color 0.2s;
+
+                    &.selected {
+                        color: #ffc107; // Gold color for selected stars
+                    }
+                }
+            }
+
+            textarea {
+                width: 100%;
+                padding: 10px;
+                border: 1px solid #ddd;
+                border-radius: 5px;
+                font-size: 1rem;
+                min-height: 120px;
+                resize: vertical;
+            }
+        }
+
+        .submit-button {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+
+            &:hover {
+                background-color: #0056b3;
+            }
+        }
+    }
+}
