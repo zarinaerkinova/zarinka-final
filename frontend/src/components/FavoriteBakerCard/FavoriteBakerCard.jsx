@@ -1,6 +1,6 @@
 import React from 'react';
 import './FavoriteBakerCard.scss';
-import { FaRegHeart, FaHeart } from "react-icons/fa";
+import { FaRegHeart, FaHeart, FaStar, FaMapMarkerAlt } from "react-icons/fa";
 import { useUserStore } from '../../store/User.js';
 
 const FavoriteBakerCard = ({ baker }) => {
@@ -38,11 +38,16 @@ const FavoriteBakerCard = ({ baker }) => {
             </div>
 
             <div className="baker-info">
-                <h3>{baker.bakery || 'Unknown Bakery'}</h3>
+                <h3>{baker.bakeryName || 'Unknown Bakery'}</h3>
                 <p>by {baker.name || 'Unknown'}</p>
                 <div className="baker-details">
-                    <span className="rate">⭐ {baker.rate || 5}</span>
-                    <span className="city">{baker.city || 'Unknown City'}</span>
+                    <span className="rating">
+                        <FaStar /> {baker.rating ? baker.rating.toFixed(1) : '0.0'}
+                    </span>
+                    <span className="num-reviews">({baker.numReviews || 0} reviews)</span>
+                    <span className="city">
+                        <FaMapMarkerAlt /> {baker.location || 'Unknown City'}
+                    </span>
                 </div>
             </div>
         </div>

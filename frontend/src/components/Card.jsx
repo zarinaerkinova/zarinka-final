@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useCartStore } from '../store/Cart';
 import { useUserStore } from '../store/User';
 import { LuShoppingCart, LuStar } from 'react-icons/lu';
+import { FaStar, FaUser } from "react-icons/fa6";
 import { MdFavorite, MdFavoriteBorder } from 'react-icons/md';
 import toast from 'react-hot-toast';
 import styles from './Card.module.scss';
@@ -45,9 +46,16 @@ const Card = ({ product }) => {
     };
 
     const renderStars = (rating) => {
-        return [...Array(5)].map((_, i) => (
-            <LuStar key={i} className={i < Math.floor(rating) ? 'filled' : 'empty'} />
-        ));
+        const filledStars = Math.floor(rating);
+        const stars = [];
+        for (let i = 0; i < 5; i++) {
+            if (i < filledStars) {
+                stars.push(<LuStar key={i} className='filled' />);
+            } else {
+                stars.push(<LuStar key={i} className='empty' />);
+            }
+        }
+        return stars;
     };
 
     const imageUrl = product?.image?.startsWith('http')
@@ -71,14 +79,11 @@ const Card = ({ product }) => {
                 <div className={styles['card-header']}>
                     <h3>{product.name}</h3>
                     <div className={styles['baker-info']}>
-                        By <span>{product.baker?.name || 'Professional Baker'}</span>
+                        By <span>{product.createdBy?.name || 'Professional Baker'}</span>
                     </div>
                 </div>
                 <div className={styles.rating}>
-                    <div className={styles.stars}>{renderStars(product.rating || 4.5)}</div>
-                    <span className={styles['rating-text']}>
-                        ({product.reviewCount || 23} reviews)
-                    </span>
+                    <FaStar /> {product.rating?.average ? product.rating.average.toFixed(1) : '0.0'} ({product.reviewCount || 0} reviews)
                 </div>
                 <div className={styles.price}>
                     ${product.price}

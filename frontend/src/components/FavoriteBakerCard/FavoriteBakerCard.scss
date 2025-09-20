@@ -1,47 +1,52 @@
 .favorite-baker-card {
-    background: var(--white);
-    border-radius: var(--radius-lg);
-    box-shadow: var(--shadow);
-    padding: 1.5rem;
-    transition: var(--transition);
     display: flex;
-    flex-direction: column;
     align-items: center;
-    text-align: center;
-    height: 100%;
+    background: var(--white);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-lg);
+    padding: 1rem;
+    transition: all 0.3s ease-in-out;
+    border: 1px solid transparent;
+    position: relative;
+    border-radius: 15px;
 
     &:hover {
-        transform: translateY(-4px);
-        box-shadow: var(--shadow-lg);
+        transform: translateY(-3px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        border-color: var(--primary-color-light);
     }
 
     .like-btn {
         position: absolute;
         top: 1rem;
         right: 1rem;
-        background: transparent;
+        background: rgba(255, 255, 255, 0.8);
         border: none;
+        border-radius: 50%;
+        width: 36px;
+        height: 36px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
         cursor: pointer;
-        font-size: 1.5rem;
+        font-size: 1.2rem;
         color: var(--text-secondary);
-        transition: var(--transition);
+        transition: all 0.2s ease;
+        backdrop-filter: blur(5px);
 
         &:hover {
             color: var(--primary-color);
+            transform: scale(1.1);
         }
     }
 
     .baker-photo {
-        width: 120px;
-        height: 120px;
-        margin: 0 auto 1rem;
-        border-radius: 50%;
+        width: 100px;
+        height: 100px;
+        min-width: 100px;
+        border-radius: var(--radius-lg);
         overflow: hidden;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background-color: var(--surface);
-        border: 4px solid var(--white);
+        margin-right: 1.5rem;
         box-shadow: var(--shadow-md);
 
         img {
@@ -51,40 +56,70 @@
         }
 
         .baker-initials {
-            font-size: 3rem;
-            color: var(--primary-color);
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            color: var(--white);
+            background: var(--gradient-primary);
             font-weight: bold;
         }
     }
 
     .baker-info {
+        text-align: left;
+        flex-grow: 1;
+
         h3 {
-            font-size: 1.25rem;
-            font-weight: 600;
-            margin-bottom: 0.25rem;
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 0.1rem;
             color: var(--text-primary);
         }
 
         p {
-            font-size: 0.875rem;
+            font-size: 0.9rem;
             color: var(--text-secondary);
-            margin-bottom: 0.75rem;
+            margin-bottom: 0.8rem;
         }
 
         .baker-details {
             display: flex;
-            justify-content: center;
-            gap: 1rem;
-            font-size: 0.875rem;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 0.5rem 1rem;
+            font-size: 0.9rem;
             color: var(--text-secondary);
 
-            .rate {
-                color: var(--secondary-color);
+            .rating, .city {
+                display: flex;
+                align-items: center;
+                gap: 0.3rem;
+            }
+
+            .rating {
+                color: var(--text-primary);
                 font-weight: 600;
+
+                svg {
+                    color: #ffc107; // gold
+                    font-size: 1rem;
+                }
+            }
+
+            .num-reviews {
+                font-size: 0.85rem;
+                color: var(--text-tertiary);
             }
 
             .city {
                 color: var(--text-secondary);
+
+                svg {
+                    font-size: 1rem;
+                }
             }
         }
     }

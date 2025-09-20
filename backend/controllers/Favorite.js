@@ -36,7 +36,8 @@ export const removeFavorite = async (req, res) => {
 export const getFavorites = async (req, res) => {
   try {
     const favorites = await Favorite.find({ user: req.user.id }).populate("product");
-    res.json(favorites.map(f => f.product)); // return only products
+    const validProducts = favorites.map(f => f.product).filter(product => product !== null);
+    res.json(validProducts);
   } catch (err) {
     res.status(500).json({ message: "Error fetching favorites", error: err.message });
   }
@@ -75,7 +76,8 @@ export const removeBakerFavorite = async (req, res) => {
 export const getBakerFavorites = async (req, res) => {
     try {
         const favorites = await FavoriteBaker.find({ user: req.user.id }).populate("baker", "-password");
-        res.json(favorites.map(f => f.baker));
+        const validBakers = favorites.map(f => f.baker).filter(baker => baker !== null);
+        res.json(validBakers);
     } catch (err) {
         res.status(500).json({ message: "Error fetching favorite bakers", error: err.message });
     }

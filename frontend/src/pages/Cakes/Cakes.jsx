@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom'
 import { useProductStore } from '../../store/Product.js'
 
 const Cakes = () => {
-    const { fetchProducts, fetchCategories, products, categories } = useProductStore()
+    const { fetchProducts, fetchCategories, products, categories, loading } = useProductStore()
     const [selectedCategory, setSelectedCategory] = useState(null)
     const [searchTerm, setSearchTerm] = useState('')
     const [minPrice, setMinPrice] = useState('')
@@ -49,6 +49,19 @@ const Cakes = () => {
                 : [...prev, ingredient]
         )
     }
+
+    const resetAllFilters = () => {
+        setSelectedCategory(null)
+        setSearchTerm('')
+        setMinPrice('')
+        setMaxPrice('')
+        setSelectedIngredients([])
+        setMinRate('')
+        // Применяем пустые фильтры
+        fetchProducts({})
+    }
+
+    const hasActiveFilters = searchTerm || minPrice || maxPrice || selectedIngredients.length > 0 || minRate || selectedCategory
 
     return (
         <main>
@@ -139,12 +152,41 @@ const Cakes = () => {
             <div className="catalogue">
                 <h2>Cakes</h2>
                 <div className="catalogue_content">
-                    {products && products.length > 0 ? (
+                    {loading ? (
+                        <div className="loading-container">
+                            <div className="loading-spinner"></div>
+                            <p className="loading-text">Загружаем продукты...</p>
+                        </div>
+                    ) : products && products.length > 0 ? (
                         products.map((product) => (
                             <Card key={product._id} product={product} />
                         ))
                     ) : (
-                        <p>Loading...</p>
+                        <div className="no-products-container">
+                            <div className="no-products-icon"></div>
+                            <h3 className="no-products-message">
+                                {hasActiveFilters ? 'Товары не найдены' : 'Нет доступных продуктов'}
+                            </h3>
+                            <p className="no-products-description">
+                                {hasActiveFilters 
+                                    ? 'Попробуйте изменить параметры поиска или сбросить фильтры для просмотра всех товаров.'
+                                    : 'В данный момент в этой категории нет товаров. Загляните позже или посмотрите другие категории.'
+                                }
+                            </p>
+                            <div className="no-products-actions">
+                                {hasActiveFilters && (
+                                    <button 
+                                        className="reset-filters-btn"
+                                        onClick={resetAllFilters}
+                                    >
+                                        🔄 Сбросить фильтры
+                                    </button>
+                                )}
+                                <Link to="/" className="browse-all-btn">
+                                    🏠 На главную
+                                </Link>
+                            </div>
+                        </div>
                     )}
                 </div>
             </div>

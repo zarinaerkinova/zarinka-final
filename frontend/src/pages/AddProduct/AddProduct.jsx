@@ -134,7 +134,7 @@ const AddProduct = () => {
 			formData.append('image', form.imageFile)
 			formData.append('preparationTime', form.preparationTime)
 
-			formData.append('ingredients', JSON.stringify(form.ingredients))
+			formData.append('ingredients', form.ingredients.join(','))
 			formData.append('sizes', JSON.stringify(form.sizes))
 
 			const token = localStorage.getItem('token')

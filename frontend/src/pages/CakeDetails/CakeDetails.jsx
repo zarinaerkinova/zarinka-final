@@ -6,6 +6,7 @@ import CakeAccordion from '../../components/CakeAccordion.jsx'
 import { useCartStore } from '../../store/Cart'
 import { useProductStore } from '../../store/Product.js'
 import { useUserStore } from '../../store/User'
+import { useLoadingStore } from '../../store/Loading' // Import useLoadingStore
 import './CakeDetails.scss'
 
 const CakeDetails = () => {
@@ -13,11 +14,11 @@ const CakeDetails = () => {
 	const { products, fetchProducts } = useProductStore()
 	const { addToCart } = useCartStore()
 	const { token } = useUserStore()
+	const { setLoading } = useLoadingStore() // Get setLoading from global store
 	const navigate = useNavigate()
 
 	const [selectedSize, setSelectedSize] = useState(null)
 	const [quantity, setQuantity] = useState(1)
-	const [loading, setLoading] = useState(true)
 	const [error, setError] = useState(null)
 
 	// New state for customization
@@ -27,18 +28,18 @@ const CakeDetails = () => {
 
 	useEffect(() => {
 		const loadData = async () => {
+			setLoading(true) // Set global loading to true
 			try {
-				setLoading(true)
 				if (!products || products.length === 0) await fetchProducts()
-				setLoading(false)
 			} catch (err) {
 				setError('Failed to load product')
-				setLoading(false)
 				console.log(err)
+			} finally {
+				setLoading(false) // Set global loading to false
 			}
 		}
 		loadData()
-	}, [fetchProducts, products])
+	}, [fetchProducts, products, setLoading])
 
 	const product = products?.find(p => p._id === productId)
 
@@ -79,7 +80,6 @@ const CakeDetails = () => {
 		}
 	}, [currentIngredients, product, selectedSize])
 
-	if (loading) return <div>Loading product...</div>
 	if (error) return <div>{error}</div>
 	if (!product) return <div>Product not found</div>
 

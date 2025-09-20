@@ -17,6 +17,7 @@ import { useCartStore } from '../../store/Cart'
 import { useProductStore } from '../../store/Product'
 import { useUserStore } from '../../store/User'
 import './Home.scss'
+import { FaStar, FaUser } from "react-icons/fa6";
 
 const Home = () => {
 	const [bakers, setBakers] = useState([])
@@ -57,12 +58,6 @@ const Home = () => {
 		})
 	}
 
-	const renderStars = rating => {
-		return [...Array(5)].map((_, i) => (
-			<LuStar key={i} className={i < Math.floor(rating) ? 'filled' : 'empty'} />
-		))
-	}
-
 	const ProductCard = ({ product }) => {
 		const navigate = useNavigate()
 		const { user, token } = useUserStore()
@@ -93,6 +88,19 @@ const Home = () => {
 			? product.image
 			: `http://localhost:5000${product?.image || '/placeholder.png'}`
 
+			const renderStars = (rating) => {
+        const filledStars = Math.floor(rating);
+        const stars = [];
+        for (let i = 0; i < 5; i++) {
+            if (i < filledStars) {
+                stars.push(<LuStar key={i} className='filled' />);
+            } else {
+                stars.push(<LuStar key={i} className='empty' />);
+            }
+        }
+        return stars;
+    };
+
 		return (
 			<div className='product-card'>
 				<div className='card-image'>
@@ -114,11 +122,8 @@ const Home = () => {
 						</div>
 					</div>
 					<div className='rating'>
-						<div className='stars'>{renderStars(product.rating || 4.5)}</div>
-						<span className='rating-text'>
-							({product.reviewCount || 23} reviews)
-						</span>
-					</div>
+                    <FaStar /> {product.rating?.average ? product.rating.average.toFixed(1) : '0.0'} ({product.reviewCount || 0} reviews)
+                </div>
 					<div className='price'>
 						${product.price}
 						{product.originalPrice && <span>${product.originalPrice}</span>}
@@ -183,8 +188,7 @@ const Home = () => {
 			</div>
 			<div className='baker-details'>
 				<div className='rating'>
-					<div className='stars'>{renderStars(baker.rating || 4.7)}</div>
-					<span>({baker.reviewCount || 45} reviews)</span>
+					<FaStar /> {baker.rating?.average ? baker.rating.average.toFixed(1) : '0.0'} ({baker.reviewCount || 0} reviews)
 				</div>
 				<div className='location'>
 					<LuMapPin />

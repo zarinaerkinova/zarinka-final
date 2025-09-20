@@ -80,12 +80,6 @@ const orderSchema = new mongoose.Schema({
 				return this.deliveryMethod === 'delivery'
 			},
 		},
-		zipCode: {
-			type: String,
-			required: function () {
-				return this.deliveryMethod === 'delivery'
-			},
-		},
 	},
 	deliveryMethod: {
 		type: String,

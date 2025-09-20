@@ -7,6 +7,7 @@ import FavoriteBakerCard from '../../components/FavoriteBakerCard/FavoriteBakerC
 import './Favorite.scss';
 import { RiHeartLine } from 'react-icons/ri';
 import { Link } from 'react-router-dom';
+import { useLoadingStore } from '../../store/Loading'; // Import useLoadingStore
 
 export default function Favorite() {
   const {
@@ -17,10 +18,12 @@ export default function Favorite() {
     hydrated, 
     token
   } = useUserStore();
+  const { setLoading } = useLoadingStore(); // Get setLoading from global store
 
   // Memoized fetch functions to prevent unnecessary re-renders
   const fetchData = useCallback(async () => {
     if (hydrated && token) {
+      setLoading(true); // Set global loading to true
       try {
         await Promise.all([
           fetchFavorites(),
@@ -28,9 +31,11 @@ export default function Favorite() {
         ]);
       } catch (err) {
         toast.error(err.message || 'Failed to load favorites');
+      } finally {
+        setLoading(false); // Set global loading to false
       }
     }
-  }, [fetchFavorites, fetchBakerFavorites, hydrated, token]);
+  }, [fetchFavorites, fetchBakerFavorites, hydrated, token, setLoading]);
 
   // Fetch both product and baker favorites
   useEffect(() => {
@@ -72,7 +77,7 @@ export default function Favorite() {
           {hasProductFavorites && (
             <FavoriteSection 
               title="Products" 
-              items={favorites} 
+              items={favorites.filter(p => p)} 
               renderItem={(product) => (
                 <FavoriteCard key={product._id} product={product} />
               )}
@@ -83,7 +88,7 @@ export default function Favorite() {
           {hasBakerFavorites && (
             <FavoriteSection 
               title="Bakers" 
-              items={bakerFavorites} 
+              items={bakerFavorites.filter(b => b)} 
               renderItem={(baker) => (
                 <FavoriteBakerCard key={baker._id} baker={baker} />
               )}

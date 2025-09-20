@@ -75,7 +75,6 @@ const Navbar = () => {
 						<FaSearch />
 						<input type='text' placeholder='Search...' />
 					</div>
-					<NotificationDropdown />
 					{token && user && (
 						<>
 							<Link className='cart-icon' to='/cart'>

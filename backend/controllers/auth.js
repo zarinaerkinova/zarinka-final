@@ -34,10 +34,17 @@ export const user = async (req, res) => {
 
 export const bakers = async (req, res) => {
     try {
-        const bakers = await User.find({ role: 'admin' }).select('-password');
+        const bakers = await User.find({ role: 'admin' }).select('-password').lean();
         if (bakers.length === 0) {
             return res.status(404).json({ msg: 'No bakers found' });
         }
+
+        for (let baker of bakers) {
+            // Use the rating and numReviews directly from the User model
+            baker.rate = baker.rating; // Assign the stored rating to 'rate' for frontend compatibility
+            baker.raters = baker.numReviews; // Assign the stored numReviews to 'raters'
+        }
+
         res.json(bakers);
     } catch (error) {
         console.error('Error fetching bakers:', error);

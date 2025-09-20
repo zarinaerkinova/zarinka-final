@@ -12,120 +12,103 @@ const router = express.Router()
 // Create a standard order
 router.post('/', auth, async (req, res) => {
 	try {
-		const { items, deliveryInfo, deliveryMethod, paymentMethod, baker } =
-			req.body
+		const { items, deliveryInfo, deliveryMethod, paymentMethod } = req.body;
 
 		if (!items || items.length === 0) {
-			return res.status(400).json({ message: 'Cart is empty' })
+			return res.status(400).json({ message: 'Cart is empty' });
 		}
 
-		if (!baker) {
-			return res.status(400).json({ message: 'Baker ID is required' })
-		}
-
-		// Ensure the provided baker exists and has baker role
-		console.log(
-			'🔍 Creating order for baker ID:',
-			baker,
-			'by user:',
-			req.user.id
-		)
-		const bakerUser = await User.findById(baker).select('role')
-		if (!bakerUser || bakerUser.role !== 'admin') {
-			console.log('❌ Invalid baker ID:', baker, 'Role:', bakerUser?.role)
-			return res.status(400).json({
-				message: 'Invalid baker ID. Order must be assigned to a baker.',
-			})
-		}
-		console.log('✅ Valid baker found:', bakerUser.role)
-
-		let totalPrice = 0
-		const orderItems = []
+		const ordersByBaker = new Map();
 
 		for (const item of items) {
-			let itemPrice = 0
-			let productData = null
-
 			if (item.product) {
-				// Regular product
-				productData = await Product.findById(item.product)
+				const productData = await Product.findById(item.product);
 				if (!productData) {
-					throw new Error(`Product not found for ID: ${item.product}`)
+					return res.status(404).json({ message: `Product with id ${item.product} not found` });
 				}
-				itemPrice = productData.price
-				orderItems.push({ product: item.product, quantity: item.quantity })
-			} else if (item.name && item.price) {
-				// Custom cake
-				itemPrice = item.price
-				orderItems.push({
-					name: item.name,
-					price: item.price,
+
+				const bakerId = productData.createdBy.toString();
+				if (!ordersByBaker.has(bakerId)) {
+					ordersByBaker.set(bakerId, {
+						items: [],
+						totalPrice: 0,
+					});
+				}
+
+				const bakerOrder = ordersByBaker.get(bakerId);
+				bakerOrder.items.push({
+					product: item.product,
 					quantity: item.quantity,
-					selectedSize: item.selectedSize,
-					customizedIngredients: item.customizedIngredients,
-				})
-			} else {
-				throw new Error(
-					'Invalid item in cart: missing product ID or custom cake details'
-				)
+				});
+				bakerOrder.totalPrice += productData.price * item.quantity;
 			}
-
-			totalPrice += itemPrice * item.quantity
+			// NOTE: Custom cakes without a product/baker are not handled here.
+			// You might want to assign them to a default baker or handle them differently.
 		}
 
-		const orderPayload = {
-			user: req.user.id,
-			items: orderItems,
-			totalPrice,
-			deliveryMethod: deliveryMethod || 'delivery',
-			paymentMethod: paymentMethod || 'cash',
-			orderNumber: uuidv4(),
-			baker, // Add baker to the order payload
+		const createdOrders = [];
+
+		for (const [bakerId, orderData] of ordersByBaker.entries()) {
+			const orderPayload = {
+				user: req.user.id,
+				baker: bakerId,
+				items: orderData.items,
+				totalPrice: orderData.totalPrice,
+				deliveryMethod: deliveryMethod || 'delivery',
+				paymentMethod: paymentMethod || 'cash',
+				orderNumber: uuidv4(),
+			};
+
+			if (deliveryMethod === 'delivery') {
+				orderPayload.deliveryInfo = deliveryInfo;
+			} else {
+                orderPayload.deliveryInfo = {
+                    name: deliveryInfo.name,
+                    phone: deliveryInfo.phone
+                };
+            }
+
+			const order = await Order.create(orderPayload);
+			createdOrders.push(order);
+
+			// Notify the user about their order
+			await Notification.create({
+				userId: req.user.id,
+				message: `Ваш заказ #${order.orderNumber} успешно оформлен!`,
+				type: 'order_placed',
+				orderId: order._id,
+			});
+
+			// Notify the baker about a new order
+			await Notification.create({
+				userId: bakerId,
+				message: `У вас новый заказ #${order.orderNumber} от ${req.user.name || 'клиента'}!`,
+				type: 'order_placed',
+				orderId: order._id,
+			});
 		}
 
-		if ((deliveryMethod || 'delivery') === 'delivery') {
-			orderPayload.deliveryInfo = deliveryInfo
-		}
-
-		const order = await Order.create(orderPayload)
-
-		// Notify the user about their order
-		await Notification.create({
-			userId: req.user.id,
-			message: `Ваш заказ #${order.orderNumber} успешно оформлен!`,
-			type: 'order_placed',
-			orderId: order._id,
-		})
-
-		// Notify the baker about a new order
-		await Notification.create({
-			userId: baker, // The baker's ID
-			message: `У вас новый заказ #${order.orderNumber} от ${
-				req.user.name || 'клиента'
-			}!`,
-			type: 'order_placed',
-			orderId: order._id,
-		})
-
-		res.status(201).json(order)
+		res.status(201).json(createdOrders);
 	} catch (err) {
-		console.error(err)
-		res.status(500).json({ message: err.message })
+		console.error(err);
+		res.status(500).json({ message: err.message });
 	}
 })
 
 // Create a custom order
 router.post('/custom', auth, async (req, res) => {
 	try {
-		const { details, deliveryInfo, deliveryMethod, paymentMethod, baker } =
+		const { details, deliveryInfo, deliveryMethod, paymentMethod } =
 			req.body
 
 		if (!details || !deliveryInfo) {
 			return res.status(400).json({ message: 'Incomplete custom order data' })
 		}
 
+		// Find a baker to assign the custom order to
+		const baker = await User.findOne({ role: 'baker' });
 		if (!baker) {
-			return res.status(400).json({ message: 'Baker ID is required' })
+			return res.status(500).json({ message: 'No bakers available to handle custom orders.' });
 		}
 
 		const order = await Order.create({
@@ -137,7 +120,7 @@ router.post('/custom', auth, async (req, res) => {
 			deliveryMethod: deliveryMethod || 'delivery',
 			paymentMethod: paymentMethod || 'cash',
 			orderNumber: uuidv4(),
-			baker, // Add baker to the order payload
+			baker: baker._id, // Add baker to the order payload
 		})
 
 		// Notify the user about their custom order
@@ -150,7 +133,7 @@ router.post('/custom', auth, async (req, res) => {
 
 		// Notify the baker about a new custom order
 		await Notification.create({
-			userId: baker, // The baker's ID
+			userId: baker._id, // The baker's ID
 			message: `У вас новый индивидуальный заказ #${order.orderNumber} от ${req.user.name}!`, // Assuming req.user.name is available
 			type: 'order_placed',
 			orderId: order._id,

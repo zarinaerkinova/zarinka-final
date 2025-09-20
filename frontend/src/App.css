@@ -23,26 +23,17 @@ body {
   margin: 0;
 }
 
-html,
-body {
-  height: 100%;
-  margin: 0;
-}
-
 .App {
   min-height: 100vh;
-  /* always at least full screen */
-  position: relative;
-  /* height of footer */
+  display: flex;
+  flex-direction: column;
   box-sizing: border-box;
 }
 
 footer {
-  height: 80px;
-  position: absolute;
-  bottom: 0;
-  left: 0;
+  height: 80px; /* Adjust this if your footer has a different fixed height */
   width: 100%;
+  margin-top: auto; /* Pushes the footer to the bottom */
 }
 
 :root {
@@ -135,5 +126,21 @@ footer {
     syntax: "*";
     inherits: false;
     initial-value: 0 0 #0000;
+  }
+}
+
+/* Page Transition Animations */
+.page-transition-container {
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }

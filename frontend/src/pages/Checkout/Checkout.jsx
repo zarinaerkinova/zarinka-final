@@ -22,46 +22,15 @@ const Checkout = () => {
 		phone: '',
 		city: '',
 		streetAddress: '',
-		zipCode: '',
 		deliveryNotes: '',
 	})
 	const [specialInstructions, setSpecialInstructions] = useState('')
-	const [bakers, setBakers] = useState([])
-	const [selectedBakerId, setSelectedBakerId] = useState('')
 
 	useEffect(() => {
 		if (token) {
 			fetchCart(token); // Fetch the latest cart from the backend
-			fetchBakers();
 		}
 	}, [token, fetchCart]); // Depend on token and fetchCart
-
-	const fetchBakers = async () => {
-		try {
-			const response = await fetch('/api/auth/bakers', {
-				headers: {
-					Authorization: `Bearer ${token}`,
-				},
-			});
-			const data = await response.json();
-			console.log('Fetched bakers data:', data); // Log fetched data
-			if (response.ok) {
-				setBakers(data);
-				if (data.length > 0) {
-					setSelectedBakerId(data[0]._id); // Select the first baker by default
-					console.log('Selected default baker ID:', data[0]._id); // Log selected default baker ID
-				} else {
-					console.log('No bakers found, selectedBakerId remains empty.');
-				}
-			} else {
-				toast.error(data.msg || 'Failed to fetch bakers');
-				console.error('Failed to fetch bakers:', data.msg);
-			}
-		} catch (error) {
-			console.error('Error fetching bakers:', error);
-			toast.error('Error fetching bakers');
-		}
-	};
 
 	const handleChange = e => {
 		setDeliveryInfo({ ...deliveryInfo, [e.target.name]: e.target.value })
@@ -81,8 +50,7 @@ const Checkout = () => {
 				!deliveryInfo.name ||
 				!deliveryInfo.phone ||
 				!deliveryInfo.city ||
-				!deliveryInfo.streetAddress ||
-				!deliveryInfo.zipCode
+				!deliveryInfo.streetAddress
 			) {
 				toast.error('Please fill all delivery information fields')
 				return
@@ -94,13 +62,6 @@ const Checkout = () => {
 				return
 			}
 		}
-
-		if (!selectedBakerId) {
-			toast.error('Please select a baker');
-			return;
-		}
-
-		console.log('Selected Baker ID before placing order:', selectedBakerId); // Add this line
 
 		const orderData = {
 			items: cart.map(item => {
@@ -130,7 +91,6 @@ const Checkout = () => {
 					? deliveryInfo
 					: { name: deliveryInfo.name, phone: deliveryInfo.phone },
 			specialInstructions,
-			baker: selectedBakerId,
 		}
 
 		try {
@@ -200,13 +160,6 @@ const Checkout = () => {
 								onChange={handleChange}
 								required
 							/>
-							<input
-								name='zipCode'
-								placeholder='ZIP Code'
-								value={deliveryInfo.zipCode}
-								onChange={handleChange}
-								required
-							/>
 							<textarea
 								name='deliveryNotes'
 								placeholder='Delivery Notes'
@@ -259,21 +212,6 @@ const Checkout = () => {
 						/>{' '}
 						Cash
 					</label>
-				</div>
-
-				<h2>Select Baker</h2>
-				<div className='radio-group'>
-					<select
-						value={selectedBakerId}
-						onChange={e => setSelectedBakerId(e.target.value)}
-						className='baker-select'
-					>
-						{bakers.map(baker => (
-							<option key={baker._id} value={baker._id}>
-								{baker.name}
-							</option>
-						))}
-					</select>
 				</div>
 
 				<h2>Special Instructions</h2>

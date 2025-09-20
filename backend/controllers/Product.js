@@ -1,5 +1,6 @@
 import mongoose from 'mongoose'
 import Product from '../models/Product.js'
+import Review from '../models/Review.js';
 
 // Get all products with optional filtering
 export const getProducts = async (req, res) => {
@@ -54,6 +55,13 @@ export const getProducts = async (req, res) => {
 		const products = await Product.find(query)
 			.populate('category', 'name')
 			.populate('createdBy', 'name email bio image')
+            .lean();
+
+        for (let product of products) {
+            const reviews = await Review.find({ product: product._id });
+            product.reviewCount = reviews.length;
+        }
+
 		res.status(200).json({ success: true, data: products })
 	} catch (error) {
 		console.error('Error fetching products:', error.message)
@@ -111,32 +119,17 @@ export const getBakerProducts = async (req, res) => {
 // Create product
 export const createProduct = async (req, res) => {
 	try {
-		console.log('🔍 Create product request received')
-		console.log('Request body:', req.body)
-		console.log('Request file:', req.file)
-		console.log('User:', req.user)
-
 		const {
 			name,
 			price,
 			description,
 			category,
-			ingredients,
-			sizes,
-			preparationTime,
-			isCustomizable,
 		} = req.body
 
 		if (!name || !price || !description || !category) {
-			console.log('❌ Missing required fields:', {
-				name,
-				price,
-				description,
-				category,
-			})
 			return res
 				.status(400)
-				.json({ success: false, message: 'Please provide all product fields' })
+				.json({ success: false, message: 'Please provide all required product fields' })
 		}
 
 		if (!mongoose.Types.ObjectId.isValid(category)) {
@@ -151,77 +144,32 @@ export const createProduct = async (req, res) => {
 				.json({ success: false, message: 'Product image is required' })
 		}
 
-		let ingredients_arr = []
-		if (ingredients) {
-			if (typeof ingredients === 'string') {
-				try {
-					const parsed = JSON.parse(ingredients)
-					if (Array.isArray(parsed)) {
-						ingredients_arr = parsed
-					}
-				} catch {
-					// ignore if parsing fails
-				}
-			}
-		}
-
-		let sizes_arr = []
-		if (sizes) {
-			if (typeof sizes === 'string') {
-				try {
-					const parsed = JSON.parse(sizes)
-					if (Array.isArray(parsed)) {
-						sizes_arr = parsed
-					}
-				} catch {
-					// ignore if parsing fails
-				}
-			}
-		}
-
-		console.log('📦 Creating product with data:', {
-			name,
-			price,
-			description,
-			category,
-			ingredients: ingredients_arr,
-			sizes: sizes_arr,
-			preparationTime: preparationTime || '',
-			isCustomizable,
-		})
-
-		const product = await Product.create({
+		const product = new Product({
 			name,
 			price,
 			image: `/uploads/${req.file.filename}`,
 			description,
 			category,
-			createdBy: req.user._id, // Use req.user._id from auth middleware
-			ingredients: ingredients_arr,
-			sizes: sizes_arr,
-			preparationTime: preparationTime || '',
-			isAvailable: true, // Default to available
-			orderCount: 0,
-			rating: { average: 0, count: 0 }, // ✅ default rating
-		})
+			createdBy: req.user._id,
+            ingredients: ['default ingredient'], // Add a default ingredient
+		});
 
-		console.log('✅ Product created successfully:', product._id)
+		await product.save();
 
 		const populatedProduct = await Product.findById(product._id)
 			.populate('category', 'name')
-			.populate('createdBy', 'name email bio image')
+			.populate('createdBy', 'name email bio image');
 
-		console.log('✅ Product populated successfully')
-		res.status(201).json({ success: true, product: populatedProduct })
+		res.status(201).json({ success: true, product: populatedProduct });
+
 	} catch (error) {
-		console.error('❌ Create product error:', error)
-		console.error('Error details:', error.message)
-		console.error('Error stack:', error.stack)
-		res
-			.status(500)
-			.json({ success: false, message: 'Server error: ' + error.message })
+		console.error('❌ Create product error:', error);
+		if (error.name === 'ValidationError') {
+			return res.status(400).json({ success: false, message: error.message });
+		}
+		res.status(500).json({ success: false, message: 'Server error: ' + error.message });
 	}
-}
+};
 
 // Update product
 export const updateProduct = async (req, res) => {

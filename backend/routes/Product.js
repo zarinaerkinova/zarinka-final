@@ -72,6 +72,21 @@ const handleMulterError = (err, req, res, next) => {
 	next()
 }
 
+const uploadWithCatch = (req, res, next) => {
+    try {
+        upload.single('image')(req, res, (err) => {
+            if (err) {
+                console.error('Error in upload.single:', err);
+                return res.status(500).json({ message: 'Error uploading file' });
+            }
+            next();
+        });
+    } catch (error) {
+        console.error('Caught exception in upload middleware:', error);
+        res.status(500).json({ message: 'Error processing file upload' });
+    }
+};
+
 router.get('/', getProducts)
 // Place more specific routes BEFORE the generic "/:id" route
 router.get('/category/:categoryId', getProductsByCategory)
@@ -82,7 +97,7 @@ router.post(
 	'/',
 	auth,
 	onlyBakers, // Changed from onlyAdmins
-	upload.single('image'),
+	uploadWithCatch,
 	handleMulterError,
 	(req, res, next) => {
 		if (!req.file) {

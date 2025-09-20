@@ -86,6 +86,16 @@ const UserSchema = new mongoose.Schema({
     vacationEndDate: {
         type: Date,
     },
+    rating: {
+        type: Number,
+        required: true,
+        default: 0,
+    },
+    numReviews: {
+        type: Number,
+        required: true,
+        default: 0,
+    },
 })
 
 UserSchema.pre('save', async function (next) {

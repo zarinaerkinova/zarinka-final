@@ -28,6 +28,18 @@ const DashboardProductCard = ({ product, onDelete }) => {
             <div className="product-info">
                 <h4>{product.name}</h4>
                 <p className="price">{product.price} ₽</p>
+                {product.rating && (
+                    <div className="product-rating">
+                        <span className="rating-stars">
+                            {Array.from({ length: 5 }, (_, i) => (
+                                <span key={i} className={`star ${i < Math.floor(product.rating) ? 'filled' : ''}`}>
+                                    ★
+                                </span>
+                            ))}
+                        </span>
+                        <span className="rating-value">{product.rating.toFixed(1)}</span>
+                    </div>
+                )}
                 <p className={`availability ${product.isAvailable ? 'available' : 'unavailable'}`}>
                     {product.isAvailable ? 'Available' : 'Not Available'}
                 </p>

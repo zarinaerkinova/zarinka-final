@@ -1,26 +1,31 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect } from 'react'
 import { RiShoppingBag3Line } from 'react-icons/ri'
 import { Link, useNavigate } from 'react-router-dom'
 import CartItem from '../../components/CartItem'
 import { useCartStore } from '../../store/Cart'
 import { useUserStore } from '../../store/User'
+import { useLoadingStore } from '../../store/Loading' // Import useLoadingStore
 import './Cart.scss'
 
 const Cart = () => {
 	const { cart, fetchCart } = useCartStore()
 	const { token } = useUserStore()
-	const [loading, setLoading] = useState(true)
+	const { setLoading } = useLoadingStore() // Get setLoading from global store
 	const navigate = useNavigate()
 
 	useEffect(() => {
 		const loadCart = async () => {
-			if (token) await fetchCart(token)
-			setLoading(false)
+			setLoading(true) // Set global loading to true
+			try {
+				if (token) await fetchCart(token)
+			} catch (error) {
+				console.error("Failed to fetch cart:", error)
+			} finally {
+				setLoading(false) // Set global loading to false
+			}
 		}
 		loadCart()
-	}, [token, fetchCart])
-
-	if (loading) return <div className='container'>Loading cart...</div>
+	}, [token, fetchCart, setLoading])
 
 	if (!cart || cart.length === 0) {
 		return (

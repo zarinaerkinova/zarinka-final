@@ -67,7 +67,7 @@ const Custom = () => {
 			: {
 					name: 'кастомный торт',
 					price: basePrice,
-					image: '/placeholder.png', // A placeholder image for custom cakes
+					image: '/placeholder', // A placeholder image for custom cakes
 					customizedIngredients: customizedIngredientsArray,
 					baker: { name: 'индивидуальный заказ' },
 			  }

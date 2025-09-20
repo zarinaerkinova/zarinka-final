@@ -1,24 +1,214 @@
-.bakers-page_content {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+main {
+    max-width: 1600px;
+    margin: 0 auto;
+    padding: 40px 20px;
+    display: flex;
+    align-items: flex-start;
     gap: 30px;
 }
 
-.specialist-initials-container {
+.menu {
+    padding: 24px;
+    background-color: var(--white);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg); /* Более заметная тень, как в Home */
+    width: 300px;
+    flex-shrink: 0;
+}
+
+.menu h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 20px;
+}
+
+.filter-section {
+    margin-bottom: 20px;
+    padding: 20px; /* Увеличен padding для лучшего внешнего вида */
+    background-color: var(--surface); /* Светлый фон */
+    border-radius: var(--radius); /* Более крупные закругления */
+    border: 1px solid var(--border-light);
+    box-shadow: var(--shadow);
+    transition: var(--transition); /* Плавный переход */
+}
+
+.filter-section:hover {
+    transform: translateY(-3px); /* Эффект подъема */
+    box-shadow: var(--shadow-md); /* Более сильная тень при наведении */
+}
+
+/* Убран border-bottom, так как он не нужен с shadow */
+.filter-section:last-child {
+    margin-bottom: 0;
+}
+
+.filter-section h3 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 15px;
+}
+
+.filter-section input[type="text"],
+.filter-section input[type="number"],
+.filter-section select {
     width: 100%;
-    height: 100%;
+    padding: 12px 14px;
+    margin-bottom: 10px;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    font-size: 0.95rem;
+    color: var(--text-primary);
+    background-color: var(--white); /* Установлен белый фон */
+    transition: var(--transition);
+    appearance: none;
+}
+
+.filter-section input[type="text"]:focus,
+.filter-section input[type="number"]:focus,
+.filter-section select:focus {
+    border-color: var(--primary-color);
+    box-shadow: var(--shadow-md); /* Консистентная тень при фокусе */
+    outline: none;
+}
+
+/* catalogue */
+.catalogue {
+    flex-grow: 1;
+    padding: 24px;
+    min-width: 320px;
+    max-width: 1200px;
+    width: 100%;
+    background-color: var(--white);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg); /* Консистентная тень с боковой панелью */
+}
+
+.catalogue h2 {
+    font-size: 2rem; /* Увеличен шрифт для согласованности с h2 в Home.scss */
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 50px; /* Увеличен отступ */
+    position: relative;
+}
+
+.catalogue h2::after {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    left: 0;
+    width: 60px;
+    height: 4px;
+    background: var(--gradient-primary);
+    border-radius: 2px;
+}
+
+.catalogue_content {
+    max-width: 1200px;
+    min-width: auto;
     display: flex;
+    flex-wrap: wrap;
+    gap: 25px; /* Увеличен зазор между карточками */
+}
+
+.catalogue_content > * {
+    width: calc(33.333% - 17px);
+}
+
+/* No Products Found Styles */
+.no-bakers-message {
+    display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
-    background: var(--gradient-primary);
+    padding: 60px 40px;
+    width: 100%;
+    min-height: 400px;
+    background: linear-gradient(135deg, var(--surface) 0%, var(--white) 100%);
+    border-radius: var(--radius-lg);
+    border: 2px dashed var(--border-light);
+    text-align: center;
+    position: relative;
+    overflow: hidden;
 }
 
-.specialist-initials {
+.no-bakers-message::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(var(--primary-color-rgb), 0.03) 0%, transparent 70%);
+    animation: float 6s ease-in-out infinite;
+}
+
+@keyframes float {
+    0%, 100% { transform: translate(0, 0) rotate(0deg); }
+    50% { transform: translate(-10px, -10px) rotate(1deg); }
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+    .catalogue_content > * {
+        width: calc(50% - 12.5px);
+    }
+}
+
+@media (max-width: 768px) {
+    main {
+        flex-direction: column;
+        padding: 20px;
+    }
+
+    .menu {
+        width: 100%;
+        max-width: none;
+        order: 2; /* Боковое меню внизу на мобильных */
+    }
+
+    .catalogue {
+        width: 100%;
+        order: 1; /* Каталог вверху на мобильных */
+    }
+
+    .catalogue_content > * {
+        width: 100%;
+    }
+
+    .catalogue_content {
+        gap: 24px;
+    }
+
+    .no-bakers-message {
+        padding: 40px 20px;
+        min-height: 300px;
+    }
+}
+
+@media (max-width: 480px) {
+    .catalogue h2 {
+        font-size: 2rem;
+    }
+}
+
+.load-more-button {
+    display: block;
+    width: 200px;
+    margin: 30px auto 0 auto;
+    padding: 15px 20px;
+    background-color: var(--primary-color);
     color: var(--white);
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
     font-weight: 600;
-    font-size: 3rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
-.bakers-page_content .btns a {
-    padding: 12px 20px;
+.load-more-button:hover {
+    background-color: var(--primary-dark);
+    transform: translateY(-2px);
 }

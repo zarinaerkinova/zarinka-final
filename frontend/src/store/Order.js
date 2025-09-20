@@ -2,6 +2,7 @@ import { create } from 'zustand'
 import api from '../config/axios.js'
 import { useCartStore } from './Cart'
 import { useUserStore } from './User'
+import { useLoadingStore } from './Loading.js' // Import useLoadingStore
 
 // zustand store for orders
 export const useOrderStore = create((set, get) => ({
@@ -12,6 +13,8 @@ export const useOrderStore = create((set, get) => ({
 	allBakerOrders: [], // New state for all orders for a baker
 
 	placeOrder: async (token, orderData) => {
+		const setLoading = useLoadingStore.getState().setLoading;
+		setLoading(true);
 		try {
 			const { cart, setCart } = useCartStore.getState()
 
@@ -20,11 +23,6 @@ export const useOrderStore = create((set, get) => ({
 				(!orderData?.items || orderData.items.length === 0)
 			) {
 				throw new Error('Cart is empty')
-			}
-
-			// Ensure baker ID is included for new orders
-			if (!orderData.baker) {
-				throw new Error('Baker ID is required for placing an order')
 			}
 
 			const items =
@@ -65,7 +63,6 @@ export const useOrderStore = create((set, get) => ({
 				deliveryInfo: orderData?.deliveryInfo || {},
 				deliveryMethod: orderData?.deliveryMethod,
 				paymentMethod: orderData?.paymentMethod,
-				baker: orderData.baker, // Include baker ID in the payload
 			}
 
 			const res = await api.post('/orders', payload, {
@@ -74,31 +71,37 @@ export const useOrderStore = create((set, get) => ({
 
 			setCart([]) // clear cart
 			set(state => ({ orders: [...state.orders, res.data] }))
+            get().fetchBakerOrders(token); // Refetch baker orders
 			return res.data
 		} catch (error) {
 			console.error(error.response?.data || error.message)
 			throw error
+		} finally {
+			setLoading(false);
 		}
 	},
 
 	placeCustomOrder: async (token, orderDetails) => {
+		const setLoading = useLoadingStore.getState().setLoading;
+		setLoading(true);
 		try {
-			// Ensure baker ID is included for custom orders
-			if (!orderDetails.baker) {
-				throw new Error('Baker ID is required for placing a custom order')
-			}
 			const res = await api.post('/orders/custom', orderDetails, {
 				headers: { Authorization: `Bearer ${token}` },
 			})
 			set(state => ({ customOrders: [...state.customOrders, res.data] }))
+            get().fetchBakerOrders(token); // Refetch baker orders
 			return res.data
 		} catch (error) {
 			console.error(error.response?.data || error.message)
 			throw error
+		} finally {
+			setLoading(false);
 		}
 	},
 
 	fetchOrders: async token => {
+		const setLoading = useLoadingStore.getState().setLoading;
+		setLoading(true);
 		try {
 			const res = await api.get('/orders/my-orders', {
 				headers: { Authorization: `Bearer ${token}` },
@@ -106,11 +109,15 @@ export const useOrderStore = create((set, get) => ({
 			set({ orders: res.data })
 		} catch (error) {
 			console.error(error)
+		} finally {
+			setLoading(false);
 		}
 	},
 
 	// New fetch actions for baker-specific orders
 	fetchNewBakerOrders: async token => {
+		const setLoading = useLoadingStore.getState().setLoading;
+		setLoading(true);
 		try {
 			const res = await api.get('/orders/baker/new', {
 				headers: { Authorization: `Bearer ${token}` },
@@ -118,10 +125,14 @@ export const useOrderStore = create((set, get) => ({
 			set({ newOrders: res.data })
 		} catch (error) {
 			console.error('❌ Error fetching new baker orders:', error)
+		} finally {
+			setLoading(false);
 		}
 	},
 
 	fetchCompletedBakerOrders: async token => {
+		const setLoading = useLoadingStore.getState().setLoading;
+		setLoading(true);
 		try {
 			const res = await api.get('/orders/baker/completed', {
 				headers: { Authorization: `Bearer ${token}` },
@@ -138,10 +149,14 @@ export const useOrderStore = create((set, get) => ({
 			set({ completedOrders: filteredOrders })
 		} catch (error) {
 			console.error(error)
+		} finally {
+			setLoading(false);
 		}
 	},
 
 	fetchAllBakerOrders: async token => {
+		const setLoading = useLoadingStore.getState().setLoading;
+		setLoading(true);
 		try {
 			const res = await api.get('/orders/baker-orders', {
 				// This route now fetches all orders for the authenticated baker
@@ -157,6 +172,8 @@ export const useOrderStore = create((set, get) => ({
 			})
 		} catch (error) {
 			console.error('❌ Error fetching all baker orders:', error)
+		} finally {
+			setLoading(false);
 		}
 	},
 
@@ -173,6 +190,8 @@ export const useOrderStore = create((set, get) => ({
 	},
 
 	updateOrderStatus: async (token, orderId, status, reason = '') => {
+		const setLoading = useLoadingStore.getState().setLoading;
+		setLoading(true);
 		try {
 			const res = await api.put(
 				`/orders/${orderId}/status`,
@@ -201,10 +220,14 @@ export const useOrderStore = create((set, get) => ({
 		} catch (error) {
 			console.error(error.response?.data || error.message)
 			throw error
+		} finally {
+			setLoading(false);
 		}
 	},
 
 	deleteOrder: async (token, orderId) => {
+		const setLoading = useLoadingStore.getState().setLoading;
+		setLoading(true);
 		try {
 			await api.delete(`/orders/${orderId}`, {
 				headers: { Authorization: `Bearer ${token}` },
@@ -221,6 +244,8 @@ export const useOrderStore = create((set, get) => ({
 		} catch (error) {
 			console.error(error.response?.data || error.message)
 			throw error
+		} finally {
+			setLoading(false);
 		}
 	},
 }))

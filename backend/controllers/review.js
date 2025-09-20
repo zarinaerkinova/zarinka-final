@@ -1,6 +1,7 @@
 import Order from '../models/Order.js' // To verify order status and get baker ID
 import Product from '../models/Product.js'
 import Review from '../models/Review.js'
+import User from '../models/User.js'
 
 export const createReview = async (req, res) => {
 	const { orderId, productId, rating, comment } = req.body
@@ -57,6 +58,16 @@ export const createReview = async (req, res) => {
 			product.rating.average = totalRating / newCount
 			product.rating.count = newCount
 			await product.save()
+		}
+
+		// 6. Update the baker's average rating
+		const baker = await User.findById(bakerId)
+		if (baker) {
+			const reviews = await Review.find({ baker: bakerId })
+			baker.numReviews = reviews.length
+			baker.rating = 
+				reviews.reduce((acc, item) => item.rating + acc, 0) / reviews.length
+			await baker.save()
 		}
 
 		res.status(201).json(savedReview)

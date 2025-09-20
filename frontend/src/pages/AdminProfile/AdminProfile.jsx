@@ -205,6 +205,9 @@ const AdminProfile = () => {
 							<Link to={'/addproduct'}>
 								<button className='add-pet'>Добавить продукт</button>
 							</Link>
+							<Link to={`/admin/product-list?bakerId=${userInfo?._id}`}>
+								<button className='add-pet'>Управление продуктами</button>
+							</Link>
 							<div className='pets-container'>
 								{products?.length > 0 ? (
 									products.map(product => (

@@ -3,6 +3,7 @@ import { Link, useParams, useNavigate } from 'react-router-dom';
 import { useBakerStore } from '../../store/Baker.js';
 import { useProductStore } from '../../store/Product.js';
 import { useFavoriteStore } from '../../store/Favorite.js'; // Assuming a favorite store for bakers
+import { useLoadingStore } from '../../store/Loading.js'; // Import useLoadingStore
 import Card from '../../components/Card.jsx';
 import './BakerDetail.scss';
 
@@ -14,7 +15,6 @@ const BakerDetail = () => {
     const {
         selectedBaker,
         error,
-        loading,
         fetchBakerById,
         clearSelectedBaker
     } = useBakerStore();
@@ -27,6 +27,8 @@ const BakerDetail = () => {
     const addToFavorite = useFavoriteStore((state) => state.addToFavorite);
     const removeFromFavorite = useFavoriteStore((state) => state.removeFromFavorite);
     const favorites = useFavoriteStore((state) => state.favorites);
+
+    const { loading } = useLoadingStore(); // Get loading state from useLoadingStore
 
     const isFavorite = selectedBaker ? favorites.some(fav => fav._id === selectedBaker._id) : false;
 

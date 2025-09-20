@@ -7,7 +7,7 @@ export const useUserStore = create(
     (set, get) => ({
       user: null,
       token: null,
-      userInfo: null,
+      userInfo: null, // Здесь должен храниться рейтинг
       errorMessage: '',
       loading: false,
       hydrated: false,
@@ -38,7 +38,12 @@ export const useUserStore = create(
             return { success: false, message: data.message || data.msg };
           }
 
-          set({ user: data.userData, token: data.token, loading: false });
+          set({ 
+            user: data.userData, 
+            token: data.token, 
+            userInfo: data.userData, // Сохраняем userData также в userInfo
+            loading: false 
+          });
 
           // ⭐ Fetch favorites right after register
           await get().fetchFavorites();
@@ -70,7 +75,12 @@ export const useUserStore = create(
             return { success: false, message: data.message };
           }
 
-          set({ user: data.userData, token: data.token, loading: false });
+          set({ 
+            user: data.userData, 
+            token: data.token, 
+            userInfo: data.userData, // Сохраняем userData также в userInfo
+            loading: false 
+          });
 
           // ⭐ Fetch favorites right after login
           await get().fetchFavorites();
@@ -84,7 +94,7 @@ export const useUserStore = create(
 
       logoutUser: () => {
         localStorage.clear();
-        set({ user: null, token: null, favorites: [] }); // clear favorites too
+        set({ user: null, token: null, userInfo: null, favorites: [] }); // очищаем userInfo тоже
       },
 
       fetchProfile: async () => {
@@ -286,7 +296,8 @@ export const useUserStore = create(
       partialize: (state) => ({
         user: state.user,
         token: state.token,
-        favorites: state.favorites, // ✅ fixed: store full objects instead of just IDs
+        userInfo: state.userInfo, // ✅ Добавляем userInfo в сохраняемые данные
+        favorites: state.favorites,
       }),
       onRehydrateStorage: () => (state) => {
         if (state) state.setHydrated(true);
@@ -294,3 +305,5 @@ export const useUserStore = create(
     }
   )
 );
+
+
