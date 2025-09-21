@@ -28,16 +28,16 @@ const DashboardProductCard = ({ product, onDelete }) => {
             <div className="product-info">
                 <h4>{product.name}</h4>
                 <p className="price">{product.price} ₽</p>
-                {product.rating && (
+                {product.rating && product.rating.average !== undefined && (
                     <div className="product-rating">
                         <span className="rating-stars">
                             {Array.from({ length: 5 }, (_, i) => (
-                                <span key={i} className={`star ${i < Math.floor(product.rating) ? 'filled' : ''}`}>
+                                <span key={i} className={`star ${i < Math.floor(product.rating.average) ? 'filled' : ''}`}>
                                     ★
                                 </span>
                             ))}
                         </span>
-                        <span className="rating-value">{product.rating.toFixed(1)}</span>
+                        <span className="rating-value">{product.rating.average.toFixed(1)}</span>
                     </div>
                 )}
                 <p className={`availability ${product.isAvailable ? 'available' : 'unavailable'}`}>
