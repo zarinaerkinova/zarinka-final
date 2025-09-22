@@ -1,0 +1,209 @@
+// Favorite.scss
+.favorite-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  min-height: 60vh;
+  padding: 2rem;
+  
+  &__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.5rem;
+    margin-top: 1rem;
+    
+    @media (max-width: 768px) {
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 1rem;
+    }
+    
+    @media (max-width: 480px) {
+      grid-template-columns: 1fr;
+    }
+  }
+}
+
+.empty-favorites {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 4rem 1.25rem;
+  color: var(--text-muted);
+  background: var(--gradient-surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  margin: 2rem 0;
+  transition: var(--transition);
+  
+  &:hover {
+    box-shadow: var(--shadow-lg);
+    transform: translateY(-2px);
+  }
+  
+  .heart_icon {
+    font-size: 5rem; // Increased font size
+    margin-bottom: 1.5rem;
+    color: var(--primary-color);
+    opacity: 0.2;
+  }
+  
+  h3 {
+    font-size: 1.75rem; // Increased font size
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: var(--text-primary);
+  }
+  
+  p {
+    margin-bottom: 2rem;
+    max-width: 400px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+  }
+  
+  .btns {
+    display: flex;
+    gap: 1rem;
+    
+    @media (max-width: 480px) {
+      flex-direction: column;
+      width: 100%;
+      max-width: 280px;
+    }
+    
+    a {
+      padding: 0.75rem 1.5rem;
+      border-radius: var(--radius);
+      font-weight: 500;
+      transition: var(--transition);
+      text-decoration: none;
+      
+      &.build {
+        background: var(--gradient-primary);
+        color: var(--white);
+        box-shadow: var(--shadow);
+        
+        &:hover {
+          transform: translateY(-2px);
+          box-shadow: var(--shadow-lg);
+        }
+        
+        &:active {
+          transform: translateY(0);
+        }
+      }
+      
+      &.browse {
+        border: 1px solid var(--border-color);
+        color: var(--text-primary);
+        background: var(--white);
+        
+        &:hover {
+          background-color: var(--surface);
+          border-color: var(--primary-light);
+          color: var(--primary-color);
+        }
+      }
+    }
+  }
+}
+
+.favorite-section {
+  margin-bottom: 2.5rem;
+  animation: fadeIn 0.5s ease-out forwards;
+  
+  &:nth-child(2) {
+    animation-delay: 0.1s;
+  }
+  
+  h2 {
+    position: relative;
+    padding-bottom: 0.75rem;
+    margin-bottom: 1.5rem;
+    color: var(--text-primary);
+    font-size: 1.5rem;
+    font-weight: 600;
+    
+    &::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 3rem;
+      height: 0.25rem;
+      background: var(--gradient-primary);
+      border-radius: 2px;
+    }
+  }
+}
+
+// Анимации
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(1rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// Состояние загрузки
+.loading-state {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 4rem 2rem;
+  
+  .spinner {
+    width: 2.5rem;
+    height: 2.5rem;
+    border: 3px solid var(--border-light);
+    border-top: 3px solid var(--primary-color);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+// Адаптивность
+@media (max-width: 768px) {
+  .favorite-container {
+    padding: 1rem;
+  }
+  
+  .empty-favorites {
+    padding: 2.5rem 1rem;
+    
+    .heart_icon {
+      font-size: 3rem;
+    }
+    
+    h3 {
+      font-size: 1.25rem;
+    }
+  }
+}
+
+// Улучшения доступности
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  
+  .empty-favorites:hover {
+    transform: none;
+  }
+  
+  .favorite-section {
+    animation: none;
+  }
+}

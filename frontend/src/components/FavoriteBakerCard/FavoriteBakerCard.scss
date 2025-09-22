@@ -1,0 +1,126 @@
+.favorite-baker-card {
+    display: flex;
+    align-items: center;
+    background: var(--white);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-lg);
+    padding: 1rem;
+    transition: all 0.3s ease-in-out;
+    border: 1px solid transparent;
+    position: relative;
+    border-radius: 15px;
+
+    &:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        border-color: var(--primary-color-light);
+    }
+
+    .like-btn {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        background: rgba(255, 255, 255, 0.8);
+        border: none;
+        border-radius: 50%;
+        width: 36px;
+        height: 36px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        font-size: 1.2rem;
+        color: var(--text-secondary);
+        transition: all 0.2s ease;
+        backdrop-filter: blur(5px);
+
+        &:hover {
+            color: var(--primary-color);
+            transform: scale(1.1);
+        }
+    }
+
+    .baker-photo {
+        width: 100px;
+        height: 100px;
+        min-width: 100px;
+        border-radius: var(--radius-lg);
+        overflow: hidden;
+        margin-right: 1.5rem;
+        box-shadow: var(--shadow-md);
+
+        img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .baker-initials {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            color: var(--white);
+            background: var(--gradient-primary);
+            font-weight: bold;
+        }
+    }
+
+    .baker-info {
+        text-align: left;
+        flex-grow: 1;
+
+        h3 {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 0.1rem;
+            color: var(--text-primary);
+        }
+
+        p {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.8rem;
+        }
+
+        .baker-details {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 0.5rem 1rem;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+
+            .rating, .city {
+                display: flex;
+                align-items: center;
+                gap: 0.3rem;
+            }
+
+            .rating {
+                color: var(--text-primary);
+                font-weight: 600;
+
+                svg {
+                    color: #ffc107; // gold
+                    font-size: 1rem;
+                }
+            }
+
+            .num-reviews {
+                font-size: 0.85rem;
+                color: var(--text-tertiary);
+            }
+
+            .city {
+                color: var(--text-secondary);
+
+                svg {
+                    font-size: 1rem;
+                }
+            }
+        }
+    }
+}

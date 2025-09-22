@@ -1,0 +1,540 @@
+// Variables (re-using from Contact.scss for consistency)
+$primary-color: #8b1538;
+$secondary-color: #a64d5f;
+$accent-color: #d1477a;
+$text-primary: #101828;
+$text-secondary: #4a5565;
+$text-muted: #6b7280;
+$background: #fafafa;
+$white: #ffffff;
+$gray-50: #f8fafc;
+$gray-100: #f1f5f9;
+$gray-200: #e2e8f0;
+$success: #10b981;
+$border-radius: 24px;
+$border-radius-sm: 16px;
+$border-radius-xs: 12px;
+$transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+$shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+$shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+
+// Mixins (re-using from Contact.scss for consistency)
+@mixin gradient-primary {
+  background: linear-gradient(135deg, $primary-color 0%, $secondary-color 100%);
+}
+
+@mixin gradient-text {
+  background: linear-gradient(45deg, $white, #f8fafc);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+@mixin card {
+  background: $white;
+  border-radius: $border-radius;
+  padding: 32px;
+  box-shadow: $shadow;
+  border: 1px solid $gray-100;
+  transition: $transition;
+  
+  &:hover {
+    box-shadow: $shadow-lg;
+    transform: translateY(-2px);
+  }
+}
+
+@mixin button-primary {
+  padding: 16px 32px;
+  @include gradient-primary;
+  color: $white;
+  border: none;
+  border-radius: $border-radius-sm;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: $transition;
+  box-shadow: $shadow-lg;
+  font-family: inherit;
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: left 0.5s;
+  }
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 15px 25px -5px rgba(139, 21, 56, 0.3);
+
+    &::before {
+      left: 100%;
+    }
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+
+  &:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    transform: none;
+
+    &:hover {
+      transform: none;
+      box-shadow: $shadow-lg;
+    }
+  }
+}
+
+@mixin input-field {
+  width: 100%;
+  padding: 14px 18px;
+  border: 2px solid $gray-200;
+  border-radius: $border-radius-sm;
+  font-size: 1rem;
+  transition: $transition;
+  outline: none;
+  font-family: inherit;
+  background: $white;
+
+  &:focus {
+    border-color: $primary-color;
+    box-shadow: 0 0 0 3px rgba(139, 21, 56, 0.1);
+    transform: translateY(-1px);
+  }
+
+  &:hover {
+    border-color: darken($gray-200, 5%);
+  }
+
+  &::placeholder {
+    color: $text-muted;
+  }
+}
+
+// Animations
+@keyframes fadeIn {
+  from { 
+    opacity: 0; 
+    transform: translateY(-10px); 
+  }
+  to { 
+    opacity: 1; 
+    transform: translateY(0); 
+  }
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+// Main styles for Help page
+.help-page {
+  min-height: 100vh;
+  background: $background;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+// Hero Section
+.hero-section {
+  @include gradient-primary;
+  color: $white;
+  padding: 120px 0;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="25" cy="25" r="1" fill="rgba(255,255,255,0.1)"/><circle cx="75" cy="25" r="1" fill="rgba(255,255,255,0.1)"/><circle cx="25" cy="75" r="1" fill="rgba(255,255,255,0.1)"/><circle cx="75" cy="75" r="1" fill="rgba(255,255,255,0.1)"/></svg>');
+    background-size: 50px 50px;
+    animation: pulse 4s ease-in-out infinite;
+  }
+
+  .hero-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 0 20px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .hero-title {
+    font-size: 3.5rem;
+    font-weight: 900;
+    margin-bottom: 32px;
+    @include gradient-text;
+    animation: slideInUp 0.8s ease-out;
+
+    @media (max-width: 768px) {
+      font-size: 2.5rem;
+    }
+  }
+
+  .search-bar {
+    position: relative;
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+
+    input {
+      @include input-field;
+      padding-left: 50px; // Space for icon
+      background: rgba(255, 255, 255, 0.9);
+      border-color: rgba(255, 255, 255, 0.5);
+      color: $text-primary;
+
+      &:focus {
+        border-color: $primary-color;
+        box-shadow: 0 0 0 3px rgba(139, 21, 56, 0.2);
+      }
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 18px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: $text-muted;
+    }
+  }
+}
+
+.help-main-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 80px 20px;
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 48px;
+  align-items: start;
+
+  @media (max-width: 1024px) {
+    grid-template-columns: 1fr;
+    gap: 40px;
+    padding: 60px 20px;
+  }
+}
+
+.help-sections {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  position: sticky;
+  top: 20px;
+
+  @media (max-width: 1024px) {
+    position: static;
+  }
+}
+
+.contact-support-link {
+  @include button-primary;
+  background: $white;
+  color: $primary-color;
+  border: 1px solid $gray-200;
+  text-decoration: none;
+  justify-content: center;
+
+  &:hover {
+    background: $gray-50;
+    color: $primary-color;
+    transform: translateY(-2px);
+    box-shadow: $shadow-lg;
+  }
+}
+
+.baker-resources-card {
+  @include card;
+  text-align: center;
+
+  h2 {
+    font-size: 1.5rem;
+    color: $text-primary;
+    margin-bottom: 16px;
+  }
+
+  p {
+    color: $text-secondary;
+    margin-bottom: 24px;
+  }
+
+  .button-link {
+    @include button-primary;
+    text-decoration: none;
+    display: inline-flex;
+    justify-content: center;
+    width: auto;
+  }
+}
+
+.policy-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+
+  .policy-button {
+    @include button-primary;
+    background: $white;
+    color: $text-primary;
+    border: 1px solid $gray-200;
+    justify-content: flex-start;
+    padding: 14px 24px;
+    font-size: 0.95rem;
+
+    &:hover {
+      background: $gray-50;
+      color: $primary-color;
+      transform: translateY(-2px);
+      box-shadow: $shadow-lg;
+    }
+
+    svg {
+      color: $primary-color;
+      margin-right: 8px;
+    }
+  }
+}
+
+.support-contact-cards {
+  display: grid;
+  // grid-template-columns: 1fr 1fr;
+  gap: 24px;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
+
+  .support-card {
+    @include card;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+
+    svg {
+      color: $primary-color;
+      width: 48px;
+      height: 48px;
+      z-index: 999;
+    }
+
+    h3 {
+      font-size: 1.25rem;
+      color: $text-primary;
+      margin: 0;
+    }
+
+    p {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: $primary-color;
+      margin: 0;
+    }
+
+    span {
+      font-size: 0.875rem;
+      color: $text-muted;
+    }
+  }
+}
+
+.faq-section {
+  h2 {
+    font-size: 2rem;
+    font-weight: 700;
+    color: $text-primary;
+    margin-bottom: 32px;
+    position: relative;
+
+    &::after {
+      content: '';
+      position: absolute;
+      bottom: -8px;
+      left: 0;
+      width: 80px;
+      height: 5px;
+      @include gradient-primary;
+      border-radius: 3px;
+    }
+  }
+
+  .faq-items {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .faq-item {
+    border: 1px solid $gray-200;
+    border-radius: $border-radius-sm;
+    overflow: hidden;
+    transition: $transition;
+
+    &.active {
+      border-color: $primary-color;
+      box-shadow: 0 0 0 3px rgba(139, 21, 56, 0.1);
+    }
+
+    .faq-question {
+      width: 100%;
+      padding: 18px;
+      background: $white;
+      border: none;
+      text-align: left;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 1rem;
+      font-weight: 600;
+      color: $text-primary;
+      transition: $transition;
+      position: relative;
+
+      &:hover {
+        background: $gray-50;
+      }
+
+      &.active {
+        background: $gray-50;
+      }
+
+      svg {
+        color: $primary-color;
+        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+        &.rotated {
+          transform: rotate(180deg);
+        }
+      }
+    }
+
+    .faq-answer {
+      background: $gray-50;
+      animation: fadeIn 0.3s ease-out;
+
+      .answer-content {
+        padding: 0 18px 18px;
+        color: $text-secondary;
+        line-height: 1.6;
+        margin: 0;
+        font-size: 0.95rem;
+      }
+    }
+  }
+
+  .no-results {
+    text-align: center;
+    color: $text-muted;
+    padding: 40px;
+    font-size: 1.1rem;
+  }
+}
+
+// Policy Popups
+.policy-popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  animation: fadeIn 0.3s ease-out;
+}
+
+.policy-popup-content {
+  background: $white;
+  border-radius: $border-radius;
+  padding: 40px;
+  max-width: 700px;
+  width: 90%;
+  box-shadow: $shadow-lg;
+  position: relative;
+  animation: slideInUp 0.4s ease-out;
+
+  h3 {
+    font-size: 2rem;
+    color: $primary-color;
+    margin-bottom: 24px;
+    text-align: center;
+  }
+
+  p {
+    color: $text-secondary;
+    line-height: 1.7;
+    margin-bottom: 16px;
+  }
+
+  button {
+    @include button-primary;
+    margin-top: 24px;
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+// Responsive Design
+@media (max-width: 768px) {
+  .hero-section {
+    padding: 80px 0;
+
+    .hero-title {
+      font-size: 2.5rem;
+    }
+  }
+
+  .help-main-content {
+    padding: 40px 15px;
+  }
+
+  .baker-resources-card, .support-card, .policy-button {
+    padding: 24px;
+  }
+
+  .policy-popup-content {
+    padding: 30px;
+
+    h3 {
+      font-size: 1.5rem;
+    }
+  }
+}

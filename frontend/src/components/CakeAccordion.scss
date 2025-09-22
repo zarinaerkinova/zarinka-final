@@ -1,0 +1,62 @@
+.cake-accordion {
+  margin-top: 1rem;
+  border-radius: 1rem;
+  overflow: hidden;
+  border: 1px solid #ffd4dd;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  background: #fff;
+
+  &__header {
+    width: 100%;
+    padding: 1rem 1.5rem;
+    text-align: left;
+    font-weight: 600;
+    font-size: 1.1rem;
+    color: #ff4d6d;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    background: #fff;
+    border: none;
+    outline: none;
+    transition: background 0.3s;
+
+    &:hover {
+      background: #fff0f2;
+    }
+
+    &.open {
+      background: #fff0f2;
+    }
+
+    .icon {
+      transition: transform 0.3s;
+
+      &.open {
+        transform: rotate(180deg);
+      }
+    }
+  }
+
+  &__content {
+    overflow: hidden;
+    transition: max-height 0.35s ease;
+    background: #fff;
+
+    &__inner {
+      padding: 1rem 1.5rem;
+      color: #555;
+      font-size: 0.95rem;
+
+      ul {
+        padding-left: 1.2rem;
+        list-style-type: disc;
+
+        li {
+          margin-bottom: 0.5rem;
+        }
+      }
+    }
+  }
+}
