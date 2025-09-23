@@ -6,7 +6,7 @@ import CakeAccordion from '../../components/CakeAccordion.jsx'
 import { useCartStore } from '../../store/Cart'
 import { useProductStore } from '../../store/Product.js'
 import { useUserStore } from '../../store/User'
-import { useLoadingStore } from '../../store/Loading' // Import useLoadingStore
+import { useLoadingStore } from '../../store/Loading'
 import './CakeDetails.scss'
 
 const CakeDetails = () => {
@@ -14,28 +14,26 @@ const CakeDetails = () => {
 	const { products, fetchProducts } = useProductStore()
 	const { addToCart } = useCartStore()
 	const { token } = useUserStore()
-	const { setLoading } = useLoadingStore() // Get setLoading from global store
+	const { setLoading } = useLoadingStore()
 	const navigate = useNavigate()
 
 	const [selectedSize, setSelectedSize] = useState(null)
 	const [quantity, setQuantity] = useState(1)
 	const [error, setError] = useState(null)
-
-	// New state for customization
 	const [currentIngredients, setCurrentIngredients] = useState([])
 	const [availableIngredients, setAvailableIngredients] = useState([])
 	const [customizedPrice, setCustomizedPrice] = useState(0)
 
 	useEffect(() => {
 		const loadData = async () => {
-			setLoading(true) // Set global loading to true
+			setLoading(true)
 			try {
 				if (!products || products.length === 0) await fetchProducts()
 			} catch (err) {
 				setError('Failed to load product')
 				console.log(err)
 			} finally {
-				setLoading(false) // Set global loading to false
+				setLoading(false)
 			}
 		}
 		loadData()
@@ -43,19 +41,55 @@ const CakeDetails = () => {
 
 	const product = products?.find(p => p._id === productId)
 
+	// Debug: Check what product data looks like
+	useEffect(() => {
+		if (product) {
+			console.log('Product data:', product)
+			console.log('Product image path:', product.image)
+			console.log('Product price:', product.price)
+			console.log('Product sizes:', product.sizes)
+		}
+	}, [product])
+
+	// Fix image URL function
+	const getImageUrl = (imagePath) => {
+		if (!imagePath) {
+			console.log('No image path provided')
+			return '/placeholder-image.jpg'
+		}
+
+		// If it's already a full URL, return as is
+		if (imagePath.startsWith('http')) {
+			console.log('Full URL detected:', imagePath)
+			return imagePath
+		}
+
+		// If it starts with /, remove the leading slash to avoid double slashes
+		if (imagePath.startsWith('/')) {
+			const url = `${import.meta.env.VITE_API_URL}${imagePath}`
+			console.log('Built URL:', url)
+			return url
+		}
+
+		// Otherwise, assume it's relative to API
+		const url = `${import.meta.env.VITE_API_URL}/${imagePath}`
+		console.log('Relative path URL:', url)
+		return url
+	}
+
 	// Inject mock data for ingredients and set initial state
 	useEffect(() => {
 		if (product) {
 			const initialIngs = Array.isArray(product.ingredients)
 				? product.ingredients.map((ing, idx) =>
-						typeof ing === 'string'
-							? { id: `ing-${idx}`, name: ing, price: 0 }
-							: ing
-				  )
+					typeof ing === 'string'
+						? { id: `ing-${idx}`, name: ing, price: 0 }
+						: ing
+				)
 				: [
-						{ id: 'base1', name: 'Basic Sponge', price: 0 },
-						{ id: 'base2', name: 'Cream Frosting', price: 0 },
-				  ]
+					{ id: 'base1', name: 'Basic Sponge', price: 0 },
+					{ id: 'base2', name: 'Cream Frosting', price: 0 },
+				]
 			setCurrentIngredients(initialIngs)
 
 			const availableIngs = [
@@ -65,18 +99,39 @@ const CakeDetails = () => {
 				{ id: 'add4', name: 'Edible Flowers', price: 150 },
 			]
 			setAvailableIngredients(availableIngs)
+
+			// Initialize with base price
+			setCustomizedPrice(product.price)
 		}
 	}, [product])
 
-	// Calculate customized price
+	// FIXED Price Calculation
 	useEffect(() => {
 		if (product) {
-			const basePrice = selectedSize ? selectedSize.price : product.price
+			console.log('Calculating price...')
+			console.log('Base price:', product.price)
+			console.log('Selected size:', selectedSize)
+			console.log('Current ingredients:', currentIngredients)
+
+			let totalPrice = product.price; // Start with base price
+
+			// Add size price (not replace)
+			if (selectedSize) {
+				console.log('Size price to add:', selectedSize.price)
+				totalPrice = product.price + selectedSize.price
+			}
+
+			// Add ingredients price
 			const ingredientsPrice = currentIngredients.reduce(
 				(sum, ing) => sum + ing.price,
 				0
 			)
-			setCustomizedPrice(basePrice + ingredientsPrice)
+			console.log('Ingredients price:', ingredientsPrice)
+
+			totalPrice += ingredientsPrice
+			console.log('Total calculated price:', totalPrice)
+
+			setCustomizedPrice(totalPrice)
 		}
 	}, [currentIngredients, product, selectedSize])
 
@@ -104,8 +159,8 @@ const CakeDetails = () => {
 		}
 		const productToAdd = {
 			...product,
-			price: customizedPrice, // Use customized price
-			customizedIngredients: currentIngredients, // Add customized ingredients
+			price: customizedPrice,
+			customizedIngredients: currentIngredients,
 			selectedSize,
 		}
 		try {
@@ -139,15 +194,24 @@ const CakeDetails = () => {
 		}
 	}
 
-	// Removed unused handlers to satisfy linter
-
 	return (
 		<main className='cake-details'>
 			<div className='cake-details__container'>
 				<div className='cake-details__images'>
 					<img
-						src={`${import.meta.env.VITE_API_URL}${product.image}`}
+						src={getImageUrl(product.image)}
 						alt={product.name}
+						onError={(e) => {
+							console.error('Image failed to load:', e.target.src)
+							e.target.src = '/placeholder-image.jpg'
+							e.target.style.backgroundColor = '#f0f0f0'
+						}}
+						style={{
+							maxWidth: '100%',
+							height: 'auto',
+							minHeight: '200px',
+							backgroundColor: '#f9f9f9'
+						}}
 					/>
 				</div>
 
@@ -164,15 +228,22 @@ const CakeDetails = () => {
 
 					<div className='cake-details__sizes'>
 						<h4>Select Size:</h4>
-						{product.sizes?.map(size => (
-							<button
-								key={size.label}
-								className={selectedSize?.label === size.label ? 'active' : ''}
-								onClick={() => setSelectedSize(size)}
-							>
-								{size.label} (${size.price})
-							</button>
-						))}
+						{product.sizes?.length > 0 ? (
+							product.sizes.map(size => (
+								<button
+									key={size.label}
+									className={selectedSize?.label === size.label ? 'active' : ''}
+									onClick={() => {
+										console.log('Size selected:', size)
+										setSelectedSize(size)
+									}}
+								>
+									{size.label} (+${size.price})
+								</button>
+							))
+						) : (
+							<p>No sizes available</p>
+						)}
 					</div>
 
 					<div className='cake-details__quantity'>
@@ -196,7 +267,7 @@ const CakeDetails = () => {
 								<ul>
 									{currentIngredients.map(ing => (
 										<li key={ing.id}>
-											{ing.name} (+{ing.price}₽)
+											{ing.name} {ing.price > 0 && `(+${ing.price}₽)`}
 											<button onClick={() => handleRemoveIngredient(ing.id)}>
 												Remove
 											</button>
@@ -231,7 +302,17 @@ const CakeDetails = () => {
 						</p>
 					</div>
 
-					<div className='cake-details__price'>Price: ${customizedPrice}</div>
+					<div className='cake-details__price'>
+						<div><strong>Price Breakdown:</strong></div>
+						<div>Base Price: ${product.price}</div>
+						{selectedSize && (
+							<div>Size: +${selectedSize.price}</div>
+						)}
+						{currentIngredients.some(ing => ing.price > 0) && (
+							<div>Ingredients: +${currentIngredients.reduce((sum, ing) => sum + ing.price, 0)}</div>
+						)}
+						<div className='total-price'><strong>Total: ${customizedPrice}</strong></div>
+					</div>
 
 					<div className='cake-details__actions'>
 						<button className='btn-primary' onClick={handleAddToCart}>
