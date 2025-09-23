@@ -217,7 +217,7 @@ const UserProfile = () => {
                         <div className="user-profile__image-container">
                             {userInfo.image ? (
                                 <img 
-                                    src={`http://localhost:5000${userInfo.image}`}
+                                    src={`https://api.zarinka.uz${userInfo.image}`}
                                     alt="Profile" 
                                     className="user-profile__image"
                                 />

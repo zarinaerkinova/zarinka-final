@@ -6,9 +6,9 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': {
-        target: 'http://localhost:5000',
+        target: 'https://api.zarinka.uz',
         changeOrigin: true,
-        secure: false,
+        secure: true,
       },
     },
   },

@@ -24,7 +24,7 @@ const DashboardProductCard = ({ product, onDelete }) => {
 
     return (
         <div className="dashboard-product-card">
-            <img src={`http://localhost:5000${product.image}`} alt={product.name} />
+            <img src={`https://api.zarinka.uz${product.image}`} alt={product.name} />
             <div className="product-info">
                 <h4>{product.name}</h4>
                 <p className="price">{product.price} ₽</p>

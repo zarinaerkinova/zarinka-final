@@ -7,7 +7,7 @@ const CheckoutProductCard = ({ item }) => {
 
     // Determine the image source
     const imageSrc = item.product?.image
-        ? `http://localhost:5000${item.product.image}`
+        ? `https://api.zarinka.uz${item.product.image}`
         : '/placeholder.png'; // Placeholder for custom cakes or if product image is missing
 
     // Determine the name

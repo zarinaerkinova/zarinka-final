@@ -154,7 +154,7 @@ const ProductList = () => {
                         <div className='baker-profile'>
                             {bakerInfo.image ? (
                                 <img
-                                    src={`http://localhost:5000${bakerInfo.image}`}
+                                    src={`https://api.zarinka.uz${bakerInfo.image}`}
                                     alt={bakerInfo.name}
                                     className='baker-avatar'
                                 />

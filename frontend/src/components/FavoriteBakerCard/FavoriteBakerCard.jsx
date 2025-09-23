@@ -27,7 +27,7 @@ const FavoriteBakerCard = ({ baker }) => {
             <div className="baker-photo">
                 {baker.img ? (
                     <img
-                        src={`http://localhost:5000/uploads/${baker.img}`}
+                        src={`https://api.zarinka.uz/uploads/${baker.img}`}
                         alt={baker.name || 'Baker'}
                     />
                 ) : (

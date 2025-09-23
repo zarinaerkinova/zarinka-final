@@ -168,7 +168,7 @@ const AdminProfile = () => {
 									<img
 										src={
 											userInfo?.image
-												? `http://localhost:5000${userInfo.image}`
+												? `https://api.zarinka.uz${userInfo.image}`
 												: profileImage
 										}
 										alt={userInfo?.name || 'Profile'}

@@ -58,7 +58,7 @@ const BakerDashboard = () => {
 								<div className='baker-profile-image-container'>
 									{userInfo?.image ? (
 										<img
-											src={`http://localhost:5000${userInfo.image}`}
+											src={`https://api.zarinka.uz${userInfo.image}`}
 											alt='Baker Profile'
 											className='baker-profile-image'
 										/>

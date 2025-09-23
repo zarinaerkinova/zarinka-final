@@ -40,7 +40,7 @@ const DashboardOrderCard = ({ order }) => {
 				<img
 					src={
 						order?.items?.[0]?.product?.image
-							? `http://localhost:5000${order.items[0].product.image}`
+							? `https://api.zarinka.uz${order.items[0].product.image}`
 							: '/placeholder.png'
 					}
 					alt={order?.items?.[0]?.product?.name || 'Product'}

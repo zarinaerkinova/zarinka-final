@@ -205,7 +205,7 @@ const SingleProduct = () => {
                             <h3>Пекарь</h3>
                             <div className="baker-info">
                                 <img
-                                    src={product.createdBy.image ? `http://localhost:5000${product.createdBy.image}` : profileImage}
+                                    src={product.createdBy.image ? `https://api.zarinka.uz${product.createdBy.image}` : profileImage}
                                     alt={product.createdBy.name || 'Baker'}
                                     className="baker-avatar"
                                 />

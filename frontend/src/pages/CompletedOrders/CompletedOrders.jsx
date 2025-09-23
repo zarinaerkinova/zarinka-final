@@ -54,7 +54,7 @@ const CompletedOrders = () => {
                                         <img
                                             src={
                                                 item.product?.image
-                                                    ? `http://localhost:5000${item.product.image}`
+                                                    ? `https://api.zarinka.uz${item.product.image}`
                                                     : '/placeholder.png'
                                             }
                                             alt={item.product?.name || 'Product'}

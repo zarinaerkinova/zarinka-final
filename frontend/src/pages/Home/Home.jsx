@@ -86,7 +86,7 @@ const Home = () => {
 
 		const imageUrl = product?.image?.startsWith('http')
 			? product.image
-			: `http://localhost:5000${product?.image || '/placeholder.png'}`
+			: `https://api.zarinka.uz${product?.image || '/placeholder.png'}`
 
 			const renderStars = (rating) => {
         const filledStars = Math.floor(rating);
