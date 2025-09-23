@@ -6,7 +6,7 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': {
-        target: 'https://zarinka-final.onrender.com',
+        target: 'https://api.zarinka.uz',
         changeOrigin: true,
         secure: true,
       },
