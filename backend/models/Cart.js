@@ -13,7 +13,7 @@ const cartItemSchema = new mongoose.Schema({
     },
     price: {
         type: Number,
-        required: function() { return !this.product; } // Required if no product
+        // price is always optional, but will be saved if provided
     },
     quantity: {
         type: Number,

@@ -46,13 +46,13 @@ const updateBakerProfile = async (req, res) => {
             priceRange,
             location,
             constructorOptions,
-            existingGalleryImages,
-            maxOrdersPerDay,
             workingHours,
-            isVacationMode,
-            vacationMessage,
-            vacationStartDate,
-            vacationEndDate,
+            orderSettings,
+            vacationMode,
+            vacationDetails,
+            unavailableDates,
+            busyDates,
+            existingGalleryImages,
         } = req.body;
         const newProfileImage = req.files && req.files.image ? `/uploads/${req.files.image[0].filename}` : null;
         const newGalleryImages = req.files && req.files.galleryImages ? req.files.galleryImages.map(file => `/uploads/${file.filename}`) : [];
@@ -68,10 +68,17 @@ const updateBakerProfile = async (req, res) => {
         user.bakeryName = bakeryName || user.bakeryName;
         user.phone = phone || user.phone;
         user.bio = bio || user.bio;
-        user.specialties = specialties ? JSON.parse(specialties) : user.specialties; // Specialties might come as JSON string
+        if (specialties) user.specialties = specialties.split(',').map(s => s.trim());
         user.priceRange = priceRange || user.priceRange;
         user.location = location || user.location;
         user.constructorOptions = constructorOptions || user.constructorOptions;
+
+        if (workingHours) user.workingHours = JSON.parse(workingHours);
+        if (orderSettings) user.orderSettings = JSON.parse(orderSettings);
+        if (vacationMode) user.vacationMode = JSON.parse(vacationMode);
+        if (vacationDetails) user.vacationDetails = JSON.parse(vacationDetails);
+        if (unavailableDates) user.unavailableDates = JSON.parse(unavailableDates);
+        if (busyDates) user.busyDates = JSON.parse(busyDates);
         
         if (newProfileImage) {
             user.image = newProfileImage;
@@ -80,21 +87,23 @@ const updateBakerProfile = async (req, res) => {
         // Handle gallery images
         let updatedGallery = [];
         if (existingGalleryImages) {
-            // existingGalleryImages will be a JSON string if multiple, or a string if single
-            const parsedExisting = typeof existingGalleryImages === 'string' ? JSON.parse(existingGalleryImages) : existingGalleryImages;
-            updatedGallery = [...parsedExisting];
+            try {
+                const parsedExisting = JSON.parse(existingGalleryImages);
+                updatedGallery = Array.isArray(parsedExisting) ? parsedExisting : [parsedExisting];
+            } catch (error) {
+                // If parsing fails, it might be a single string URL
+                updatedGallery = [existingGalleryImages];
+            }
         }
-        user.gallery = [...updatedGallery, ...newGalleryImages]; // Combine existing and new gallery images
         
-        // Handle availability fields
-        user.maxOrdersPerDay = maxOrdersPerDay !== undefined ? maxOrdersPerDay : user.maxOrdersPerDay;
-        user.workingHours = workingHours ? JSON.parse(workingHours) : user.workingHours; // workingHours might come as JSON string
-        user.isVacationMode = isVacationMode !== undefined ? isVacationMode : user.isVacationMode;
-        user.vacationMessage = vacationMessage || user.vacationMessage;
-        user.vacationStartDate = vacationStartDate ? new Date(vacationStartDate) : user.vacationStartDate;
-        user.vacationEndDate = vacationEndDate ? new Date(vacationEndDate) : user.vacationEndDate;
+        if (newGalleryImages && newGalleryImages.length > 0) {
+            user.gallery = [...updatedGallery, ...newGalleryImages];
+        } else {
+            user.gallery = updatedGallery;
+        }
         
-        const updatedUser = await user.save();        res.json(updatedUser);
+        const updatedUser = await user.save();
+        res.json(updatedUser);
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Server Error' });

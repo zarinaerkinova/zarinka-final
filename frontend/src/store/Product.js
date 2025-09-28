@@ -139,6 +139,7 @@ export const useProductStore = create(set => ({
 				params.append('ingredients', filters.ingredients.join(','));
 			if (filters.minRating) params.append('minRating', filters.minRating);
 			if (filters.category) params.append('category', filters.category);
+            if (filters.isAvailable !== undefined) params.append('isAvailable', filters.isAvailable);
 
 			const queryString = params.toString();
 			const url = queryString ? `/products?${queryString}` : '/products';
@@ -278,6 +279,55 @@ export const useProductStore = create(set => ({
 			return { success: false, message: errorMessage };
 		} finally {
 			setLoading(false);
+		}
+	},
+
+	updateProduct: async (productId, productData, token) => {
+		const setLoading = useLoadingStore.getState().setLoading
+		setLoading(true)
+		set({ error: '', success: '' })
+
+		if (!productId || !productData || !token) {
+			const errorMsg = 'Product ID, data, and token are required for update'
+			set({ error: errorMsg })
+			setLoading(false)
+			return { success: false, message: errorMsg }
+		}
+
+		try {
+			const res = await api.put(`/products/${productId}`, productData, {
+				headers: {
+					Authorization: `Bearer ${token}`,
+				},
+				timeout: 30000,
+			})
+
+			const updatedProduct = res.data?.data || res.data
+
+			set(state => ({
+				products: state.products.map(p =>
+					p._id === productId ? updatedProduct : p
+				),
+				bakerProducts: state.bakerProducts.map(p =>
+					p._id === productId ? updatedProduct : p
+				),
+				success: '✅ Product successfully updated!',
+			}))
+
+			return { success: true, product: updatedProduct }
+		} catch (err) {
+			console.error('Error updating product:', err.message)
+			let errorMessage = 'An error occurred while updating the product'
+			if (err.code === 'ERR_NETWORK') {
+				errorMessage = 'Server connection error'
+			} else if (err.response) {
+				errorMessage =
+					err.response.data?.message || `Server error: ${err.response.status}`
+			}
+			set({ error: errorMessage })
+			return { success: false, message: errorMessage }
+		} finally {
+			setLoading(false)
 		}
 	},
 

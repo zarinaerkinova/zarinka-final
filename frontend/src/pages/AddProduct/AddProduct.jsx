@@ -168,7 +168,7 @@ const AddProduct = () => {
 		<main className='edit-product-main'>
 			<div className='container_add'>
 				<form className='form' onSubmit={handleSubmit}>
-					<h1>Add New Cake</h1>
+					<h1 className='title_product_add'>Add New Cake</h1>
 
 					<div className='step-indicator'>
 						<span

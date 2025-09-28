@@ -16,56 +16,13 @@ export const useOrderStore = create((set, get) => ({
 		const setLoading = useLoadingStore.getState().setLoading;
 		setLoading(true);
 		try {
-			const { cart, setCart } = useCartStore.getState()
+			const { setCart } = useCartStore.getState()
 
-			if (
-				(!cart || cart.length === 0) &&
-				(!orderData?.items || orderData.items.length === 0)
-			) {
-				throw new Error('Cart is empty')
+			if (!orderData?.items || orderData.items.length === 0) {
+				throw new Error('Order has no items')
 			}
 
-			const items =
-				orderData?.items && orderData.items.length > 0
-					? orderData.items.map(i =>
-							i?.product
-								? {
-										product: i.product,
-										quantity: i.quantity,
-										selectedSize: i.selectedSize,
-								  }
-								: {
-										name: i.name,
-										price: i.price,
-										quantity: i.quantity,
-										selectedSize: i.selectedSize,
-										customizedIngredients: i.customizedIngredients,
-								  }
-					  )
-					: cart.map(i =>
-							i.product?._id
-								? {
-										product: i.product._id,
-										quantity: i.quantity,
-										selectedSize: i.selectedSize,
-								  }
-								: {
-										name: i.name,
-										price: i.price,
-										quantity: i.quantity,
-										selectedSize: i.selectedSize,
-										customizedIngredients: i.customizedIngredients,
-								  }
-					  )
-
-			const payload = {
-				items,
-				deliveryInfo: orderData?.deliveryInfo || {},
-				deliveryMethod: orderData?.deliveryMethod,
-				paymentMethod: orderData?.paymentMethod,
-			}
-
-			const res = await api.post('/orders', payload, {
+			const res = await api.post('/orders', orderData, {
 				headers: { Authorization: `Bearer ${token}` },
 			})
 

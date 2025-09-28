@@ -8,9 +8,10 @@
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 
         .form {
-            h1 {
+            .title_product_add {
                 text-align: center;
                 margin-bottom: 1.5rem;
+                box-shadow: none;
             }
 
             .step-indicator {

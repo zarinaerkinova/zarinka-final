@@ -114,3 +114,20 @@ export const getBakerReviews = async (req, res) => {
 		res.status(500).json({ msg: 'Server error' })
 	}
 }
+
+export const getBakerReviewsById = async (req, res) => {
+	const { bakerId } = req.params
+
+	try {
+		const reviews = await Review.find({ baker: bakerId })
+			.populate('user', 'name email')
+			.populate('product', 'name')
+			.populate('order', 'orderNumber')
+			.sort({ createdAt: -1 })
+
+		res.json(reviews)
+	} catch (error) {
+		console.error('Error fetching baker reviews:', error)
+		res.status(500).json({ msg: 'Server error' })
+	}
+}

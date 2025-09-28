@@ -36,15 +36,11 @@ import Notifications from './pages/Notifications/Notifications.jsx';
 import BakerReviews from './pages/BakerReviews/BakerReviews.jsx';
 import LoadingBar from './components/LoadingBar/LoadingBar.jsx'; // Import LoadingBar
 import { useLoadingStore } from './store/Loading.js'; // Import useLoadingStore
+import AvailabilitySettings from './pages/AvailabilitySettings/AvailabilitySettings.jsx';
+import AllOrders from './pages/AllOrders/AllOrders.jsx';
 
 function App() {
   const location = useLocation(); // Add useLocation hook
-
-  useEffect(() => {
-    const user = useUserStore.getState().user;
-    const token = useUserStore.getState().token;
-    console.log('App loaded: user', user, 'token', token);
-  }, []);
 
   return (
     <div className="App">
@@ -80,6 +76,7 @@ function App() {
           <Route path='/baker-orders' element={<BakerOrders />} />
           <Route path='/notifications' element={<Notifications />} />
           <Route path='/baker/reviews' element={<BakerReviews />} />
+          <Route path='/all-orders' element={<AllOrders />} />
 
 
           <Route
@@ -153,6 +150,14 @@ function App() {
             element={
               <OnlyAuthorized>
                 <EditProfile />
+              </OnlyAuthorized>
+            }
+          />
+          <Route
+            path="/availability"
+            element={
+              <OnlyAuthorized>
+                <AvailabilitySettings />
               </OnlyAuthorized>
             }
           />

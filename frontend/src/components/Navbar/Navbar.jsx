@@ -71,10 +71,6 @@ const Navbar = () => {
 				</div>
 
 				<div className='icons'>
-					<div className='search-bar'>
-						<FaSearch />
-						<input type='text' placeholder='Search...' />
-					</div>
 					{token && user && (
 						<>
 							<Link className='cart-icon' to='/cart'>

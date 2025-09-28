@@ -3,7 +3,7 @@ import './CheckoutProductCard.scss';
 
 const CheckoutProductCard = ({ item }) => {
     // Determine the price based on selectedSize, product price, or item price (for custom cakes)
-    const price = item.selectedSize?.price ?? item.product?.price ?? item.price ?? 0;
+    const price = item.price ?? item.product?.price
 
     // Determine the image source
     const imageSrc = item.product?.image

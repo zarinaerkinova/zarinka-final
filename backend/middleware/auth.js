@@ -45,3 +45,11 @@ export const auth = async (req, res, next) => {
 		})
 	}
 }
+
+export const isBaker = (req, res, next) => {
+    if (req.user && req.user.role === 'baker') {
+        next();
+    } else {
+        res.status(403).json({ message: 'Access denied. Only bakers can perform this action.' });
+    }
+};

@@ -15,19 +15,17 @@ const IngredientsTooltip = ({ ingredients }) => {
             } else if (ing && typeof ing === 'object' && ing.name) {
                 return ing.name;
             }
-            return ''; // Fallback for undefined/null/malformed ingredients
-        });
+            return '';
+        }).filter(Boolean);
     } else if (typeof ingredients === 'object') {
-        // For custom cakes, ingredients is an object like { sponge: 'Vanilla', cream: 'Buttercream', decor: 'Sprinkles' }
-        // We want to display the values
         ingredientsToDisplay = Object.values(ingredients).map(val => {
             if (typeof val === 'string') {
                 return val;
             } else if (val && typeof val === 'object' && val.name) {
                 return val.name;
             }
-            return ''; // Fallback for undefined/null/malformed values
-        });
+            return '';
+        }).filter(Boolean);
     }
 
     if (ingredientsToDisplay.length === 0) {
@@ -35,8 +33,8 @@ const IngredientsTooltip = ({ ingredients }) => {
     }
 
     return (
-        <div className="ingredients-tooltip">
-            <h4>Ingredients:</h4>
+        <div className="ingredients-list">
+            <strong>Ingredients:</strong>
             <ul>
                 {ingredientsToDisplay.map((ingredient, index) => (
                     <li key={index}>{ingredient}</li>

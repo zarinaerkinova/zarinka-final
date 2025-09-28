@@ -151,8 +151,8 @@ export const useUserStore = create(
             return { success: false, message: data.message || 'Failed to update profile' };
           }
 
-          set({ userInfo: data.user, loading: false }); // Assuming backend returns updated user data
-          return { success: true, user: data.user };
+          set({ userInfo: data.userData, loading: false }); // Assuming backend returns updated user data
+          return { success: true, user: data.userData };
         } catch (err) {
           set({ errorMessage: err.message || 'Network error', loading: false });
           return { success: false, message: err.message };

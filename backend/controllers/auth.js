@@ -167,44 +167,57 @@ export const login = async (req, res) => {
 
 export const updateProfile = async (req, res) => {
     try {
-        console.log('Update Profile Request Body:', req.body);
-        console.log('Update Profile Request File:', req.file);
-
-        const { name, email, phone, bio, bakeryName } = req.body;
+        const {
+            name, email, phone, bio, bakeryName, specialties, priceRange, location, 
+            workingHours, orderSettings, vacationMode, vacationDetails, unavailableDates, busyDates, 
+            existingGalleryImages
+        } = req.body;
         const userId = req.user.id;
-        console.log('User ID from token:', userId);
 
-        // Find the user
         const user = await User.findById(userId);
         if (!user) {
-            console.log('User not found for ID:', userId);
             return res.status(404).json({ success: false, message: 'User not found' });
         }
-        console.log('User found before update:', user);
 
-        // Update fields if provided
         if (name) user.name = name;
         if (bakeryName) user.bakeryName = bakeryName;
         if (email) user.email = email;
         if (phone) user.phone = phone;
         if (bio) user.bio = bio;
+        if (specialties) user.specialties = specialties.split(',').map(s => s.trim());
+        if (priceRange) user.priceRange = priceRange;
+        if (location) user.location = location;
 
-        // Update image if uploaded
-        if (req.file) {
-            user.image = `/uploads/${req.file.filename}`;
+        if (workingHours) user.workingHours = JSON.parse(workingHours);
+        if (orderSettings) user.orderSettings = JSON.parse(orderSettings);
+        if (vacationMode) user.vacationMode = JSON.parse(vacationMode);
+        if (vacationDetails) user.vacationDetails = JSON.parse(vacationDetails);
+        if (unavailableDates) user.unavailableDates = JSON.parse(unavailableDates);
+        if (busyDates) user.busyDates = JSON.parse(busyDates);
+
+        if (req.files && req.files.image) {
+            user.image = `/uploads/${req.files.image[0].filename}`;
         }
-        console.log('User object before saving:', user);
 
-        // Save the updated user
-        try {
-            await user.save();
-            console.log('User saved successfully:', user);
-        } catch (saveError) {
-            console.error('Error saving user:', saveError);
-            return res.status(500).json({ success: false, message: 'Error saving profile changes' });
+        let updatedGallery = [];
+        if (existingGalleryImages) {
+            try {
+                const parsedExisting = JSON.parse(existingGalleryImages);
+                updatedGallery = Array.isArray(parsedExisting) ? parsedExisting : [parsedExisting];
+            } catch (error) {
+                updatedGallery = [existingGalleryImages];
+            }
         }
 
-        // Return updated user data (without password)
+        const newGalleryImages = req.files && req.files.galleryImages ? req.files.galleryImages.map(file => `/uploads/${file.filename}`) : [];
+        if (newGalleryImages.length > 0) {
+            user.gallery = [...updatedGallery, ...newGalleryImages];
+        } else {
+            user.gallery = updatedGallery;
+        }
+
+        await user.save();
+
         const userData = {
             _id: user._id,
             name: user.name,
@@ -214,6 +227,16 @@ export const updateProfile = async (req, res) => {
             bio: user.bio,
             image: user.image,
             role: user.role,
+            specialties: user.specialties,
+            priceRange: user.priceRange,
+            location: user.location,
+            workingHours: user.workingHours,
+            orderSettings: user.orderSettings,
+            vacationMode: user.vacationMode,
+            vacationDetails: user.vacationDetails,
+            unavailableDates: user.unavailableDates,
+            busyDates: user.busyDates,
+            gallery: user.gallery,
         };
 
         res.json({ success: true, message: 'Profile updated successfully', userData });

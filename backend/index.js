@@ -13,6 +13,7 @@ import categoryRoutes from './routes/Category.js'
 import contactRoutes from './routes/contact.js'
 import favoriteRoutes from './routes/Favorite.js'
 import notificationRoutes from './routes/Notification.js'
+import availabilityRoutes from './routes/availability.js'
 import orderRoutes from './routes/Order.js'
 import productRoutes from './routes/Product.js'
 import reviewRoutes from './routes/review.js' // Import reviewRoutes
@@ -43,6 +44,7 @@ app.use(
 )
 app.options('*', cors())
 app.use(express.json())
+app.use(express.urlencoded({ extended: true }))
 
 // API Routes
 app.use('/api/products', productRoutes)
@@ -56,6 +58,7 @@ app.use('/api/contact', contactRoutes)
 app.use('/api/baker', bakerProfileRoutes) // Use bakerProfileRoutes
 app.use('/api/reviews', reviewRoutes) // Use reviewRoutes
 app.use('/api/notifications', notificationRoutes)
+app.use('/api/availability', availabilityRoutes)
 
 // Error handler
 app.use((err, req, res, next) => {

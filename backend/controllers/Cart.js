@@ -73,7 +73,7 @@ export const addToCart = async (req, res) => {
             if (existingItem) {
                 existingItem.quantity += quantity;
             } else {
-                cart.items.push({ product: productId, quantity, selectedSize, customizedIngredients });
+                cart.items.push({ product: productId, price, quantity, selectedSize, customizedIngredients });
             }
         } else {
             // Logic for custom cakes

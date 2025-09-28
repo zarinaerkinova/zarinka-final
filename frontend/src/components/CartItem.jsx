@@ -37,7 +37,7 @@ const CartItem = ({ item }) => {
 		item.product?.customizedIngredients ??
 		item.product?.ingredients ??
 		[]
-	const price = item.selectedSize?.price ?? item.product?.price ?? item.price
+	const price = item.price ?? item.product?.price
 
 	const imageSrc = (() => {
 		const img = item.product?.image ?? item.image
@@ -53,9 +53,6 @@ const CartItem = ({ item }) => {
 			onMouseEnter={() => setIsTooltipVisible(true)}
 			onMouseLeave={() => setIsTooltipVisible(false)}
 		>
-			{isTooltipVisible && (
-				<IngredientsTooltip ingredients={ingredientsForTooltip} />
-			)}
 			<img
 				src={imageSrc}
 				alt={item.product?.name || item.name}
@@ -65,6 +62,9 @@ const CartItem = ({ item }) => {
 				<div className='texts'>
 					<h3 className='product-name'>{item.product?.name || item.name}</h3>
 					<p>Изготовитель: {item.product?.baker?.name || 'Custom order'}</p>
+					{item.selectedSize && (
+						<p>Size: {item.selectedSize.label}</p>
+					)}
 					<span>{price} ₽ / each</span>
 				</div>
 

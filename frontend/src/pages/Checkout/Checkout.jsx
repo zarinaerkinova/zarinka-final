@@ -37,11 +37,11 @@ const Checkout = () => {
 	}
 
 	const subtotal = cart.reduce((sum, item) => {
-		const price = item.selectedSize?.price ?? item.product?.price ?? item.price ?? 0
+		const price = item.price ?? item.product?.price ?? 0
 		return sum + price * item.quantity
 	}, 0)
 
-	const deliveryFee = deliveryMethod === 'delivery' ? 500 : 0
+	const deliveryFee = deliveryMethod === 'delivery' ? (subtotal > 500 ? 0 : 500) : 0
 	const total = subtotal + deliveryFee
 
 	const handleOrder = async () => {
@@ -71,6 +71,7 @@ const Checkout = () => {
 						product: item.product._id,
 						quantity: item.quantity,
 						selectedSize: item.selectedSize,
+						customizedIngredients: item.customizedIngredients, // <-- ADDED
 					};
 				} else {
 					// Custom cake
@@ -233,21 +234,32 @@ const Checkout = () => {
 						<span>Subtotal</span>
 						<span>{subtotal} ₽</span>
 					</div>
-					<div className='cost-item'>
-						<span>Delivery Fee</span>
-						<span>{deliveryFee} ₽</span>
-					</div>
-					<div className='cost-item total'>
-						<span>Total</span>
-						<span>{total} ₽</span>
-					</div>
-				</div>
-				<button className='place-order-btn' onClick={handleOrder}>
-					Place Order
-				</button>
-			</div>
-		</div>
-	)
-}
-
+					          <div className='cost-item'>
+					            <span>Delivery Fee</span>
+					            {deliveryFee === 0 ? (
+					              <span className='free-delivery'>FREE</span>
+					            ) : (
+					              <span>{deliveryFee} ₽</span>
+					            )}
+					          </div>
+					          <div className='cost-item total'>
+					            <span>Total</span>
+					            <span>{total} ₽</span>
+					          </div>
+					        </div>
+					        <button className='place-order-btn' onClick={handleOrder}>
+					          Place Order
+					        </button>
+					      </div>
+					      <style>
+					        {`
+					          .free-delivery {
+					            color: green;
+					            font-weight: bold;
+					          }
+					        `}
+					      </style>
+					    </div>
+					  )
+					}
 export default Checkout

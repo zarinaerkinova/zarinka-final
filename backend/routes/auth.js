@@ -24,7 +24,7 @@ const router = express.Router();
 router.post('/login', login);
 router.post('/register', upload.single('image'), register);
 router.get('/profile', auth, user);
-router.put('/profile', auth, upload.single('image'), updateProfile);
+router.put('/profile', auth, upload.fields([{ name: 'image', maxCount: 1 }, { name: 'galleryImages', maxCount: 10 }]), updateProfile);
 router.get('/bakers', bakers);
 router.get('/bakers/:id', getBakerById);
 router.get('/:bakerId/products', baker);

@@ -18,6 +18,7 @@ const Auth = () => {
 		phone: '',
 	})
 
+	const [confirmPassword, setConfirmPassword] = useState('')
 	const [imageFile, setImageFile] = useState(null)
 	const [isLogin, setIsLogin] = useState(true)
 	const [errorMessage, setErrorMessage] = useState('')
@@ -186,33 +187,37 @@ const Auth = () => {
 	const handleUserAction = async (isAfterVerification = false) => {
 		let response
 
-		if (isLogin) {
-			response = await loginUser({
-				email: newUser.email,
-				password: newUser.password,
-			})
-		} else {
-			// Если это этап верификации, не выполняем регистрацию
-			if (isVerificationStep && !isAfterVerification) return
-
-			// Проверяем верификацию телефона перед регистрацией
-			if (newUser.phone && !isPhoneVerified && !isAfterVerification) {
-				await verifyPhoneNumber()
-				return
-			}
-
-			const formData = new FormData()
-			Object.entries(newUser).forEach(([key, value]) => {
-				if (value !== undefined && value !== null && value !== '') {
-					formData.append(key, value)
-				}
-			})
-			if (imageFile) formData.append('image', imageFile)
-
-			// To inspect FormData content (for debugging, not for production):
-
-			response = await createUser(formData)
+	if (isLogin) {
+		response = await loginUser({
+			email: newUser.email,
+			password: newUser.password,
+		})
+	} else {
+		// Проверяем совпадение паролей
+		if (newUser.password !== confirmPassword) {
+			setErrorMessage('Пароли не совпадают')
+			return
 		}
+
+		// Если это этап верификации, не выполняем регистрацию
+		if (isVerificationStep && !isAfterVerification) return
+
+		// Проверяем верификацию телефона перед регистрацией
+		if (newUser.phone && !isPhoneVerified && !isAfterVerification) {
+			await verifyPhoneNumber()
+			return
+		}
+
+		const formData = new FormData()
+		Object.entries(newUser).forEach(([key, value]) => {
+			if (value !== undefined && value !== null && value !== '') {
+				formData.append(key, value)
+			}
+		})
+		if (imageFile) formData.append('image', imageFile)
+
+		response = await createUser(formData)
+	}
 
 		const { success, token, message, userData } = response || {}
 
@@ -367,6 +372,14 @@ const Auth = () => {
 										setNewUser({ ...newUser, password: e.target.value })
 									}
 								/>
+								{!isLogin && (
+									<input
+										type='password'
+										placeholder='Повторите пароль'
+										value={confirmPassword}
+										onChange={e => setConfirmPassword(e.target.value)}
+									/>
+								)}
 								{!isLogin && (
 									<>
 										<div className='phone-input-container'>

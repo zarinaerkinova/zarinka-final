@@ -4,7 +4,7 @@ import { useProductStore } from '../../store/Product';
 import { useUserStore } from '../../store/User';
 import './DashboardProductCard.scss';
 
-const DashboardProductCard = ({ product, onDelete }) => {
+const DashboardProductCard = ({ product, onDelete, onToggleAvailability }) => {
     const { token } = useUserStore();
     const { deleteProduct } = useProductStore();
     const navigate = useNavigate();
@@ -22,8 +22,14 @@ const DashboardProductCard = ({ product, onDelete }) => {
         navigate(`/edit-product/${product._id}`);
     };
 
+    const handleToggleAvailability = () => {
+        if (onToggleAvailability) {
+            onToggleAvailability(product._id, !product.isAvailable);
+        }
+    };
+
     return (
-        <div className="dashboard-product-card">
+        <div className={`dashboard-product-card ${!product.isAvailable ? 'unavailable' : ''}`}>
             <img src={`http://localhost:5000${product.image}`} alt={product.name} />
             <div className="product-info">
                 <h4>{product.name}</h4>
@@ -40,9 +46,13 @@ const DashboardProductCard = ({ product, onDelete }) => {
                         <span className="rating-value">{product.rating.average.toFixed(1)}</span>
                     </div>
                 )}
-                <p className={`availability ${product.isAvailable ? 'available' : 'unavailable'}`}>
-                    {product.isAvailable ? 'Available' : 'Not Available'}
-                </p>
+                <button 
+                    className={`availability-toggle ${product.isAvailable ? 'active' : 'inactive'}`}
+                    onClick={handleToggleAvailability}
+                    aria-label={product.isAvailable ? 'Mark as unavailable' : 'Mark as available'}
+                >
+                    {product.isAvailable ? '👁️' : '🚫'}
+                </button>
             </div>
             <div className="product-actions">
                 <button onClick={handleEdit} className="btn-edit">Edit</button>

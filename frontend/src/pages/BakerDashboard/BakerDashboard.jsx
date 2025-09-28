@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import DashboardOrderCard from '../../components/DashboardOrderCard/DashboardOrderCard'
 import DashboardProductCard from '../../components/DashboardProductCard/DashboardProductCard'
@@ -15,20 +15,15 @@ const BakerDashboard = () => {
 	const navigate = useNavigate()
 
 	useEffect(() => {
-		if (!token) {
-			navigate('/register')
-		} else {
-			fetchProfile()
-			fetchBakerOrders(token)
-			if (userInfo?._id) {
-				fetchProductsByBaker(userInfo._id)
-			}
+		fetchProfile()
+		fetchBakerOrders(token)
+		if (userInfo?._id) {
+			fetchProductsByBaker(userInfo._id)
 		}
 	}, [
-		token,
 		fetchProfile,
 		fetchBakerOrders,
-		navigate,
+		token,
 		userInfo?._id,
 		fetchProductsByBaker,
 	])
@@ -78,9 +73,11 @@ const BakerDashboard = () => {
 								<div className='rating-display'>
 									<span className='rating-stars'>
 										{Array.from({ length: 5 }, (_, i) => (
-											<span 
-												key={i} 
-												className={`star ${i < Math.floor(userInfo?.rating || 0) ? 'filled' : ''}`}
+											<span
+												key={i}
+												className={`star ${
+													i < Math.floor(userInfo?.rating || 0) ? 'filled' : ''
+												}`}
 											>
 												★
 											</span>
@@ -92,10 +89,22 @@ const BakerDashboard = () => {
 								</div>
 							</div>
 						</div>
-						<div className='dashboard-actions'>
-							<Link to='/addproduct' className='btn btn-primary'>
-								<span className='btn-icon'>+</span>
-								Add Product
+
+						{/* Button Group вместо бургер-меню */}
+						<div className='dashboard-button-group'>
+							<Link to='/addproduct' className='btn-group-btn'>
+								<span className='btn-icon'>➕</span>
+								<span className='btn-text'>Add Product</span>
+							</Link>
+
+							<Link to='/product-list' className='btn-group-btn'>
+								<span className='btn-icon'>📦</span>
+								<span className='btn-text'>Manage Products</span>
+							</Link>
+
+							<Link to='/edit-profile' className='btn-group-btn'>
+								<span className='btn-icon'>👤</span>
+								<span className='btn-text'>Edit Profile</span>
 							</Link>
 						</div>
 					</div>
@@ -115,7 +124,10 @@ const BakerDashboard = () => {
 						</div>
 					</Link>
 
-					<Link to='/baker/orders/completed' className='stat-card completed-orders'>
+					<Link
+						to='/baker/orders/completed'
+						className='stat-card completed-orders'
+					>
 						<div className='stat-icon'>✅</div>
 						<div className='stat-content'>
 							<h3>Completed</h3>
@@ -131,7 +143,9 @@ const BakerDashboard = () => {
 						<div className='stat-icon'>⭐</div>
 						<div className='stat-content'>
 							<h3>Rating</h3>
-							<p className='stat-number'>{userInfo?.rating?.toFixed(1) || 'N/A'}</p>
+							<p className='stat-number'>
+								{userInfo?.rating?.toFixed(1) || 'N/A'}
+							</p>
 							<span className='stat-label'>Average</span>
 						</div>
 						<div className='stat-trend'>
@@ -146,36 +160,24 @@ const BakerDashboard = () => {
 					<section className='orders-section'>
 						<div className='section-header'>
 							<h2>Recent Orders</h2>
-							<Link to='/baker-orders' className='view-all-btn'>
+							<Link to={'/all-orders'} className='view-all-btn'>
 								View All →
 							</Link>
+
 						</div>
 						<div className='order-list'>
 							{allBakerOrders.length > 0 ? (
-								allBakerOrders.slice(0, 5).map(order => (
-									<DashboardOrderCard key={order._id} order={order} />
-								))
+								allBakerOrders
+									.slice(0, 5)
+									.map(order => (
+										<DashboardOrderCard key={order._id} order={order} />
+									))
 							) : (
 								<div className='empty-state'>
 									<div className='empty-icon'>📦</div>
 									<p>No orders found.</p>
 								</div>
 							)}
-						</div>
-					</section>
-
-					{/* Products Section */}
-					<section className='products-section'>
-						<div className='section-header'>
-							<h2>Product Management</h2>
-							<div className='product-stats'>
-								<Link to='/product-list' className='product-stat'>
-									<strong>{bakerProducts.length}</strong> Total
-								</Link>
-								<Link to='/product-list?status=available' className='product-stat available'>
-									<strong>{bakerProducts.filter(p => p.isAvailable).length}</strong> Available
-								</Link>
-							</div>
 						</div>
 					</section>
 				</div>

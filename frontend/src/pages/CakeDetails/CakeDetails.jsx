@@ -71,25 +71,35 @@ const CakeDetails = () => {
 	// Calculate customized price
 	useEffect(() => {
 		if (product) {
-			const basePrice = selectedSize ? selectedSize.price : product.price
+			const basePrice = product.price
+			const sizePrice = selectedSize ? selectedSize.price : 0
 			const ingredientsPrice = currentIngredients.reduce(
 				(sum, ing) => sum + ing.price,
 				0
 			)
-			setCustomizedPrice(basePrice + ingredientsPrice)
+			setCustomizedPrice(basePrice + sizePrice + ingredientsPrice)
 		}
-	}, [currentIngredients, product, selectedSize])
+	}, [currentIngredients, product, selectedSize, quantity])
 
 	if (error) return <div>{error}</div>
 	if (!product) return <div>Product not found</div>
 
-	const handleRemoveIngredient = id => {
-		setCurrentIngredients(currentIngredients.filter(ing => ing.id !== id))
+	const handleRemoveIngredient = ingredientId => {
+		const ingredientToRemove = currentIngredients.find(
+			ing => ing.id === ingredientId
+		)
+		if (ingredientToRemove) {
+			setCurrentIngredients(currentIngredients.filter(ing => ing.id !== ingredientId))
+			setAvailableIngredients([...availableIngredients, ingredientToRemove])
+		}
 	}
 
 	const handleAddIngredient = ingredient => {
 		if (!currentIngredients.some(ing => ing.id === ingredient.id)) {
 			setCurrentIngredients([...currentIngredients, ingredient])
+			setAvailableIngredients(
+				availableIngredients.filter(ing => ing.id !== ingredient.id)
+			)
 		}
 	}
 
@@ -102,12 +112,14 @@ const CakeDetails = () => {
 			toast.error('Please select a size')
 			return
 		}
+		console.log('Customized Price:', customizedPrice);
 		const productToAdd = {
 			...product,
 			price: customizedPrice, // Use customized price
 			customizedIngredients: currentIngredients, // Add customized ingredients
 			selectedSize,
 		}
+		console.log('Product to add to cart:', productToAdd);
 		try {
 			await addToCart(productToAdd, token, quantity)
 			toast.success('Added to cart!')
@@ -173,16 +185,6 @@ const CakeDetails = () => {
 								{size.label} (${size.price})
 							</button>
 						))}
-					</div>
-
-					<div className='cake-details__quantity'>
-						<label>Quantity:</label>
-						<input
-							type='number'
-							min='1'
-							value={quantity}
-							onChange={e => setQuantity(Number(e.target.value))}
-						/>
 					</div>
 
 					{/* Customization Section */}

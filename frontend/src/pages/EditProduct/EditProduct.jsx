@@ -168,7 +168,7 @@ const EditProduct = () => {
         <main className='edit-product-main'>
             <div className='container_add'>
                 <div className='form'>
-                    <h1>Редактировать продукт</h1>
+                    <h1 className='title_product_add'>Редактировать продукт</h1>
 
                     {message.error && <p className='error-message'>{message.error}</p>}
                     {message.success && <p className='success-message'>{message.success}</p>}

@@ -56,35 +56,46 @@ const UserSchema = new mongoose.Schema({
         type: [String], // Array of image URLs for the gallery
         default: [],
     },
-    maxOrdersPerDay: {
-        type: Number,
-        default: 0,
+    orderSettings: {
+        type: Object,
+        default: {
+            maxOrders: 10,
+            leadTime: 48,
+            autoAccept: true,
+            acceptOnlyWorkingDays: true,
+        },
     },
     workingHours: {
         type: Object,
         default: {
-            Monday: { from: '', to: '' },
-            Tuesday: { from: '', to: '' },
-            Wednesday: { from: '', to: '' },
-            Thursday: { from: '', to: '' },
-            Friday: { from: '', to: '' },
-            Saturday: { from: '', to: '' },
-            Sunday: { from: '', to: '' },
+            monday: { enabled: true, from: '09:00', to: '17:00' },
+            tuesday: { enabled: true, from: '09:00', to: '17:00' },
+            wednesday: { enabled: true, from: '09:00', to: '17:00' },
+            thursday: { enabled: true, from: '09:00', to: '17:00' },
+            friday: { enabled: true, from: '09:00', to: '17:00' },
+            saturday: { enabled: true, from: '10:00', to: '16:00' },
+            sunday: { enabled: false, from: '', to: '' },
         },
     },
-    isVacationMode: {
+    vacationMode: {
         type: Boolean,
         default: false,
     },
-    vacationMessage: {
-        type: String,
-        default: '',
+    vacationDetails: {
+        type: Object,
+        default: {
+            reason: '',
+            from: '',
+            to: '',
+        },
     },
-    vacationStartDate: {
-        type: Date,
+    unavailableDates: {
+        type: [Date],
+        default: [],
     },
-    vacationEndDate: {
-        type: Date,
+    busyDates: {
+        type: [Date],
+        default: [],
     },
     rating: {
         type: Number,

@@ -54,11 +54,10 @@ const Cart = () => {
 
 	// Calculate total using selected size if present
 	const total = cart.reduce((sum, item) => {
-		const price =
-			item.selectedSize?.price ?? item.product?.price ?? item.price ?? 0
+		const price = item.price ?? item.product?.price ?? 0
 		return sum + price * item.quantity
 	}, 0)
-	const deliveryPrice = 500 // Placeholder for delivery price
+	const deliveryPrice = total > 500 ? 0 : 500 // Placeholder for delivery price
 
 	const handleCheckout = () => {
 		navigate('/checkout', { state: { cart } })
@@ -80,10 +79,7 @@ const Cart = () => {
 									{item.product?.name || item.name} (x{item.quantity})
 								</span>
 								<span>
-									{(item.selectedSize?.price ??
-										item.product?.price ??
-										item.price ??
-										0) * item.quantity}{' '}
+									{(item.price ?? item.product?.price ?? 0) * item.quantity}{' '}
 									₽
 								</span>
 							</div>
@@ -91,7 +87,11 @@ const Cart = () => {
 					</div>
 					<div className='summary-delivery'>
 						<span>Delivery</span>
-						<span>{deliveryPrice} ₽</span>
+						{deliveryPrice === 0 ? (
+							<span className='free-delivery'>FREE</span>
+						) : (
+							<span>{deliveryPrice} ₽</span>
+						)}
 					</div>
 					<div className='summary-total'>
 						<span>Total</span>

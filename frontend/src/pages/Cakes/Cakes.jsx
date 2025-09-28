@@ -23,6 +23,7 @@ const Cakes = () => {
             ingredients: selectedIngredients,
             minRating: minRate,
             category: selectedCategory?._id,
+            isAvailable: true, // Always fetch available products
         }
         fetchProducts(filters)
     }, [searchTerm, minPrice, maxPrice, selectedIngredients, minRate, selectedCategory, fetchProducts])
@@ -57,8 +58,8 @@ const Cakes = () => {
         setMaxPrice('')
         setSelectedIngredients([])
         setMinRate('')
-        // Применяем пустые фильтры
-        fetchProducts({})
+        // Применяем фильтры, чтобы показать только доступные продукты
+        fetchProducts({ isAvailable: true })
     }
 
     const hasActiveFilters = searchTerm || minPrice || maxPrice || selectedIngredients.length > 0 || minRate || selectedCategory

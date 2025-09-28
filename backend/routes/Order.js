@@ -36,9 +36,12 @@ router.post('/', auth, async (req, res) => {
 				}
 
 				const bakerOrder = ordersByBaker.get(bakerId);
+								console.log('Backend received item:', item);
 				bakerOrder.items.push({
 					product: item.product,
 					quantity: item.quantity,
+					selectedSize: item.selectedSize,
+					customizedIngredients: item.customizedIngredients,
 				});
 				bakerOrder.totalPrice += productData.price * item.quantity;
 			}
@@ -214,7 +217,7 @@ router.get('/baker/completed', auth, onlyBakers, async (req, res) => {
 	try {
 		const orders = await Order.find({
 			baker: req.user.id,
-			status: { $in: ['delivered', 'declined'] },
+			status: { $in: ['delivered'] },
 		})
 			.populate('items.product')
 			.populate('user', 'name email phone')
@@ -246,9 +249,6 @@ router.put('/:orderId/status', auth, onlyBakers, async (req, res) => {
 		}
 
 		order.status = status
-		if (status === 'declined') {
-			order.rejectionReason = reason
-		}
 
 		await order.save()
 
@@ -260,11 +260,6 @@ router.put('/:orderId/status', auth, onlyBakers, async (req, res) => {
 			if (status === 'accepted') {
 				notificationMessage = `Ваш заказ #${order.orderNumber} принят! Мы свяжемся с вами для подтверждения деталей.`
 				notificationType = 'order_accepted'
-			} else if (status === 'declined') {
-				notificationMessage = `К сожалению, ваш заказ #${
-					order.orderNumber
-				} отклонен.${reason ? ` Причина: ${reason}` : ''}`
-				notificationType = 'order_rejected'
 			} else if (status === 'preparing') {
 				notificationMessage = `Ваш заказ #${order.orderNumber} готовится! Мы уже начали работу над ним.`
 				notificationType = 'order_preparing'
