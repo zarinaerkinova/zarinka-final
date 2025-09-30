@@ -1,67 +1,54 @@
-import axios from 'axios'
-import { create } from 'zustand'
-
-const API_URL = '/api/notifications'
+import { create } from 'zustand';
+import api from '../config/axios.js';
 
 export const useNotificationStore = create((set, get) => ({
-	notifications: [],
-	addNotification: notification =>
-		set(state => ({ notifications: [notification, ...state.notifications] })),
-	fetchNotifications: async () => {
-		try {
-			const token = localStorage.getItem('token')
-			if (!token) return
+  notifications: [],
+  unreadCount: 0,
+  loading: false,
 
-			const config = {
-				headers: {
-					Authorization: `Bearer ${token}`,
-				},
-			}
-			const res = await axios.get(`${API_URL}/me`, config)
-			set({ notifications: res.data })
-		} catch (error) {
-			console.error('Error fetching notifications:', error)
-		}
-	},
-	markAsRead: async notificationId => {
-		try {
-			const token = localStorage.getItem('token')
-			if (!token) return
+  fetchNotifications: async (token) => {
+    set({ loading: true });
+    try {
+      const res = await api.get('/notifications/me', {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const notifications = res.data;
+      const unreadCount = notifications.filter(n => !n.read).length;
+      set({ notifications, unreadCount, loading: false });
+    } catch (error) {
+      console.error('Failed to fetch notifications:', error);
+      set({ loading: false });
+    }
+  },
 
-			const config = {
-				headers: {
-					Authorization: `Bearer ${token}`,
-				},
-			}
-			await axios.put(`${API_URL}/${notificationId}/read`, {}, config)
-			set(state => ({
-				notifications: state.notifications.map(n =>
-					n._id === notificationId ? { ...n, read: true } : n
-				),
-			}))
-		} catch (error) {
-			console.error('Error marking notification as read:', error)
-		}
-	},
-	markAllAsRead: async () => {
-		try {
-			const token = localStorage.getItem('token')
-			if (!token) return
+  markAsRead: async (notificationId, token) => {
+    try {
+      const res = await api.put(`/notifications/${notificationId}/read`, {}, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      set(state => {
+        const updatedNotifications = state.notifications.map(n =>
+          n._id === notificationId ? { ...n, read: true } : n
+        );
+        const unreadCount = updatedNotifications.filter(n => !n.read).length;
+        return { notifications: updatedNotifications, unreadCount };
+      });
+    } catch (error) {
+      console.error('Failed to mark notification as read:', error);
+    }
+  },
 
-			const config = {
-				headers: {
-					Authorization: `Bearer ${token}`,
-				},
-			}
-			await axios.put(`${API_URL}/read-all`, {}, config)
-			set(state => ({
-				notifications: state.notifications.map(n => ({ ...n, read: true })),
-			}))
-		} catch (error) {
-			console.error('Error marking all notifications as read:', error)
-		}
-	},
-	getUnreadCount: () => {
-		return get().notifications.filter(n => !n.read).length
-	},
-}))
+  markAllAsRead: async (token) => {
+    try {
+      await api.put('/notifications/read-all', {}, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      set(state => ({
+        notifications: state.notifications.map(n => ({ ...n, read: true })),
+        unreadCount: 0,
+      }));
+    } catch (error) {
+      console.error('Failed to mark all notifications as read:', error);
+    }
+  },
+}));

@@ -124,7 +124,10 @@ export const createProduct = async (req, res) => {
 			price,
 			description,
 			category,
+			preparationTime,
 		} = req.body
+
+		let { ingredients, sizes } = req.body;
 
 		if (!name || !price || !description || !category) {
 			return res
@@ -144,6 +147,19 @@ export const createProduct = async (req, res) => {
 				.json({ success: false, message: 'Product image is required' })
 		}
 
+		// Parse ingredients and sizes from string to array
+		if (typeof ingredients === 'string') {
+			ingredients = ingredients.split(',').map(item => item.trim());
+		}
+
+		if (typeof sizes === 'string') {
+			try {
+				sizes = JSON.parse(sizes);
+			} catch (error) {
+				return res.status(400).json({ success: false, message: 'Invalid sizes format' });
+			}
+		}
+
 		const product = new Product({
 			name,
 			price,
@@ -151,7 +167,9 @@ export const createProduct = async (req, res) => {
 			description,
 			category,
 			createdBy: req.user._id,
-            ingredients: ['default ingredient'], // Add a default ingredient
+			ingredients,
+			sizes,
+			preparationTime,
 		});
 
 		await product.save();

@@ -192,17 +192,7 @@
 }
 
 .form h1 {
-    text-align: center;
-    background: var(--gradient-primary);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    font-size: 32px;
-    font-weight: 900;
-    margin-bottom: 16px;
-    position: relative;
-    letter-spacing: -0.5px;
-    animation: titleGlow 2s ease-in-out infinite alternate;
+
 
     &::after {
         content: '';

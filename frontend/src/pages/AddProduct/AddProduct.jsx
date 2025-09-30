@@ -9,7 +9,7 @@ import './AddProduct.scss'
 const AddProduct = () => {
 	const { createProduct, fetchProducts, fetchProductsByBaker } =
 		useProductStore()
-	const { userInfo } = useUserStore()
+	const { userInfo, token } = useUserStore()
 	const navigate = useNavigate()
 	const [step, setStep] = useState(1)
 
@@ -136,8 +136,6 @@ const AddProduct = () => {
 
 			formData.append('ingredients', form.ingredients.join(','))
 			formData.append('sizes', JSON.stringify(form.sizes))
-
-			const token = localStorage.getItem('token')
 
 			const { success, message } = await createProduct(formData, token)
 

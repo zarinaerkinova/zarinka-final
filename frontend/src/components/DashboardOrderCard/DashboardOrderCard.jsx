@@ -7,6 +7,7 @@ const DashboardOrderCard = ({ order }) => {
 	const { updateOrderStatus, deleteOrder } = useOrderStore()
 	const { token } = useUserStore()
 	const [status, setStatus] = useState(order?.status)
+	const [showDetails, setShowDetails] = useState(false);
 
 	const handleStatusChange = async newStatus => {
 		await updateOrderStatus(token, order._id, newStatus)
@@ -48,7 +49,7 @@ const DashboardOrderCard = ({ order }) => {
 				<div className='order-details'>
 					<h4>
 						{(order?.items || [])
-							.map(item => item?.product?.name)
+							.map(item => item?.product?.name || item.name)
 							.filter(Boolean)
 							.join(', ') || 'Order'}
 					</h4>
@@ -57,6 +58,7 @@ const DashboardOrderCard = ({ order }) => {
 					</p>
 					<p className='price'>{order?.totalPrice ?? 0} ₽</p>
 					<p className='order-id'>ID: {order?._id}</p>
+
 				</div>
 			</div>
 			<div className='order-status-management'>

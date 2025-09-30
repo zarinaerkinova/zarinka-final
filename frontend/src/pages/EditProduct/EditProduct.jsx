@@ -211,7 +211,7 @@ const EditProduct = () => {
                                 <div key={index} className="size-input">
                                     <input type="text" placeholder="Название размера (напр. 1 кг)" value={size.label} onChange={(e) => handleSizeChange(index, 'label', e.target.value)} />
                                     <input type="number" placeholder="Цена для этого размера" value={size.price} onChange={(e) => handleSizeChange(index, 'price', e.target.value)} />
-                                    <button onClick={() => removeSize(index)} className="remove-size-btn">Удалить</button>
+                                    <button onClick={() => removeSize(index)} className="remove-size-btn">-</button>
                                 </div>
                             ))}
                             <button onClick={addSize} className="add-size-btn">Добавить размер</button>

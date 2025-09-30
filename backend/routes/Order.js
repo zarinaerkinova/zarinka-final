@@ -36,14 +36,17 @@ router.post('/', auth, async (req, res) => {
 				}
 
 				const bakerOrder = ordersByBaker.get(bakerId);
-								console.log('Backend received item:', item);
-				bakerOrder.items.push({
+
+				const orderItem = {
 					product: item.product,
 					quantity: item.quantity,
 					selectedSize: item.selectedSize,
 					customizedIngredients: item.customizedIngredients,
-				});
-				bakerOrder.totalPrice += productData.price * item.quantity;
+					price: item.price, // Use the price from the item
+				};
+
+				bakerOrder.items.push(orderItem);
+				bakerOrder.totalPrice += item.price * item.quantity;
 			}
 			// NOTE: Custom cakes without a product/baker are not handled here.
 			// You might want to assign them to a default baker or handle them differently.
@@ -117,8 +120,17 @@ router.post('/custom', auth, async (req, res) => {
 		const order = await Order.create({
 			orderType: 'custom',
 			user: req.user.id,
-			details,
-			totalPrice: 50, // Placeholder price
+			items: [
+				{
+					isCustomized: true,
+					name: details.name || 'Custom Cake',
+					description: details.description,
+					price: details.price,
+					quantity: 1,
+					customizedIngredients: details.ingredients, // Corrected field
+				},
+			],
+			totalPrice: details.price,
 			deliveryInfo,
 			deliveryMethod: deliveryMethod || 'delivery',
 			paymentMethod: paymentMethod || 'cash',

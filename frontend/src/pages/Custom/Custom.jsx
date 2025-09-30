@@ -11,7 +11,7 @@ const Custom = () => {
 	const location = useLocation()
 	const { addToCart } = useCartStore()
 
-	const [decor, setDecor] = useState('')
+	const [decor, setDecor] = useState(null)
 	const [quantity, setQuantity] = useState(1)
 	const [error, setError] = useState('')
 
@@ -33,7 +33,18 @@ const Custom = () => {
 	]
 	const [cream, setCream] = useState(creams[0])
 
-	const decors = ['Sprinkles', 'Berries', 'Chocolate Drips']
+	const decorsOptions = [
+		{ name: 'Sprinkles', price: 0 },
+		{ name: 'Berries', price: 0 },
+		{ name: 'Chocolate Drips', price: 0 },
+		{ name: 'Fresh Flowers', price: 20 },
+		{ name: 'Sugar Flowers', price: 35 },
+		{ name: 'Chocolate Drip', price: 15 },
+		{ name: 'Gold Accents', price: 25 },
+		{ name: 'Custom Cake Topper', price: 40 },
+		{ name: 'Piped Buttercream Roses', price: 18 },
+	]
+	const [selectedDecor, setSelectedDecor] = useState(decorsOptions[0])
 
 	const sizes = [
 		{ name: 'Small', description: '6 inch, serves 8-10', price: 0 },
@@ -67,12 +78,17 @@ const Custom = () => {
 				setCream(prefillCream)
 			}
 		}
-		if (ingredients.length > 2) setDecor(ingredients[2]?.name || '')
+		if (ingredients.length > 2) {
+			const prefillDecor = decorsOptions.find(d => d.name === ingredients[2]?.name)
+			if (prefillDecor) {
+				setSelectedDecor(prefillDecor)
+			}
+		}
 	}, [location.state])
 
 	const handleAddToCart = async e => {
 		e.preventDefault()
-		if (!sponge || !cream || !decor) {
+		if (!sponge || !cream || !selectedDecor) {
 			setError('Please select all cake options.')
 			return
 		}
@@ -85,7 +101,7 @@ const Custom = () => {
 		const customizedIngredientsArray = [
 			{ id: 'sponge', name: sponge.name, price: sponge.price },
 			{ id: 'cream', name: cream.name, price: cream.price },
-			{ id: 'decor', name: decor, price: 0 },
+			{ id: 'decor', name: selectedDecor.name, price: selectedDecor.price },
 		]
 
 		const baseProduct = location.state?.baseProduct
@@ -93,17 +109,17 @@ const Custom = () => {
 			? {
 					// Keep original product so it remains a normal purchasable item
 					...baseProduct,
-					price: baseProduct.price + size.price + sponge.price + cream.price,
-					selectedSize: size.name,
+					price: baseProduct.price + size.price + sponge.price + cream.price + selectedDecor.price,
+					selectedSize: size,
 					customizedIngredients: customizedIngredientsArray,
 			  }
 			: {
 					name: 'кастомный торт',
-					price: basePrice + size.price + sponge.price + cream.price,
-					image: '/placeholder', // A placeholder image for custom cakes
+					price: basePrice + size.price + sponge.price + cream.price + selectedDecor.price,
+					image: '../../assets/CustomCake.png', // A placeholder image for custom cakes
 					customizedIngredients: customizedIngredientsArray,
 					baker: { name: 'индивидуальный заказ' },
-					selectedSize: size.name,
+					selectedSize: size,
 			  }
 
 		try {
@@ -111,7 +127,7 @@ const Custom = () => {
 			toast.success('Added to cart!')
 			setSponge(sponges[0])
 			setCream(creams[0])
-			setDecor('')
+			setSelectedDecor(decorsOptions[0])
 			setQuantity(1)
 		} catch (err) {
 			setError('Failed to add to cart. Please try again.')
@@ -208,19 +224,19 @@ const Custom = () => {
 							<div className="config-section">
 								<h3 className="section-title">Choose Decorations (Optional)</h3>
 								<div className="option-grid three-cols">
-									{decors.map(d => (
-										<label key={d} className="option-item">
+									{decorsOptions.map(d => (
+										<label key={d.name} className="option-item">
 											<input
 												type="radio"
 												name="decor"
-												value={d}
-												checked={decor === d}
-												onChange={() => setDecor(d)}
+												value={d.name}
+												checked={selectedDecor?.name === d.name}
+												onChange={() => setSelectedDecor(d)}
 												className="option-input"
 											/>
 											<div className="option-label advanced">
-												<span className="option-text">{d}</span>
-												<div className="option-indicator square">
+												<span className="option-text">{d.name} {d.price > 0 && `(+${d.price} ₽)`}</span>
+												<div className="option-indicator">
 													<svg className="checkmark-icon" fill="currentColor" viewBox="0 0 20 20">
 														<path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
 													</svg>
@@ -326,10 +342,16 @@ const Custom = () => {
 									<span className="price-value">+{cream.price} ₽</span>
 								</div>
 							)}
+							{selectedDecor?.price > 0 && (
+								<div className="price-item">
+									<span className="price-label">{selectedDecor.name}</span>
+									<span className="price-value">+{selectedDecor.price} ₽</span>
+								</div>
+							)}
 							<div className="price-divider"></div>
 							<div className="total-price">
 								<span>Total</span>
-								<span className="total-amount">{(basePrice + size.price + sponge.price + cream.price) * quantity} ₽</span>
+								<span className="total-amount">{(basePrice + size.price + sponge.price + cream.price + selectedDecor.price) * quantity} ₽</span>
 							</div>
 						</div>
 

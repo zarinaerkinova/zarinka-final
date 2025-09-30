@@ -81,7 +81,11 @@ export const addToCart = async (req, res) => {
         }
 
         await cart.save();
-        await getCart(req, res);
+        
+        // Re-populate to send the full cart back
+        const updatedCart = await Cart.findOne({ user: userId }).populate('items.product');
+        res.status(200).json(updatedCart.items);
+
     } catch (error) {
         console.error('Error adding to cart:', error);
         res.status(500).json({ message: 'Server Error' });
@@ -112,7 +116,11 @@ export const updateCartItemQuantity = async (req, res) => {
         itemToUpdate.quantity = quantity;
 
         await cart.save();
-        await getCart(req, res);
+        
+        // Re-populate to send the full cart back
+        const updatedCart = await Cart.findOne({ user: userId }).populate('items.product');
+        res.status(200).json(updatedCart.items);
+
     } catch (error) {
         console.error('Error updating cart item quantity:', error);
         res.status(500).json({ message: 'Server Error' });
@@ -142,7 +150,11 @@ export const removeFromCart = async (req, res) => {
         cart.items.pull(cartItemId);
 
         await cart.save();
-        await getCart(req, res);
+        
+        // Re-populate to send the full cart back
+        const updatedCart = await Cart.findOne({ user: userId }).populate('items.product');
+        res.status(200).json(updatedCart.items);
+
     } catch (error) {
         console.error('Error removing from cart:', error);
         res.status(500).json({ message: 'Server Error' });

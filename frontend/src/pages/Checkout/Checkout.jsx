@@ -69,6 +69,7 @@ const Checkout = () => {
 					// Regular product
 					return {
 						product: item.product._id,
+                        price: item.price, // <-- ADDED
 						quantity: item.quantity,
 						selectedSize: item.selectedSize,
 						customizedIngredients: item.customizedIngredients, // <-- ADDED
