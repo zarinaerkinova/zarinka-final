@@ -29,13 +29,13 @@ const BakerOrders = () => {
         <div className="order-items">
           {order.items.map((item, index) => (
             <div key={index} className="order-item">
-              <p><strong>{item.name}</strong> - {item.quantity} x ${item.price.toFixed(2)}</p>
+              <p><strong>{item.name}</strong> - {item.quantity} x {item.price.toFixed(2)} UZS</p>
               {item.customizedIngredients && item.customizedIngredients.length > 0 && (
                 <div className="custom-ingredients">
                   <strong>Custom Ingredients:</strong>
                   <ul>
                     {item.customizedIngredients.map(ingredient => (
-                      <li key={ingredient.id}>{ingredient.name} - ${ingredient.price.toFixed(2)}</li>
+                      <li key={ingredient.id}>{ingredient.name} - {ingredient.price.toFixed(2)} UZS</li>
                     ))}
                   </ul>
                 </div>
@@ -43,7 +43,7 @@ const BakerOrders = () => {
             </div>
           ))}
         </div>
-        <p>Total: ${order.totalPrice.toFixed(2)}</p>
+        <p>Total: {order.totalPrice.toFixed(2)} UZS</p>
       </div>
     ));
   };

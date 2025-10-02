@@ -24,7 +24,7 @@ export default function FavoriteCard({ product }) {
     const imageUrl = product?.image
         ? product.image.startsWith('http')
             ? product.image
-            : `${import.meta.env.VITE_API_URL}${product.image}`
+            : `${import.meta.env.VITE_BACKEND_BASE_URL}${product.image}`
         : null;
 
     return (
@@ -43,7 +43,7 @@ export default function FavoriteCard({ product }) {
             <h3 className="favorite-card__title">{product.name}</h3>
             <p className="favorite-card__description">{product.description}</p>
             <div className="favorite-card__footer">
-                <span className="favorite-card__price">${product.price}</span>
+                <span className="favorite-card__price">{product.price} UZS</span>
                 <button
                     onClick={handleRemove}
                     className="favorite-card__remove"

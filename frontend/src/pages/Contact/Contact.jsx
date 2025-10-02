@@ -73,7 +73,7 @@ const Contact = () => {
     },
     {
       question: "What are your delivery options?",
-      answer: "We offer local delivery within a 20-mile radius of our bakery. Delivery fees start at $10 and vary based on distance. We also provide pickup options if you prefer to collect your order."
+      answer: "We offer local delivery within a 20-mile radius of our bakery. Delivery fees start at 50000 UZS and vary based on distance. We also provide pickup options if you prefer to collect your order."
     },
     {
       question: "How far in advance should I order?",

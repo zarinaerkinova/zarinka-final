@@ -15,7 +15,7 @@ const OrderCard = ({ order }) => {
             </div>
             <div className="order-card__body">
                 <p><strong>Bakery:</strong> {order.bakeryName || 'N/A'}</p>
-                <p><strong>Price:</strong> ${order.totalPrice ? order.totalPrice.toFixed(2) : '0.00'}</p>
+                <p><strong>Price:</strong> {order.totalPrice ? order.totalPrice.toFixed(2) : '0.00'} UZS</p>
                 <p><strong>Date:</strong> {new Date(order.createdAt).toLocaleDateString()}</p>
             </div>
             <div className="order-card__actions">

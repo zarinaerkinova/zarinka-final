@@ -95,6 +95,7 @@ export const useUserStore = create(
       logoutUser: () => {
         localStorage.clear();
         set({ user: null, token: null, userInfo: null, favorites: [] }); // очищаем userInfo тоже
+        window.location.href = '/';
       },
 
       fetchProfile: async () => {
@@ -305,5 +306,4 @@ export const useUserStore = create(
     }
   )
 );
-
 

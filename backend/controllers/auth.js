@@ -75,14 +75,14 @@ export const getBakerById = async (req, res) => {
 
 
 export const register = async (req, res) => {
-    const { name, email, password, role, bio, phone } = req.body;
+    const { name, bakeryName, email, password, role, bio, phone, location, priceRange } = req.body;
     const image = req.file ? `/uploads/${req.file.filename}` : '/uploads/default.png';
 
     try {
         let user = await User.findOne({ email });
         if (user) return res.status(400).json({ msg: "User already exists" });
 
-        user = new User({ name, email, password, role, image, bio, phone });
+        user = new User({ name, bakeryName, email, password, role, image, bio, phone, location, priceRange });
         console.log('Register: User object before saving:', user);
         
         try {

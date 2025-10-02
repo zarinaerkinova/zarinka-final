@@ -31,7 +31,7 @@ app.use('/uploads', express.static(path.join(__dirname, '..', 'uploads')))
 console.log('Serving static files from:', path.join(__dirname, '..', 'uploads'))
 
 // Middleware
-const allowedOrigins = ['http://localhost:5173', 'http://localhost:5177']
+const allowedOrigins = [process.env.FRONTEND_URL || 'http://localhost:5173']
 app.use(
 	cors({
 		origin: function (origin, callback) {

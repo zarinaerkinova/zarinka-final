@@ -10,7 +10,7 @@ import UserIcon from '../../assets/user-placeholder.svg'
 import AvailabilitySettings from '../AvailabilitySettings/AvailabilitySettings'
 
 const EditProfile = () => {
-	const { userInfo, fetchProfile, updateUserProfile } = useUserStore()
+	const { userInfo, fetchProfile, updateUserProfile, deleteAccount } = useUserStore()
 	const { fetchBakerById } = useBakerStore()
 	const token = useUserStore(state => state.token)
 	const [activeTab, setActiveTab] = useState('Basic')
@@ -45,6 +45,8 @@ const EditProfile = () => {
 		// Account Status
 		profileEnabled: true,
 	})
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+    const [confirmationName, setConfirmationName] = useState('');
 
 	// Ref for gallery file input
 	const galleryInputRef = useRef(null)
@@ -166,21 +168,18 @@ const EditProfile = () => {
 		toast.success('Profile has been enabled')
 	}
 
-	const handleDeleteAccount = () => {
-		if (
-			window.confirm(
-				'Are you sure you want to delete your account? This action cannot be undone. All your data will be permanently lost.'
-			)
-		) {
-			if (
-				window.confirm(
-					'This is your final warning. Click OK to permanently delete your account and all associated data.'
-				)
-			) {
-				// Here you would call your account deletion API
-				toast.error('Account deletion functionality would be implemented here')
-			}
-		}
+	const handleDeleteAccount = async () => {
+        try {
+            const result = await deleteAccount();
+            if (result.success) {
+                toast.success('Account deleted successfully.');
+                navigate('/');
+            } else {
+                toast.error(result.message || 'Failed to delete account.');
+            }
+        } catch (error) {
+            toast.error(error.message || 'An error occurred while deleting the account.');
+        }
 	}
 
 	const handleSubmit = async e => {
@@ -219,8 +218,8 @@ const EditProfile = () => {
 			if (updatedUserInfo) {
 				setFormData({
 					name: updatedUserInfo.name || '',
-					bakeryName: updatedUserInfo.bakeryName || '',
-					email: updatedUserInfo.email || '',
+				bakeryName: updatedUserInfo.bakeryName || '',
+				email: updatedUserInfo.email || '',
 					phone: updatedUserInfo.phone || '',
 					bio: updatedUserInfo.bio || '',
 					specialties: updatedUserInfo.specialties ? updatedUserInfo.specialties.join(', ') : '',
@@ -270,6 +269,15 @@ const EditProfile = () => {
 						<label htmlFor='profileImageUpload' className='upload-icon'></label>
 					</div>
 					{imageFile && <p className="selected-file-info">Selected file: {imageFile.name}</p>}
+				</div>
+				<div className='form-group'>
+					<label>Name</label>
+					<input
+						type='text'
+						name='name'
+						value={formData.name}
+						onChange={handleChange}
+					/>
 				</div>
 			</div>
 			<div className='form-group'>
@@ -535,7 +543,7 @@ const EditProfile = () => {
 						<button
 							type='button'
 							className='btn-danger'
-							onClick={handleDeleteAccount}
+							onClick={() => setIsDeleteModalOpen(true)}
 						>
 							Delete Account
 						</button>
@@ -596,6 +604,31 @@ const EditProfile = () => {
 			<form onSubmit={handleSubmit} className='edit-profile-form' id='edit-profile-form'>
 				{renderTabContent()}
 			</form>
+
+            {isDeleteModalOpen && (
+                <div className="modal-backdrop">
+                    <div className="modal-content">
+                        <h3>Delete Account</h3>
+                        <p>This action is irreversible. To confirm, please type your name: <strong>{userInfo.name}</strong></p>
+                        <input 
+                            type="text" 
+                            value={confirmationName}
+                            onChange={(e) => setConfirmationName(e.target.value)}
+                            placeholder="Enter your name"
+                        />
+                        <div className="modal-actions">
+                            <button onClick={() => setIsDeleteModalOpen(false)} className="btn-secondary">Cancel</button>
+                            <button 
+                                onClick={handleDeleteAccount} 
+                                className="btn-danger" 
+                                disabled={confirmationName !== userInfo.name}
+                            >
+                                Delete Account
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
 		</div>
 	)
 }

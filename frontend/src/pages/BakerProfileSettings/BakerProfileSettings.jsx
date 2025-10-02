@@ -273,7 +273,7 @@ const BakerProfileSettings = () => {
             id="priceRange"
             value={priceRange}
             onChange={(e) => setPriceRange(e.target.value)}
-            placeholder="e.g., $-$$"
+            placeholder="e.g., 100000-500000 UZS"
           />
         </div>
         <div className="form-group">

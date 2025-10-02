@@ -1,46 +1,45 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import toast from 'react-hot-toast'
 import macarons from '../../assets/macarons.png'
 import './Auth.scss'
-
 import { jwtDecode } from 'jwt-decode'
-import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useUserStore } from '../../store/User'
 
 const Auth = () => {
-	const [newUser, setNewUser] = useState({
+	const [userData, setUserData] = useState({
 		name: '',
+		bakeryName: '',
 		email: '',
 		password: '',
 		role: '',
 		bio: '',
 		phone: '',
+		location: '',
+		priceRange: '',
 	})
 
-	const [confirmPassword, setConfirmPassword] = useState('')
-	const [imageFile, setImageFile] = useState(null)
-	const [isLogin, setIsLogin] = useState(true)
-	const [errorMessage, setErrorMessage] = useState('')
-	const [verificationCode, setVerificationCode] = useState('')
-	const [generatedCode, setGeneratedCode] = useState('')
-	const [isVerificationStep, setIsVerificationStep] = useState(false)
-	const [isPhoneVerified, setIsPhoneVerified] = useState(false)
-	const [verificationTimer, setVerificationTimer] = useState(0)
-	const [isResendAvailable, setIsResendAvailable] = useState(true)
+	const [passwordConfirm, setPasswordConfirm] = useState('')
+	const [profileImage, setProfileImage] = useState(null)
+	const [isLoginMode, setIsLoginMode] = useState(true)
+	const [validationError, setValidationError] = useState('')
+	const [smsCode, setSmsCode] = useState('')
+	const [systemCode, setSystemCode] = useState('')
+	const [showVerification, setShowVerification] = useState(false)
+	const [phoneVerified, setPhoneVerified] = useState(false)
+	const [countdown, setCountdown] = useState(0)
+	const [canResend, setCanResend] = useState(true)
+	const [showRoleSelection, setShowRoleSelection] = useState(false)
 
 	const { createUser, loginUser } = useUserStore()
 	const navigate = useNavigate()
 
-	// Валидация номера телефона
 	const validatePhoneNumber = phone => {
-		// Проверяем формат телефона (российский номер)
 		const phoneRegex =
 			/^(\+7|7|8)?[\s-]?\(?[489][0-9]{2}\)?[\s-]?[0-9]{3}[\s-]?[0-9]{2}[\s-]?[0-9]{2}$/
 		return phoneRegex.test(phone.replace(/\s+/g, ''))
 	}
 
-	// Форматирование номера телефона
 	const formatPhoneNumber = phone => {
 		const cleaned = phone.replace(/\D/g, '')
 		if (cleaned.startsWith('8')) {
@@ -53,39 +52,16 @@ const Auth = () => {
 		return phone
 	}
 
-	// Генерация случайного 6-значного кода
 	const generateVerificationCode = () => {
 		return Math.floor(100000 + Math.random() * 900000).toString()
 	}
 
-	// Отправка SMS (имитация)
 	const sendSMSVerification = async phoneNumber => {
 		try {
-			// Здесь должна быть интеграция с SMS сервисом (например, Twilio, SMS.ru, etc.)
 			const code = generateVerificationCode()
-			setGeneratedCode(code)
-
-			// Имитация отправки SMS
-
-			// В реальном приложении вы бы отправили запрос на ваш backend:
-			/*
-            const response = await fetch('/api/send-sms-verification', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    phone: phoneNumber,
-                    code: code
-                })
-            });
-            */
-
+			setSystemCode(code)
 			toast.success(`Код верификации отправлен на ${phoneNumber}`)
-
-			// Для демонстрации показываем код в консоли
 			toast.success(`Демо код: ${code}`, { duration: 5000 })
-
 			return { success: true, code }
 		} catch (error) {
 			console.error('Ошибка отправки SMS:', error)
@@ -94,15 +70,14 @@ const Auth = () => {
 		}
 	}
 
-	// Старт таймера для повторной отправки
 	const startResendTimer = () => {
-		setIsResendAvailable(false)
-		setVerificationTimer(60)
+		setCanResend(false)
+		setCountdown(60)
 
 		const timer = setInterval(() => {
-			setVerificationTimer(prev => {
+			setCountdown(prev => {
 				if (prev <= 1) {
-					setIsResendAvailable(true)
+					setCanResend(true)
 					clearInterval(timer)
 					return 0
 				}
@@ -111,120 +86,111 @@ const Auth = () => {
 		}, 1000)
 	}
 
-	// Верификация номера телефона
 	const verifyPhoneNumber = async () => {
-		if (!newUser.phone) {
-			setErrorMessage('Введите номер телефона')
+		if (!userData.phone) {
+			setValidationError('Введите номер телефона')
 			return
 		}
 
-		if (!validatePhoneNumber(newUser.phone)) {
-			setErrorMessage('Введите корректный номер телефона')
+		if (!validatePhoneNumber(userData.phone)) {
+			setValidationError('Введите корректный номер телефона')
 			return
 		}
 
-		const formattedPhone = formatPhoneNumber(newUser.phone)
-		setNewUser(prev => ({ ...prev, phone: formattedPhone }))
+		const formattedPhone = formatPhoneNumber(userData.phone)
+		setUserData(prev => ({ ...prev, phone: formattedPhone }))
 
 		const result = await sendSMSVerification(formattedPhone)
 
 		if (result.success) {
-			setIsVerificationStep(true)
-			setErrorMessage('')
+			setShowVerification(true)
+			setValidationError('')
 			startResendTimer()
 		}
 	}
 
-	// Повторная отправка кода
 	const resendVerificationCode = async () => {
-		if (!isResendAvailable) return
+		if (!canResend) return
 
-		const result = await sendSMSVerification(newUser.phone)
+		const result = await sendSMSVerification(userData.phone)
 		if (result.success) {
-			setVerificationCode('')
+			setSmsCode('')
 			startResendTimer()
 			toast.success('Код отправлен повторно')
 		}
 	}
 
-	// Проверка введенного кода
 	const checkVerificationCode = () => {
-		if (!verificationCode) {
-			setErrorMessage('Введите код верификации')
+		if (!smsCode) {
+			setValidationError('Введите код верификации')
 			return
 		}
 
-		if (verificationCode === generatedCode) {
+		if (smsCode === systemCode) {
 			toast.success('Номер телефона успешно верифицирован!')
-			setIsVerificationStep(false)
-			setIsPhoneVerified(true)
-			setVerificationCode('')
-			setErrorMessage('')
-			handleUserAction(true) // Продолжаем регистрацию
+			setShowVerification(false)
+			setPhoneVerified(true)
+			setSmsCode('')
+			setValidationError('')
+			handleUserAction(true)
 		} else {
-			setErrorMessage('Неверный код верификации. Попробуйте снова.')
+			setValidationError('Неверный код верификации. Попробуйте снова.')
 		}
 	}
 
-	// Обработка изменения номера телефона
 	const handlePhoneChange = e => {
 		let value = e.target.value
-
-		// Разрешаем только цифры, +, пробелы, скобки и дефисы
 		value = value.replace(/[^0-9+\s()-]/g, '')
-
-		// Ограничиваем длину
 		if (value.length > 18) return
-
-		setNewUser({ ...newUser, phone: value })
-
-		// Сбрасываем статус верификации при изменении номера
-		if (isPhoneVerified) {
-			setIsPhoneVerified(false)
+		setUserData({ ...userData, phone: value })
+		if (phoneVerified) {
+			setPhoneVerified(false)
 		}
+	}
+
+	const selectRole = (role) => {
+		setUserData({ ...userData, role })
+		setShowRoleSelection(false)
 	}
 
 	const handleUserAction = async (isAfterVerification = false) => {
 		let response
 
-	if (isLogin) {
-		response = await loginUser({
-			email: newUser.email,
-			password: newUser.password,
-		})
-	} else {
-		// Проверяем совпадение паролей
-		if (newUser.password !== confirmPassword) {
-			setErrorMessage('Пароли не совпадают')
-			return
-		}
-
-		// Если это этап верификации, не выполняем регистрацию
-		if (isVerificationStep && !isAfterVerification) return
-
-		// Проверяем верификацию телефона перед регистрацией
-		if (newUser.phone && !isPhoneVerified && !isAfterVerification) {
-			await verifyPhoneNumber()
-			return
-		}
-
-		const formData = new FormData()
-		Object.entries(newUser).forEach(([key, value]) => {
-			if (value !== undefined && value !== null && value !== '') {
-				formData.append(key, value)
+		if (isLoginMode) {
+			response = await loginUser({
+				email: userData.email,
+				password: userData.password,
+			})
+		} else {
+			if (userData.password !== passwordConfirm) {
+				setValidationError('Пароли не совпадают')
+				return
 			}
-		})
-		if (imageFile) formData.append('image', imageFile)
 
-		response = await createUser(formData)
-	}
+			if (showVerification && !isAfterVerification) return
 
-		const { success, token, message, userData } = response || {}
+			if (userData.phone && !phoneVerified && !isAfterVerification) {
+				await verifyPhoneNumber()
+				return
+			}
+
+			const formData = new FormData()
+			Object.entries(userData).forEach(([key, value]) => {
+				if (value !== undefined && value !== null && value !== '') {
+					formData.append(key, value)
+				}
+			})
+			if (profileImage) formData.append('image', profileImage)
+
+			response = await createUser(formData)
+		}
+
+		const { success, token, message, userData: userDataResponse } = response || {}
 
 		if (success) {
 			try {
 				localStorage.setItem('token', token)
-				localStorage.setItem('user', JSON.stringify(userData))
+				localStorage.setItem('user', JSON.stringify(userDataResponse))
 
 				const decoded = jwtDecode(token)
 				const expiryTime = decoded.exp * 1000
@@ -239,10 +205,10 @@ const Auth = () => {
 			} catch (decodeError) {
 				console.error('JWT Decode failed:', decodeError)
 				localStorage.clear()
-				setErrorMessage('Ошибка авторизации. Попробуйте снова.')
+				setValidationError('Ошибка авторизации. Попробуйте снова.')
 			}
 		} else {
-			setErrorMessage(message || 'Произошла ошибка. Попробуйте снова.')
+			setValidationError(message || 'Произошла ошибка. Попробуйте снова.')
 		}
 	}
 
@@ -270,195 +236,267 @@ const Auth = () => {
 	}, [navigate])
 
 	return (
-		<>
-			<main className='admin-main'>
-				<div className='container_add'>
-					<div className='form'>
-						<img src={macarons} alt='' className='macarons' />
-						<h1>
-							{isLogin
-								? 'Вход'
-								: isVerificationStep
-								? 'Верификация телефона'
-								: 'Регистрация'}
-						</h1>
+		<main className='auth-page'>
+			<div className='auth-container'>
+				<div className='auth-form-wrapper'>
+					<img src={macarons} alt='Logo' className='auth-logo' />
+					<h1 className='auth-title'>
+						{isLoginMode
+							? 'Вход'
+							: showVerification
+							? 'Верификация телефона'
+							: showRoleSelection
+							? 'Выберите роль'
+							: 'Регистрация'}
+					</h1>
 
-						{isVerificationStep ? (
-							<>
-								<div className='verification-info'>
-									<p>Код верификации отправлен на</p>
-									<p>
-										<strong>{newUser.phone}</strong>
-									</p>
-									<p>Введите 6-значный код из SMS</p>
-								</div>
-								<input
-									type='text'
-									placeholder='Код верификации'
-									value={verificationCode}
-									onChange={e =>
-										setVerificationCode(
-											e.target.value.replace(/\D/g, '').slice(0, 6)
-										)
-									}
-									maxLength={6}
-									className='verification-input'
-								/>
-								<button
-									className='submit'
-									onClick={checkVerificationCode}
-									disabled={verificationCode.length !== 6}
-								>
-									Подтвердить
-								</button>
-
-								<div className='resend-section'>
-									{isResendAvailable ? (
-										<button
-											className='resend-button'
-											onClick={resendVerificationCode}
-											type='button'
-										>
-											Отправить код повторно
-										</button>
-									) : (
-										<p className='resend-timer'>
-											Повторная отправка через {verificationTimer} сек
-										</p>
-									)}
-								</div>
-
-								<button
-									className='switch'
-									onClick={() => {
-										setIsVerificationStep(false)
-										setVerificationCode('')
-										setErrorMessage('')
-										setVerificationTimer(0)
-										setIsResendAvailable(true)
-									}}
-								>
-									Назад к регистрации
-								</button>
-							</>
-						) : (
-							<>
-								{!isLogin && (
-									<input
-										type='text'
-										placeholder='Имя'
-										name='name'
-										value={newUser.name}
-										onChange={e =>
-											setNewUser({ ...newUser, name: e.target.value })
-										}
-									/>
-								)}
-								<input
-									type='email'
-									placeholder='Электронная почта'
-									name='email'
-									value={newUser.email}
-									onChange={e =>
-										setNewUser({ ...newUser, email: e.target.value })
-									}
-								/>
-								<input
-									type='password'
-									placeholder='Пароль'
-									name='password'
-									value={newUser.password}
-									onChange={e =>
-										setNewUser({ ...newUser, password: e.target.value })
-									}
-								/>
-								{!isLogin && (
-									<input
-										type='password'
-										placeholder='Повторите пароль'
-										value={confirmPassword}
-										onChange={e => setConfirmPassword(e.target.value)}
-									/>
-								)}
-								{!isLogin && (
-									<>
-										<div className='phone-input-container'>
-											<input
-												type='tel'
-												name='phone'
-												placeholder='Номер телефона'
-												value={newUser.phone}
-												onChange={handlePhoneChange}
-												className={isPhoneVerified ? 'verified' : ''}
-											/>
-											{isPhoneVerified && (
-												<span className='verification-status verified'>
-													✓ Подтвержден
-												</span>
-											)}
-										</div>
-
-										<input
-											type='file'
-											accept='image/*'
-											onChange={e => setImageFile(e.target.files[0])}
-										/>
-										<select
-											value={newUser.role}
-											onChange={e =>
-												setNewUser({ ...newUser, role: e.target.value })
-											}
-										>
-											<option value='' disabled>
-												Выберите роль
-											</option>
-											<option value={'user'}>Пользователь</option>
-											<option value={'admin'}>Кондитер</option>
-										</select>
-										<textarea
-											name='bio'
-											placeholder='О себе'
-											value={newUser.bio}
-											onChange={e =>
-												setNewUser({ ...newUser, bio: e.target.value })
-											}
-										></textarea>
-									</>
-								)}
-								<button className='submit' onClick={handleUserAction}>
-									{isLogin ? 'Войти' : 'Зарегистрироваться'}
-								</button>
-							</>
-						)}
-
-						{errorMessage && <p className='error-message'>{errorMessage}</p>}
-
-						{!isVerificationStep && (
+					{!isLoginMode && showRoleSelection ? (
+						<div className='role-selection'>
+							<button 
+								className='role-card customer-role'
+								onClick={() => selectRole('user')}
+							>
+								<div className='role-icon'>🛍️</div>
+								<h3>Покупатель</h3>
+								<p>Заказывайте вкусные сладости от лучших кондитеров</p>
+							</button>
+							<button 
+								className='role-card baker-role'
+								onClick={() => selectRole('admin')}
+							>
+								<div className='role-icon'>👨‍🍳</div>
+								<h3>Кондитер</h3>
+								<p>Создавайте и продавайте свои кулинарные шедевры</p>
+							</button>
+						</div>
+					) : showVerification ? (
+						<>
+							<div className='verification-info-box'>
+								<p>Код верификации отправлен на</p>
+								<p><strong>{userData.phone}</strong></p>
+								<p>Введите 6-значный код из SMS</p>
+							</div>
+							<input
+								type='text'
+								placeholder='Код верификации'
+								value={smsCode}
+								onChange={e =>
+									setSmsCode(e.target.value.replace(/\D/g, '').slice(0, 6))
+								}
+								maxLength={6}
+								className='verification-code-input'
+							/>
 							<button
-								className='switch'
+								className='primary-button'
+								onClick={checkVerificationCode}
+								disabled={smsCode.length !== 6}
+							>
+								Подтвердить
+							</button>
+
+							<div className='resend-wrapper'>
+								{canResend ? (
+									<button
+										className='resend-code-button'
+										onClick={resendVerificationCode}
+										type='button'
+									>
+										Отправить код повторно
+									</button>
+								) : (
+									<p className='resend-countdown'>
+										Повторная отправка через {countdown} сек
+									</p>
+								)}
+							</div>
+
+							<button
+								className='back-button'
 								onClick={() => {
-									setIsLogin(!isLogin)
-									setErrorMessage('')
-									setIsPhoneVerified(false)
-									setNewUser({
-										name: '',
-										email: '',
-										password: '',
-										role: '',
-										bio: '',
-										phone: '',
-									})
+									setShowVerification(false)
+									setSmsCode('')
+									setValidationError('')
+									setCountdown(0)
+									setCanResend(true)
 								}}
 							>
-								{isLogin
-									? 'Нет аккаунта? Зарегистрируйтесь'
-									: 'Уже есть аккаунт? Войти'}
+								Назад к регистрации
 							</button>
-						)}
-					</div>
+						</>
+					) : (
+						<>
+							{!isLoginMode && !userData.role && (
+								<button 
+									className='select-role-button'
+									onClick={() => setShowRoleSelection(true)}
+								>
+									Сначала выберите роль
+								</button>
+							)}
+							
+							{(!isLoginMode && userData.role) || isLoginMode ? (
+								<>
+									{!isLoginMode && (
+										<input
+											type='text'
+											placeholder='Имя'
+											name='name'
+											value={userData.name}
+											onChange={e =>
+												setUserData({ ...userData, name: e.target.value })
+											}
+											className='auth-input'
+										/>
+									)}
+									<input
+										type='email'
+										placeholder='Электронная почта'
+										name='email'
+										value={userData.email}
+										onChange={e =>
+											setUserData({ ...userData, email: e.target.value })
+										}
+										className='auth-input'
+									/>
+									<input
+										type='password'
+										placeholder='Пароль'
+										name='password'
+										value={userData.password}
+										onChange={e =>
+											setUserData({ ...userData, password: e.target.value })
+										}
+										className='auth-input'
+									/>
+									{!isLoginMode && (
+										<input
+											type='password'
+											placeholder='Повторите пароль'
+											value={passwordConfirm}
+											onChange={e => setPasswordConfirm(e.target.value)}
+											className='auth-input'
+										/>
+									)}
+									{!isLoginMode && (
+										<>
+											<div className='phone-field-wrapper'>
+												<input
+													type='tel'
+													name='phone'
+													placeholder='Номер телефона'
+													value={userData.phone}
+													onChange={handlePhoneChange}
+													className={`auth-input ${phoneVerified ? 'phone-verified' : ''}`}
+												/>
+												{phoneVerified && (
+													<span className='phone-status-badge verified-badge'>
+														✓ Подтвержден
+													</span>
+												)}
+											</div>
+											
+											{userData.role === 'admin' && (
+												<>
+													<input
+														type='text'
+														placeholder='Название кондитерской'
+														name='bakeryName'
+														value={userData.bakeryName}
+														onChange={e =>
+															setUserData({ ...userData, bakeryName: e.target.value })
+														}
+														className='auth-input'
+													/>
+													<input
+														type='text'
+														placeholder='Локация'
+														name='location'
+														value={userData.location}
+														onChange={e =>
+															setUserData({ ...userData, location: e.target.value })
+														}
+														className='auth-input'
+													/>
+													<input
+														type='number'
+														placeholder='Цена услуги от'
+														name='priceRange'
+														value={userData.priceRange}
+														onChange={e =>
+															setUserData({ ...userData, priceRange: e.target.value })
+														}
+														className='auth-input'
+													/>
+												</>
+											)}
+
+											<div className='selected-role-display'>
+												<span className='role-label'>Выбранная роль:</span>
+												<span className={`role-badge ${userData.role === 'user' ? 'customer-badge' : 'baker-badge'}`}>
+													{userData.role === 'user' ? '🛍️ Покупатель' : '👨‍🍳 Кондитер'}
+												</span>
+												<button 
+													className='change-role-link'
+													onClick={() => setShowRoleSelection(true)}
+												>
+													Изменить
+												</button>
+											</div>
+
+
+											<input
+												type='file'
+												accept='image/*'
+												onChange={e => setProfileImage(e.target.files[0])}
+												className='file-input'
+											/>
+											<textarea
+												name='bio'
+												placeholder='О себе'
+												value={userData.bio}
+												onChange={e =>
+													setUserData({ ...userData, bio: e.target.value })
+												}
+												className='auth-textarea'
+											></textarea>
+										</>
+									)}
+									<button className='primary-button' onClick={handleUserAction}>
+										{isLoginMode ? 'Войти' : 'Зарегистрироваться'}
+									</button>
+								</>
+							) : null}
+						</>
+					)}
+
+					{validationError && <p className='error-alert'>{validationError}</p>}
+
+					{!showVerification && (
+						<button
+							className='toggle-mode-button'
+							onClick={() => {
+								setIsLoginMode(!isLoginMode)
+								setValidationError('')
+								setPhoneVerified(false)
+								setShowRoleSelection(false)
+								setUserData({
+									name: '',
+									email: '',
+									password: '',
+									role: '',
+									bio: '',
+									phone: '',
+								})
+							}}
+						>
+							{isLoginMode
+								? 'Нет аккаунта? Зарегистрируйтесь'
+								: 'Уже есть аккаунт? Войти'}
+						</button>
+					)}
 				</div>
-			</main>
-		</>
+			</div>
+		</main>
 	)
 }
 

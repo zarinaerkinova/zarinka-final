@@ -4,7 +4,7 @@ import { useBakerStore } from '../../store/Baker.js'
 import { useProductStore } from '../../store/Product.js'
 import { useFavoriteStore } from '../../store/Favorite.js'
 import { useLoadingStore } from '../../store/Loading.js'
-import useReviewStore from '../../store/review.js'
+import { useReviewStore } from '../../store/review.js'
 import Card from '../../components/Card.jsx'
 import ReviewCard from '../../components/ReviewCard/ReviewCard.jsx'
 import Calendar from 'react-calendar'
@@ -35,6 +35,22 @@ const BakerDetail = () => {
         }
         return () => clearSelectedBaker()
     }, [bakerId, fetchBakerById, fetchProductsByBaker, clearSelectedBaker, fetchBakerReviews])
+
+    useEffect(() => {
+        const handleKeyDown = (e) => {
+            if (e.key === 'Escape') {
+                setSelectedGalleryImage(null);
+            }
+        };
+
+        if (selectedGalleryImage) {
+            document.addEventListener('keydown', handleKeyDown);
+        }
+
+        return () => {
+            document.removeEventListener('keydown', handleKeyDown);
+        };
+    }, [selectedGalleryImage]);
 
     const handleFavoriteToggle = () => {
         if (selectedBaker) {
@@ -300,9 +316,6 @@ const BakerDetail = () => {
                                 <div className="empty-icon">🍰</div>
                                 <h3>No Ready-Made Cakes</h3>
                                 <p>This baker doesn't have ready-made cakes yet, but you can order a custom one!</p>
-                                <button className="primary-btn" onClick={handleOrderCustomCake}>
-                                    Order Custom Cake
-                                </button>
                             </div>
                         ) : (
                             <div className="products-grid">

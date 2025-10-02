@@ -30,10 +30,10 @@ const DashboardProductCard = ({ product, onDelete, onToggleAvailability }) => {
 
     return (
         <div className={`dashboard-product-card ${!product.isAvailable ? 'unavailable' : ''}`}>
-            <img src={`http://localhost:5000${product.image}`} alt={product.name} />
+            <img src={`${import.meta.env.VITE_BACKEND_BASE_URL}${product.image}`} alt={product.name} />
             <div className="product-info">
                 <h4>{product.name}</h4>
-                <p className="price">{product.price} ₽</p>
+                <p className="price">{product.price} UZS</p>
                 {product.rating && product.rating.average !== undefined && (
                     <div className="product-rating">
                         <span className="rating-stars">

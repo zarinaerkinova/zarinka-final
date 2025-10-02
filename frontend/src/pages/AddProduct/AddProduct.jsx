@@ -267,6 +267,7 @@ const AddProduct = () => {
 										value={size.price}
 										onChange={e =>
 											handleSizeChange(idx, 'price', e.target.value)
+											
 										}
 										required
 									/>

@@ -106,7 +106,7 @@ const NewOrders = () => {
 										<img
 											src={
 												item.product?.image
-													? `http://localhost:5000${item.product.image}`
+													? `${import.meta.env.VITE_BACKEND_BASE_URL}${item.product.image}`
 													: '/placeholder.png'
 											}
 											alt={getItemName(item)}

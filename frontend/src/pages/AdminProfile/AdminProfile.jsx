@@ -10,12 +10,13 @@ import profileImage from '../../assets/profile.jpg'
 import { ChevronDown, ChevronUp } from 'lucide-react'
 
 const AdminProfile = () => {
-	const { userInfo, fetchProfile, logoutUser, token } = useUserStore()
+	const { userInfo, fetchProfile, logoutUser, token, updateUserProfile } = useUserStore()
 	const { orders, customOrders, fetchBakerOrders, updateOrderStatus } =
 		useOrderStore()
 	const [newCategory, setNewCategory] = useState({ name: '', description: '' })
 	const [editingCategory, setEditingCategory] = useState(null)
 	const [expandedOrders, setExpandedOrders] = useState(new Set())
+	const [autoAcceptOrders, setAutoAcceptOrders] = useState(false)
 
 	useEffect(() => {
 		fetchProfile()
@@ -24,6 +25,12 @@ const AdminProfile = () => {
 	useEffect(() => {
 		if (token) fetchBakerOrders(token)
 	}, [token, fetchBakerOrders])
+
+	useEffect(() => {
+		if (userInfo) {
+			setAutoAcceptOrders(userInfo.orderSettings?.autoAccept || false)
+		}
+	}, [userInfo])
 
 	const navigate = useNavigate()
 
@@ -147,6 +154,28 @@ const AdminProfile = () => {
 		}
 	}
 
+	const handleSaveChanges = async () => {
+		if (!userInfo) return
+
+		const updatedOrderSettings = {
+			...userInfo.orderSettings,
+			autoAccept: autoAcceptOrders,
+		}
+
+		const formData = new FormData()
+		formData.append('orderSettings', JSON.stringify(updatedOrderSettings))
+
+		const result = await updateUserProfile(formData)
+
+		if (result.success) {
+			// Handle success (e.g., show toast, refresh profile)
+			console.log('Order settings updated successfully!')
+		} else {
+			// Handle error
+			console.error('Failed to update order settings:', result.message)
+		}
+	}
+
 	return (
 		<>
 			<main className='profile'>
@@ -168,7 +197,7 @@ const AdminProfile = () => {
 									<img
 										src={
 											userInfo?.image
-												? `http://localhost:5000${userInfo.image}`
+												? `${import.meta.env.VITE_BACKEND_BASE_URL}${userInfo.image}`
 												: profileImage
 										}
 										alt={userInfo?.name || 'Profile'}
@@ -188,6 +217,17 @@ const AdminProfile = () => {
 										<h3>Телефон</h3>
 										<p>{userInfo?.phone}</p>
 									</div>
+									{userInfo?.role === 'baker' && (
+										<div className='info-pair'>
+											<h3>Автоматически принимать заказы</h3>
+											<input
+												type='checkbox'
+												checked={autoAcceptOrders}
+												onChange={e => setAutoAcceptOrders(e.target.checked)}
+											/>
+											<button onClick={handleSaveChanges}>Сохранить настройки заказа</button>
+										</div>
+									)}
 								</div>
 							</div>
 							<div className='PersonalInfo-container-right'>
@@ -395,17 +435,6 @@ const AdminProfile = () => {
 														<p>
 															<b>Детали:</b>
 														</p>
-														<ul>
-															<li>
-																<b>Бисквит:</b> {order.details?.sponge}
-															</li>
-															<li>
-																<b>Крем:</b> {order.details?.cream}
-															</li>
-															<li>
-																<b>Украшение:</b> {order.details?.decor}
-															</li>
-														</ul>
 
 														{order.status === 'pending' && (
 															<div className='order-actions'>

@@ -36,8 +36,8 @@ const SingleProduct = () => {
                         rating: (Math.random() * (5 - 3) + 3).toFixed(1), // Random rating between 3 and 5
                         orderCount: Math.floor(Math.random() * 1000) + 50, // Random order count
                         preparationTime: `${Math.floor(Math.random() * 3) + 1} hours`,
-                        fullDescription: `This is a much longer and more detailed description of the product. It covers all the amazing features, the quality of ingredients, and the passion that goes into making it. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.`, 
-                        fullIngredients: `Flour, Sugar, Eggs, Butter, Milk, Baking Powder, Vanilla Extract, Salt. May contain traces of nuts and other allergens. Please check the label for detailed allergen information.`, 
+                        fullDescription: `This is a much longer and more detailed description of the product. It covers all the amazing features, the quality of ingredients, and the passion that goes into making it. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.`,
+                        fullIngredients: `Flour, Sugar, Eggs, Butter, Milk, Baking Powder, Vanilla Extract, Salt. May contain traces of nuts and other allergens. Please check the label for detailed allergen information.`,
                         servingSizes: [
                             { size: 'Small', price: data.data.price },
                             { size: 'Medium', price: (data.data.price * 1.5).toFixed(2) },
@@ -205,7 +205,7 @@ const SingleProduct = () => {
                             <h3>Пекарь</h3>
                             <div className="baker-info">
                                 <img
-                                    src={product.createdBy.image ? `http://localhost:5000${product.createdBy.image}` : profileImage}
+                                    src={product.createdBy.image ? `${import.meta.env.VITE_BACKEND_BASE_URL}${product.createdBy.image}` : profileImage}
                                     alt={product.createdBy.name || 'Baker'}
                                     className="baker-avatar"
                                 />

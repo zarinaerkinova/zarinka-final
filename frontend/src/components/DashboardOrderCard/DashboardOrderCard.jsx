@@ -41,7 +41,7 @@ const DashboardOrderCard = ({ order }) => {
 				<img
 					src={
 						order?.items?.[0]?.product?.image
-							? `http://localhost:5000${order.items[0].product.image}`
+							? `${import.meta.env.VITE_BACKEND_BASE_URL}${order.items[0].product.image}`
 							: '/placeholder.png'
 					}
 					alt={order?.items?.[0]?.product?.name || 'Product'}
@@ -58,7 +58,7 @@ const DashboardOrderCard = ({ order }) => {
 					</p>
 					<p className='price'>{order?.totalPrice ?? 0} ₽</p>
 					<p className='order-id'>ID: {order?._id}</p>
-
+					
 				</div>
 			</div>
 			<div className='order-status-management'>

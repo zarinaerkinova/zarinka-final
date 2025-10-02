@@ -132,6 +132,7 @@ footer {
 /* Page Transition Animations */
 .page-transition-container {
   animation: fadeIn 0.5s ease-in-out;
+	flex-grow: 1;
 }
 
 @keyframes fadeIn {

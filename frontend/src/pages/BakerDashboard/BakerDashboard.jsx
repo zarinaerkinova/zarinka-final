@@ -53,7 +53,7 @@ const BakerDashboard = () => {
 								<div className='baker-profile-image-container'>
 									{userInfo?.image ? (
 										<img
-											src={`http://localhost:5000${userInfo.image}`}
+											src={`${import.meta.env.VITE_BACKEND_BASE_URL}${userInfo.image}`}
 											alt='Baker Profile'
 											className='baker-profile-image'
 										/>

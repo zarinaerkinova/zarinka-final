@@ -60,7 +60,7 @@ const Card = ({ product }) => {
 
     const imageUrl = product?.image?.startsWith('http')
         ? product.image
-        : `${import.meta.env.VITE_API_URL}${product?.image || '/placeholder.png'}`;
+        : `${import.meta.env.VITE_BACKEND_BASE_URL}${product?.image || '/placeholder.png'}`;
 
     return (
         <div className={styles.card}>
@@ -86,8 +86,8 @@ const Card = ({ product }) => {
                     <FaStar /> {product.rating?.average ? product.rating.average.toFixed(1) : '0.0'} ({product.reviewCount || 0} reviews)
                 </div>
                 <div className={styles.price}>
-                    ${product.price}
-                    {product.originalPrice && <span>${product.originalPrice}</span>}
+                    {product.price} UZS
+                    {product.originalPrice && <span>{product.originalPrice} UZS</span>}
                 </div>
                 <div className={styles['card-actions']}>
                     <div className={styles['primary-actions']}>

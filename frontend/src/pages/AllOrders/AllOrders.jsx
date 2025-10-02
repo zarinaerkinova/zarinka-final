@@ -93,7 +93,7 @@ const AllOrders = () => {
         </div>
         <div className="stat-card">
           <h4>Total Revenue</h4>
-          <p>${totalRevenue.toFixed(2)}</p>
+          <p>{totalRevenue.toFixed(2)} UZS</p>
         </div>
       </div>
 

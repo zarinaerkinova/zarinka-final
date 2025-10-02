@@ -182,7 +182,7 @@ const CakeDetails = () => {
 								className={selectedSize?.label === size.label ? 'active' : ''}
 								onClick={() => setSelectedSize(size)}
 							>
-								{size.label} (${size.price})
+								{size.label} ({size.price} UZS)
 							</button>
 						))}
 					</div>
@@ -233,7 +233,7 @@ const CakeDetails = () => {
 						</p>
 					</div>
 
-					<div className='cake-details__price'>Price: ${customizedPrice}</div>
+					<div className='cake-details__price'>Price: {customizedPrice} UZS</div>
 
 					<div className='cake-details__actions'>
 						<button className='btn-primary' onClick={handleAddToCart}>

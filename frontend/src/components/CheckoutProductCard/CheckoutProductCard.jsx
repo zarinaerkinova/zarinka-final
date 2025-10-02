@@ -9,9 +9,9 @@ const CheckoutProductCard = ({ item }) => {
     const imageSrc = item.image // Check for item.image first (for custom cakes)
         ? item.image.startsWith('/') // If it's a relative path like /src/assets/CustomCake.png
             ? item.image
-            : `http://localhost:5000${item.image}` // If it's a full URL from backend
+            : `${import.meta.env.VITE_BACKEND_BASE_URL}${item.image}` // If it's a full URL from backend
         : item.product?.image // Then check for item.product?.image (for regular products)
-            ? `http://localhost:5000${item.product.image}`
+            ? `${import.meta.env.VITE_BACKEND_BASE_URL}${item.product.image}`
             : '/placeholder.png'; // Fallback
 
     // Determine the name

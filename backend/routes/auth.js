@@ -13,7 +13,9 @@ const storage = multer.diskStorage({
         cb(null, 'uploads/');
     },
     filename: function (req, file, cb) {
-        cb(null, Date.now() + '-' + file.originalname);
+        const ext = path.extname(file.originalname);
+        const sanitizedFilename = file.originalname.normalize("NFD").replace(/[^\w.]/g, ''); // Remove non-ASCII characters
+        cb(null, Date.now() + '-' + sanitizedFilename);
     }
 });
 

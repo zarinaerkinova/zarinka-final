@@ -123,7 +123,7 @@ const ProductList = () => {
                 </div>
                 <div className="stat-card">
                     <h4>Avg Price</h4>
-                    <p>{stats.avgPrice.toFixed(2)} ₽</p>
+                    <p>{stats.avgPrice.toFixed(2)} UZS</p>
                 </div>
                 <div className="stat-card">
                     <h4>Categories</h4>

@@ -1,14 +1,14 @@
 import nodemailer from 'nodemailer';
 
 const sendEmail = async (options) => {
-    // 1) Create a transporter using Ethereal for development
+    // 1) Create a transporter using SendPulse SMTP
     let transporter = nodemailer.createTransport({
-        host: 'smtp.ethereal.email',
-        port: 587,
-        secure: false, // true for 465, false for other ports
+        host: process.env.EMAIL_HOST,
+        port: process.env.EMAIL_PORT,
+        secure: false, // Use 'true' for port 465, 'false' for other ports like 587
         auth: {
-            user: 'madisen.conn@ethereal.email', // generated ethereal user
-            pass: 'Jq6xSjB6kCqfNnZJzG'  // generated ethereal password
+            user: process.env.EMAIL_USER,
+            pass: process.env.EMAIL_PASS
         }
     });
 

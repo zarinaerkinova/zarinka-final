@@ -18,6 +18,10 @@ import { useProductStore } from '../../store/Product'
 import { useUserStore } from '../../store/User'
 import './Home.scss'
 import { FaStar, FaUser } from "react-icons/fa6";
+import photo1 from '../../assets/photo_1_2025-10-02_23-08-39.jpg'
+import photo2 from '../../assets/photo_2_2025-10-02_23-08-39.jpg'
+import photo3 from '../../assets/photo_2025-10-02_23-09-03.jpg'
+import photo4 from '../../assets/photo_2_2025-10-02_23-08-56.jpg'
 
 const Home = () => {
 	const [bakers, setBakers] = useState([])
@@ -86,7 +90,7 @@ const Home = () => {
 
 		const imageUrl = product?.image?.startsWith('http')
 			? product.image
-			: `http://localhost:5000${product?.image || '/placeholder.png'}`
+			: `${import.meta.env.VITE_BACKEND_BASE_URL}${product?.image || '/placeholder.png'}`
 
 			const renderStars = (rating) => {
         const filledStars = Math.floor(rating);
@@ -125,8 +129,8 @@ const Home = () => {
                     <FaStar /> {product.rating?.average ? product.rating.average.toFixed(1) : '0.0'} ({product.reviewCount || 0} reviews)
                 </div>
 					<div className='price'>
-						${product.price}
-						{product.originalPrice && <span>${product.originalPrice}</span>}
+						{product.price} UZS
+						{product.originalPrice && <span>{product.originalPrice} UZS</span>}
 					</div>
 					<div className='card-actions'>
 						<div className='primary-actions'>
@@ -164,7 +168,7 @@ const Home = () => {
 				<div className='baker-avatar'>
 					{baker.image && !baker.image.includes('default.png') ? (
 						<img
-							src={`${import.meta.env.VITE_API_URL}${baker.image}`}
+							src={`${import.meta.env.VITE_BACKEND_BASE_URL}${baker.image}`}
 							alt={baker.bakeryName || baker.name}
 						/>
 					) : (
@@ -288,7 +292,7 @@ const Home = () => {
 					</p>
 					<Link to='/cakes' className='constructor-link'>
 						<LuCake />
-						Start Building Your Cake
+							Start Building Your Cake
 					</Link>
 				</div>
 			</section>
@@ -344,25 +348,25 @@ const Home = () => {
 					<div className='about-images'>
 						<div className='about-image'>
 							<img
-								src='/api/placeholder/300/200'
+								src={photo1}
 								alt='Professional baker decorating cake'
 							/>
 						</div>
 						<div className='about-image'>
 							<img
-								src='/api/placeholder/300/200'
+								src={photo2}
 								alt='Beautiful custom wedding cake'
 							/>
 						</div>
 						<div className='about-image'>
 							<img
-								src='/api/placeholder/300/200'
+								src={photo3}
 								alt='Colorful birthday cake collection'
 							/>
 						</div>
 						<div className='about-image'>
 							<img
-								src='/api/placeholder/300/200'
+								src={photo4}
 								alt="Baker's workspace with ingredients"
 							/>
 						</div>

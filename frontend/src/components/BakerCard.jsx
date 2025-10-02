@@ -42,7 +42,7 @@ const BakerCard = memo(({ baker }) => {
             <div className="specialist-card__photo">
                 {baker.image && !baker.image.includes('default.png') ? (
                     <img
-                        src={`${import.meta.env.VITE_API_URL}${baker.image}`}
+                        src={`${import.meta.env.VITE_BACKEND_BASE_URL}${baker.image}`}
                         alt={baker.bakery || 'Baker'}
                     />
                 ) : (
@@ -78,7 +78,7 @@ const BakerCard = memo(({ baker }) => {
                 </div>
                 <div className="specialist-card__stats">
                     <div className="orders-number">Orders: {baker.orders || 0}</div>
-                    <div className="price-range">Price: ${baker.minPrice || 10} - ${baker.maxPrice || 100}</div>
+                    <div className="price-range">Price: {baker.minPrice || 10} UZS - {baker.maxPrice || 100} UZS</div>
                 </div>
                 <div className="specialist-card__actions">
                     <Link to={`/bakers/${baker._id}`} className='specialist-card__button specialist-card__button--view'>

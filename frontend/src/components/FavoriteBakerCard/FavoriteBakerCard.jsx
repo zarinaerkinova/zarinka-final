@@ -27,7 +27,7 @@ const FavoriteBakerCard = ({ baker }) => {
             <div className="baker-photo">
                 {baker.img ? (
                     <img
-                        src={`http://localhost:5000/uploads/${baker.img}`}
+                        src={`${import.meta.env.VITE_BACKEND_BASE_URL}/uploads/${baker.img}`}
                         alt={baker.name || 'Baker'}
                     />
                 ) : (

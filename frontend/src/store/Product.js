@@ -135,8 +135,7 @@ export const useProductStore = create(set => ({
 			if (filters.search) params.append('search', filters.search);
 			if (filters.minPrice) params.append('minPrice', filters.minPrice);
 			if (filters.maxPrice) params.append('maxPrice', filters.maxPrice);
-			if (filters.ingredients)
-				params.append('ingredients', filters.ingredients.join(','));
+			if (filters.ingredients) params.append('ingredients', filters.ingredients);
 			if (filters.minRating) params.append('minRating', filters.minRating);
 			if (filters.category) params.append('category', filters.category);
             if (filters.isAvailable !== undefined) params.append('isAvailable', filters.isAvailable);

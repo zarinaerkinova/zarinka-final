@@ -10,10 +10,8 @@ const Cakes = () => {
     const [searchTerm, setSearchTerm] = useState('')
     const [minPrice, setMinPrice] = useState('')
     const [maxPrice, setMaxPrice] = useState('')
-    const [selectedIngredients, setSelectedIngredients] = useState([])
+    const [selectedIngredients, setSelectedIngredients] = useState('')
     const [minRate, setMinRate] = useState('')
-
-    const availableIngredients = ['Chocolate', 'Vanilla', 'Strawberry', 'Cream', 'Fruits', 'Nuts', 'Caramel']
 
     const applyFilters = useCallback(() => {
         const filters = {
@@ -43,12 +41,8 @@ const Cakes = () => {
         applyFilters() // Apply filters immediately for all products
     }
 
-    const handleIngredientChange = (ingredient) => {
-        setSelectedIngredients(prev =>
-            prev.includes(ingredient)
-                ? prev.filter(item => item !== ingredient)
-                : [...prev, ingredient]
-        )
+    const handleIngredientChange = (e) => {
+        setSelectedIngredients(e.target.value)
     }
 
     const resetAllFilters = () => {
@@ -56,7 +50,7 @@ const Cakes = () => {
         setSearchTerm('')
         setMinPrice('')
         setMaxPrice('')
-        setSelectedIngredients([])
+        setSelectedIngredients('')
         setMinRate('')
         // Применяем фильтры, чтобы показать только доступные продукты
         fetchProducts({ isAvailable: true })
@@ -79,6 +73,18 @@ const Cakes = () => {
                 </div>
 
                 <div className="filter-section">
+                    <h3>Ингредиенты</h3>
+                    <div className="ingredients-filter">
+                        <input
+                            type="text"
+                            placeholder="Введите ингредиенты..."
+                            value={selectedIngredients}
+                            onChange={handleIngredientChange}
+                        />
+                    </div>
+                </div>
+
+                <div className="filter-section">
                     <h3>Цена</h3>
                     <div className="price-filter">
                         <input
@@ -93,24 +99,6 @@ const Cakes = () => {
                             value={maxPrice}
                             onChange={(e) => setMaxPrice(e.target.value)}
                         />
-                    </div>
-                </div>
-
-                <div className="filter-section">
-                    <h3>Ингредиенты</h3>
-                    <div className="ingredients-filter">
-                        {availableIngredients.map(ingredient => (
-                            <label key={ingredient}>
-                                <input
-                                    type="checkbox"
-                                    value={ingredient}
-                                    checked={selectedIngredients.includes(ingredient)}
-                                    onChange={() => handleIngredientChange(ingredient)}
-                                />
-                                <span className="checkmark"></span>
-                                {ingredient}
-                            </label>
-                        ))}
                     </div>
                 </div>
 

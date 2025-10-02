@@ -43,7 +43,7 @@ const CartItem = ({ item }) => {
 		const img = item.product?.image ?? item.image
 		if (!img) return '/placeholder.png'
 		if (typeof img === 'string' && img.startsWith('/uploads'))
-			return `http://localhost:5000${img}`
+			return `${import.meta.env.VITE_BACKEND_BASE_URL}${img}`
 		return img
 	})()
 

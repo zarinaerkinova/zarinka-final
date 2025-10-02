@@ -65,6 +65,12 @@ const AllOrdersOrderCard = ({
               <span className="order-card__customer-name">
                 {order.customerName || order.user?.name || 'Guest Customer'}
               </span>
+              {order.deliveryInfo?.phone && (
+                <span className="order-card__customer-phone">📞 {order.deliveryInfo.phone}</span>
+              )}
+              {order.deliveryInfo?.streetAddress && (
+                <span className="order-card__customer-address">📍 {order.deliveryInfo.streetAddress}, {order.deliveryInfo.city}</span>
+              )}
             </div>
             <div className="order-card__datetime">
               <span className="order-card__date">{orderDate}</span>
@@ -76,7 +82,7 @@ const AllOrdersOrderCard = ({
         <div className="order-card__summary">
           <div className="order-card__amount-section">
             <span className="order-card__amount-label">Total Amount</span>
-            <div className="order-card__amount">${order.totalPrice?.toFixed(2) || '0.00'}</div>
+            <div className="order-card__amount">{order.totalPrice?.toFixed(2) || '0.00'} UZS</div>
           </div>
           
           <div className="order-card__status-section">
@@ -113,6 +119,32 @@ const AllOrdersOrderCard = ({
             </h4>
           </div>
 
+          {order.deliveryInfo && (
+            <div className="order-card__delivery-info">
+              <h5 className="delivery-info__title">Delivery Information</h5>
+              <div className="delivery-info__grid">
+                {order.deliveryInfo.name && (
+                  <div className="info-item">
+                    <span className="info-label">Recipient Name</span>
+                    <span className="info-value">{order.deliveryInfo.name}</span>
+                  </div>
+                )}
+                {order.deliveryInfo.phone && (
+                  <div className="info-item">
+                    <span className="info-label">Phone</span>
+                    <span className="info-value">{order.deliveryInfo.phone}</span>
+                  </div>
+                )}
+                {order.deliveryInfo.streetAddress && (
+                  <div className="info-item">
+                    <span className="info-label">Address</span>
+                    <span className="info-value">{order.deliveryInfo.streetAddress}, {order.deliveryInfo.city}</span>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
           <div className="order-card__items-list">
             {order.items?.map((item, index) => (
               <div key={item._id || item.product?._id || `${item.name}-${index}`} className="cake-item-wrapper">
@@ -122,7 +154,7 @@ const AllOrdersOrderCard = ({
                       <span className="cake-title-main">{item.product?.name || item.name}</span>
                       <div className="cake-title-meta">
                         <span className="cake-quantity">Qty: {item.quantity}</span>
-                        <span className="cake-price">${item.price?.toFixed(2) || item.product?.price?.toFixed(2)}</span>
+                        <span className="cake-price">{item.price?.toFixed(2) || item.product?.price?.toFixed(2)} UZS</span>
                       </div>
                     </div>
                   }
@@ -134,7 +166,7 @@ const AllOrdersOrderCard = ({
                       {item.product?.image && (
                         <div className="cake-image-container">
                           <img
-                            src={`http://localhost:5000${item.product.image}`}
+                            src={`${import.meta.env.VITE_BACKEND_BASE_URL}${item.product.image}`}
                             alt={item.product.name}
                             className="cake-image"
                           />
@@ -159,7 +191,7 @@ const AllOrdersOrderCard = ({
                           <div className="info-item">
                             <span className="info-label">Price</span>
                             <span className="info-value price">
-                              ${item.price?.toFixed(2) || item.product?.price?.toFixed(2)}
+                              {item.price?.toFixed(2) || item.product?.price?.toFixed(2)} UZS
                             </span>
                           </div>
                         </div>
@@ -193,12 +225,12 @@ const AllOrdersOrderCard = ({
             <div className="order-summary-final">
               <div className="summary-item">
                 <span>Items Total:</span>
-                <span>${order.totalPrice?.toFixed(2) || '0.00'}</span>
+                <span>{order.totalPrice?.toFixed(2) || '0.00'} UZS</span>
               </div>
               <div className="summary-divider"></div>
               <div className="summary-total">
                 <span>Final Total:</span>
-                <span className="total-amount">${order.totalPrice?.toFixed(2) || '0.00'}</span>
+                <span className="total-amount">{order.totalPrice?.toFixed(2) || '0.00'} UZS</span>
               </div>
             </div>
           </div>

@@ -195,7 +195,7 @@ const EditProduct = () => {
                             </select>
                             {product.image && (
                                 <div className="image-preview">
-                                    <img src={`http://localhost:5000${product.image}`} alt='current' className="preview-image" />
+                                    <img src={`${import.meta.env.VITE_BACKEND_BASE_URL}${product.image}`} alt='current' className="preview-image" />
                                 </div>
                             )}
                             <input type='file' accept='image/*' onChange={e => setNewImage(e.target.files[0])} />

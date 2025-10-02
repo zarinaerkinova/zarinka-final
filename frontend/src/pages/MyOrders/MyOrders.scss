@@ -29,6 +29,34 @@
 			}
 	}
 
+	.no-orders-message {
+		text-align: center;
+		font-size: 1.5rem;
+		color: var(--text-muted);
+		padding: 4rem 2rem;
+		background: var(--gradient-surface);
+		border-radius: var(--radius);
+		border: 2px dashed var(--border-color);
+		margin-top: 2rem;
+		position: relative;
+		backdrop-filter: blur(10px);
+
+		&::before {
+			content: '📭';
+			display: block;
+			font-size: 4rem;
+			margin-bottom: 1.5rem;
+			opacity: 0.7;
+		}
+
+		span {
+			display: block;
+			font-size: 1rem;
+			margin-top: 1rem;
+			font-style: italic;
+		}
+	}
+
 	.order-card {
 			background: var(--gradient-surface);
 			border-radius: var(--radius);
