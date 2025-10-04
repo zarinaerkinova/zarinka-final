@@ -131,3 +131,47 @@ export const getBakerReviewsById = async (req, res) => {
 		res.status(500).json({ msg: 'Server error' })
 	}
 }
+
+// Get user's own reviews
+export const getUserReviews = async (req, res) => {
+	const userId = req.user.id
+
+	try {
+		const reviews = await Review.find({ user: userId })
+			.populate('baker', 'name bakeryName')
+			.populate('product', 'name')
+			.populate('order', 'orderNumber totalPrice')
+			.sort({ createdAt: -1 })
+
+		res.json(reviews)
+	} catch (error) {
+		console.error('Error fetching user reviews:', error)
+		res.status(500).json({ msg: 'Server error' })
+	}
+}
+
+// Delete user's own review
+export const deleteUserReview = async (req, res) => {
+	const { reviewId } = req.params
+	const userId = req.user.id
+
+	try {
+		// Find the review and check if it belongs to the current user
+		const review = await Review.findById(reviewId)
+
+		if (!review) {
+			return res.status(404).json({ msg: 'Review not found' })
+		}
+
+		// Check if the review belongs to the current user
+		if (review.user.toString() !== userId) {
+			return res.status(403).json({ msg: 'Access denied. You can only delete your own reviews.' })
+		}
+
+		await Review.findByIdAndDelete(reviewId)
+		res.json({ msg: 'Review deleted successfully' })
+	} catch (error) {
+		console.error('Error deleting user review:', error)
+		res.status(500).json({ msg: 'Server error' })
+	}
+}

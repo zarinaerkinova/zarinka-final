@@ -205,4 +205,26 @@ export const useOrderStore = create((set, get) => ({
 			setLoading(false);
 		}
 	},
+
+	// Delete user's own order
+	deleteUserOrder: async (token, orderId) => {
+		const setLoading = useLoadingStore.getState().setLoading;
+		setLoading(true);
+		try {
+			await api.delete(`/orders/user/${orderId}`, {
+				headers: { Authorization: `Bearer ${token}` },
+			})
+			// Remove the deleted order from state
+			set(state => ({
+				orders: state.orders.filter(o => o._id !== orderId),
+				customOrders: state.customOrders.filter(o => o._id !== orderId),
+			}))
+			return { success: true, message: 'Order deleted successfully' }
+		} catch (error) {
+			console.error(error.response?.data || error.message)
+			throw error
+		} finally {
+			setLoading(false);
+		}
+	},
 }))

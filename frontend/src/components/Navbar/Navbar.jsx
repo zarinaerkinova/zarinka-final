@@ -5,7 +5,6 @@ import {
 	FaQuestionCircle,
 	FaRegHeart,
 	FaRegUser,
-	FaSearch,
 	FaSignInAlt,
 	FaSignOutAlt,
 	FaUserCircle,
@@ -14,7 +13,6 @@ import { IoCartOutline } from 'react-icons/io5'
 import { Link, NavLink } from 'react-router-dom'
 import useOutsideAlerter from '../../hooks/useOutsideAlerter'
 import { useUserStore } from '../../store/User.js'
-import NotificationDropdown from '../NotificationDropdown.jsx'
 import './Navbar.css'
 import logo from '/Zarinka_logo.svg'
 
@@ -108,23 +106,21 @@ const Navbar = () => {
 										>
 											<FaUserCircle /> Profile
 										</Link>
-										<Link
-											to='/my-orders'
-											onClick={handleMenuItemClick}
-											className='dropdown-item'
-										>
-											<FaBoxOpen /> Orders
-										</Link>
-										{user.role === 'admin' && ( // Assuming 'admin' role for bakers
-											<Link
-												to='/baker-profile-settings'
-												onClick={handleMenuItemClick}
-												className='dropdown-item'
-											>
-												<FaCog /> Baker Settings
-											</Link>
-										)}
-										<Link
+										                    <Link
+										                      to='/my-orders'
+										                      onClick={handleMenuItemClick}
+										                      className='dropdown-item'
+										                    >
+										                      <FaBoxOpen /> Orders
+										                    </Link>
+										                    <Link
+										                      to='/settings'
+										                      onClick={handleMenuItemClick}
+										                      className='dropdown-item'
+										                    >
+										                      <FaCog /> Profile Settings
+										                    </Link>
+										                    										<Link
 											to='/help'
 											onClick={handleMenuItemClick}
 											className='dropdown-item'

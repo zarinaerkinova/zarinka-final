@@ -6,6 +6,7 @@ const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api'
 export const useReviewStore = create(set => ({
 	reviews: [],
 	bakerReviews: [],
+	userReviews: [],
 	loading: false,
 	error: null,
 
@@ -24,6 +25,18 @@ export const useReviewStore = create(set => ({
 		try {
 			const response = await axios.get(`${API_URL}/reviews/baker/${bakerId}`)
 			set({ bakerReviews: response.data, loading: false })
+		} catch (error) {
+			set({ error: error.message, loading: false })
+		}
+	},
+
+	fetchUserReviews: async token => {
+		set({ loading: true, error: null })
+		try {
+			const response = await axios.get(`${API_URL}/reviews/user/my-reviews`, {
+				headers: { Authorization: `Bearer ${token}` },
+			})
+			set({ userReviews: response.data, loading: false })
 		} catch (error) {
 			set({ error: error.message, loading: false })
 		}
@@ -77,6 +90,21 @@ export const useReviewStore = create(set => ({
 			})
 			set(state => ({
 				reviews: state.reviews.filter(review => review._id !== reviewId),
+				loading: false,
+			}))
+		} catch (error) {
+			set({ error: error.message, loading: false })
+		}
+	},
+
+	deleteUserReview: async (reviewId, token) => {
+		set({ loading: true, error: null })
+		try {
+			await axios.delete(`${API_URL}/reviews/user/${reviewId}`, {
+				headers: { Authorization: `Bearer ${token}` },
+			})
+			set(state => ({
+				userReviews: state.userReviews.filter(review => review._id !== reviewId),
 				loading: false,
 			}))
 		} catch (error) {

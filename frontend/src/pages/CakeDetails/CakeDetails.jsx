@@ -89,7 +89,9 @@ const CakeDetails = () => {
 			ing => ing.id === ingredientId
 		)
 		if (ingredientToRemove) {
-			setCurrentIngredients(currentIngredients.filter(ing => ing.id !== ingredientId))
+			setCurrentIngredients(
+				currentIngredients.filter(ing => ing.id !== ingredientId)
+			)
 			setAvailableIngredients([...availableIngredients, ingredientToRemove])
 		}
 	}
@@ -112,14 +114,14 @@ const CakeDetails = () => {
 			toast.error('Please select a size')
 			return
 		}
-		console.log('Customized Price:', customizedPrice);
+		console.log('Customized Price:', customizedPrice)
 		const productToAdd = {
 			...product,
 			price: customizedPrice, // Use customized price
 			customizedIngredients: currentIngredients, // Add customized ingredients
 			selectedSize,
 		}
-		console.log('Product to add to cart:', productToAdd);
+		console.log('Product to add to cart:', productToAdd)
 		try {
 			await addToCart(productToAdd, token, quantity)
 			toast.success('Added to cart!')
@@ -157,10 +159,19 @@ const CakeDetails = () => {
 		<main className='cake-details'>
 			<div className='cake-details__container'>
 				<div className='cake-details__images'>
-					<img
-						src={`${import.meta.env.VITE_API_URL}${product.image}`}
-						alt={product.name}
-					/>
+					{product.image ? (
+						<img
+							src={product.image}
+							alt={product.name || 'Baker'}
+							className='profile-image'
+						/>
+					) : (
+						<div className='profile-initials'>
+							{product.name?.charAt(0) ||
+								product.bakeryName?.charAt(0) ||
+								'B'}
+						</div>
+					)}
 				</div>
 
 				<div className='cake-details__info'>
@@ -233,7 +244,9 @@ const CakeDetails = () => {
 						</p>
 					</div>
 
-					<div className='cake-details__price'>Price: {customizedPrice} UZS</div>
+					<div className='cake-details__price'>
+						Price: {customizedPrice} UZS
+					</div>
 
 					<div className='cake-details__actions'>
 						<button className='btn-primary' onClick={handleAddToCart}>

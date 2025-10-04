@@ -6,10 +6,17 @@ import { useUserStore } from '../../store/User.js';
 const FavoriteBakerCard = ({ baker }) => {
     const { bakerFavorites, removeBakerFavorite, addBakerFavorite, token } = useUserStore();
 
-    const isFavorite = bakerFavorites.some(b => b._id === baker._id);
+    // Early return if baker is undefined or null
+    if (!baker) {
+        return null;
+    }
+
+    const isFavorite = bakerFavorites.some(b => b?._id === baker?._id);
 
     const handleToggleFavorite = () => {
         if (!token) return alert("Please log in to manage favorites.");
+        if (!baker._id) return alert("Invalid baker data.");
+        
         if (isFavorite) removeBakerFavorite(baker._id);
         else addBakerFavorite(baker);
     };

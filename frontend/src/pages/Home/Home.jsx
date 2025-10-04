@@ -22,12 +22,25 @@ import photo1 from '../../assets/photo_1_2025-10-02_23-08-39.jpg'
 import photo2 from '../../assets/photo_2_2025-10-02_23-08-39.jpg'
 import photo3 from '../../assets/photo_2025-10-02_23-09-03.jpg'
 import photo4 from '../../assets/photo_2_2025-10-02_23-08-56.jpg'
+import photo5 from '../../assets/photo_1_2025-10-02_23-08-56.jpg'
+import photo6 from '../../assets/photo_2_2025-10-04_21-54-10.jpg'
+
+// About gallery images array
+const aboutImages = [
+	{ src: photo1, alt: 'Professional baker decorating cake' },
+	{ src: photo2, alt: 'Beautiful custom wedding cake' },
+	{ src: photo3, alt: 'Colorful birthday cake collection' },
+	{ src: photo4, alt: "Baker's workspace with ingredients" },
+	{ src: photo5, alt: 'Colorful birthday cake collection' },
+	{ src: photo6, alt: "Baker's workspace with ingredients" }
+]
 
 const Home = () => {
 	const [bakers, setBakers] = useState([])
 	const [loading, setLoading] = useState(true)
 	const [error, setError] = useState(null)
 	const [favorites, setFavorites] = useState(new Set())
+	const [selectedImageIndex, setSelectedImageIndex] = useState(null)
 	const { fetchProducts, products } = useProductStore()
 
 	useEffect(() => {
@@ -49,6 +62,37 @@ const Home = () => {
 	useEffect(() => {
 		fetchProducts()
 	}, [fetchProducts])
+
+	// Handle keyboard navigation for image modal
+	useEffect(() => {
+		const handleKeyDown = (e) => {
+			if (selectedImageIndex === null) return
+
+			switch (e.key) {
+				case 'Escape':
+					setSelectedImageIndex(null)
+					break
+				case 'ArrowLeft':
+					setSelectedImageIndex(prev => 
+						prev > 0 ? prev - 1 : aboutImages.length - 1
+					)
+					break
+				case 'ArrowRight':
+					setSelectedImageIndex(prev => 
+						prev < aboutImages.length - 1 ? prev + 1 : 0
+					)
+					break
+			}
+		}
+
+		if (selectedImageIndex !== null) {
+			document.addEventListener('keydown', handleKeyDown)
+		}
+
+		return () => {
+			document.removeEventListener('keydown', handleKeyDown)
+		}
+	}, [selectedImageIndex])
 
 	const toggleFavorite = id => {
 		setFavorites(prev => {
@@ -346,30 +390,21 @@ const Home = () => {
 					</p>
 
 					<div className='about-images'>
-						<div className='about-image'>
-							<img
-								src={photo1}
-								alt='Professional baker decorating cake'
-							/>
-						</div>
-						<div className='about-image'>
-							<img
-								src={photo2}
-								alt='Beautiful custom wedding cake'
-							/>
-						</div>
-						<div className='about-image'>
-							<img
-								src={photo3}
-								alt='Colorful birthday cake collection'
-							/>
-						</div>
-						<div className='about-image'>
-							<img
-								src={photo4}
-								alt="Baker's workspace with ingredients"
-							/>
-						</div>
+						{aboutImages.map((image, index) => (
+							<div 
+								key={index}
+								className='about-image' 
+								onClick={() => setSelectedImageIndex(index)}
+							>
+								<img
+									src={image.src}
+									alt={image.alt}
+								/>
+								<div className='image-overlay'>
+									<span className='zoom-icon'>🔍</span>
+								</div>
+							</div>
+						))}
 					</div>
 				</div>
 			</section>
@@ -447,6 +482,51 @@ const Home = () => {
 					</div>
 				</div>
 			</section>
+
+			{/* Image Modal */}
+			{selectedImageIndex !== null && (
+				<div className="image-modal" onClick={() => setSelectedImageIndex(null)}>
+					<div className="modal-content" onClick={e => e.stopPropagation()}>
+						<button className="modal-close" onClick={() => setSelectedImageIndex(null)}>
+							×
+						</button>
+						
+						{/* Navigation Arrows */}
+						<button 
+							className="modal-nav modal-prev"
+							onClick={() => setSelectedImageIndex(prev => 
+								prev > 0 ? prev - 1 : aboutImages.length - 1
+							)}
+						>
+							‹
+						</button>
+						
+						<button 
+							className="modal-nav modal-next"
+							onClick={() => setSelectedImageIndex(prev => 
+								prev < aboutImages.length - 1 ? prev + 1 : 0
+							)}
+						>
+							›
+						</button>
+
+						<img 
+							src={aboutImages[selectedImageIndex].src} 
+							alt={aboutImages[selectedImageIndex].alt} 
+							className="modal-image" 
+						/>
+						
+						<div className="modal-caption">
+							{aboutImages[selectedImageIndex].alt}
+						</div>
+						
+						{/* Image counter */}
+						<div className="modal-counter">
+							{selectedImageIndex + 1} / {aboutImages.length}
+						</div>
+					</div>
+				</div>
+			)}
 		</>
 	)
 }

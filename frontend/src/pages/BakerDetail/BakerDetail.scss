@@ -962,11 +962,11 @@ body {
   gap: var(--space-2xl);
   
   &.products-grid {
-    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    grid-template-columns: repeat(3, 300px);
   }
   
   &.gallery-grid {
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    grid-template-columns: repeat(3, 300px);
   }
 }
 
@@ -1587,6 +1587,13 @@ body {
   .section-grid,
   .availability-grid {
     grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 992px) {
+  .products-grid,
+  .gallery-grid {
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 

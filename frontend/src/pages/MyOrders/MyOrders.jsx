@@ -2,12 +2,15 @@ import axios from 'axios'
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useUserStore } from '../../store/User'
+import { useOrderStore } from '../../store/Order'
 import { FaStar } from "react-icons/fa6";
+import toast from 'react-hot-toast'
 import './MyOrders.scss'
 
 const MyOrders = () => {
 	const navigate = useNavigate()
 	const { token } = useUserStore()
+	const { deleteUserOrder } = useOrderStore()
 	const [orders, setOrders] = useState([])
 	const [reviews, setReviews] = useState({})
 	const [loading, setLoading] = useState(true)
@@ -88,8 +91,33 @@ const MyOrders = () => {
 		}
 	}
 
+	const handleDeleteOrder = async (orderId) => {
+		if (!window.confirm('Вы уверены, что хотите удалить этот заказ? Это действие нельзя отменить.')) {
+			return;
+		}
+
+		try {
+			await deleteUserOrder(token, orderId);
+			
+			// Удаляем заказ из локального состояния
+			setOrders(prevOrders => prevOrders.filter(order => order._id !== orderId));
+			// Также удаляем связанные отзывы
+			setReviews(prevReviews => {
+				const newReviews = { ...prevReviews };
+				delete newReviews[orderId];
+				return newReviews;
+			});
+			
+			toast.success('Заказ успешно удален');
+		} catch (error) {
+			console.error('Error deleting order:', error);
+			toast.error('Ошибка при удалении заказа');
+		}
+	}
+
 	return (
 		<div className='orders-container'>
+			{loading && <div className='loading-indicator'></div>}
 			<h1>Мои заказы</h1>
 			{loading ? (
 				<p>Загрузка...</p>
@@ -160,6 +188,16 @@ const MyOrders = () => {
 								<p className='review-comment'>{reviews[order._id].comment}</p>
 							</div>
 						)}
+
+						{/* Delete Order Button */}
+						<div className='order-actions'>
+							<button
+								onClick={() => handleDeleteOrder(order._id)}
+								className='delete-button'
+							>
+								🗑️ Удалить заказ
+							</button>
+						</div>
 					</div>
 				))
 			)}

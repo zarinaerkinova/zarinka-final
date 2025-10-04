@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from 'react'
-import toast from 'react-hot-toast'
-import macarons from '../../assets/macarons.png'
-import './Auth.scss'
 import { jwtDecode } from 'jwt-decode'
+import React, { useEffect, useState } from 'react'
+import toast from 'react-hot-toast'
 import { useNavigate } from 'react-router-dom'
+import macarons from '../../assets/macarons.png'
 import { useUserStore } from '../../store/User'
+import './Auth.scss'
 
 const Auth = () => {
 	const [userData, setUserData] = useState({
@@ -148,7 +148,7 @@ const Auth = () => {
 		}
 	}
 
-	const selectRole = (role) => {
+	const selectRole = role => {
 		setUserData({ ...userData, role })
 		setShowRoleSelection(false)
 	}
@@ -176,16 +176,20 @@ const Auth = () => {
 
 			const formData = new FormData()
 			Object.entries(userData).forEach(([key, value]) => {
-				if (value !== undefined && value !== null && value !== '') {
-					formData.append(key, value)
-				}
+				const safeValue = value ?? ''
+				formData.append(key, safeValue)
 			})
 			if (profileImage) formData.append('image', profileImage)
 
 			response = await createUser(formData)
 		}
 
-		const { success, token, message, userData: userDataResponse } = response || {}
+		const {
+			success,
+			token,
+			message,
+			userData: userDataResponse,
+		} = response || {}
 
 		if (success) {
 			try {
@@ -252,7 +256,7 @@ const Auth = () => {
 
 					{!isLoginMode && showRoleSelection ? (
 						<div className='role-selection'>
-							<button 
+							<button
 								className='role-card customer-role'
 								onClick={() => selectRole('user')}
 							>
@@ -260,7 +264,7 @@ const Auth = () => {
 								<h3>Покупатель</h3>
 								<p>Заказывайте вкусные сладости от лучших кондитеров</p>
 							</button>
-							<button 
+							<button
 								className='role-card baker-role'
 								onClick={() => selectRole('admin')}
 							>
@@ -273,7 +277,9 @@ const Auth = () => {
 						<>
 							<div className='verification-info-box'>
 								<p>Код верификации отправлен на</p>
-								<p><strong>{userData.phone}</strong></p>
+								<p>
+									<strong>{userData.phone}</strong>
+								</p>
 								<p>Введите 6-значный код из SMS</p>
 							</div>
 							<input
@@ -326,14 +332,14 @@ const Auth = () => {
 					) : (
 						<>
 							{!isLoginMode && !userData.role && (
-								<button 
+								<button
 									className='select-role-button'
 									onClick={() => setShowRoleSelection(true)}
 								>
 									Сначала выберите роль
 								</button>
 							)}
-							
+
 							{(!isLoginMode && userData.role) || isLoginMode ? (
 								<>
 									{!isLoginMode && (
@@ -386,7 +392,9 @@ const Auth = () => {
 													placeholder='Номер телефона'
 													value={userData.phone}
 													onChange={handlePhoneChange}
-													className={`auth-input ${phoneVerified ? 'phone-verified' : ''}`}
+													className={`auth-input ${
+														phoneVerified ? 'phone-verified' : ''
+													}`}
 												/>
 												{phoneVerified && (
 													<span className='phone-status-badge verified-badge'>
@@ -394,7 +402,7 @@ const Auth = () => {
 													</span>
 												)}
 											</div>
-											
+
 											{userData.role === 'admin' && (
 												<>
 													<input
@@ -403,7 +411,10 @@ const Auth = () => {
 														name='bakeryName'
 														value={userData.bakeryName}
 														onChange={e =>
-															setUserData({ ...userData, bakeryName: e.target.value })
+															setUserData({
+																...userData,
+																bakeryName: e.target.value,
+															})
 														}
 														className='auth-input'
 													/>
@@ -413,7 +424,10 @@ const Auth = () => {
 														name='location'
 														value={userData.location}
 														onChange={e =>
-															setUserData({ ...userData, location: e.target.value })
+															setUserData({
+																...userData,
+																location: e.target.value,
+															})
 														}
 														className='auth-input'
 													/>
@@ -423,7 +437,10 @@ const Auth = () => {
 														name='priceRange'
 														value={userData.priceRange}
 														onChange={e =>
-															setUserData({ ...userData, priceRange: e.target.value })
+															setUserData({
+																...userData,
+																priceRange: e.target.value,
+															})
 														}
 														className='auth-input'
 													/>
@@ -432,17 +449,24 @@ const Auth = () => {
 
 											<div className='selected-role-display'>
 												<span className='role-label'>Выбранная роль:</span>
-												<span className={`role-badge ${userData.role === 'user' ? 'customer-badge' : 'baker-badge'}`}>
-													{userData.role === 'user' ? '🛍️ Покупатель' : '👨‍🍳 Кондитер'}
+												<span
+													className={`role-badge ${
+														userData.role === 'user'
+															? 'customer-badge'
+															: 'baker-badge'
+													}`}
+												>
+													{userData.role === 'user'
+														? '🛍️ Покупатель'
+														: '👨‍🍳 Кондитер'}
 												</span>
-												<button 
+												<button
 													className='change-role-link'
 													onClick={() => setShowRoleSelection(true)}
 												>
 													Изменить
 												</button>
 											</div>
-
 
 											<input
 												type='file'
@@ -481,12 +505,18 @@ const Auth = () => {
 								setShowRoleSelection(false)
 								setUserData({
 									name: '',
+									bakeryName: '',
 									email: '',
 									password: '',
 									role: '',
 									bio: '',
 									phone: '',
+									location: '',
+									priceRange: '',
 								})
+								setPasswordConfirm('')
+								setProfileImage(null)
+								setSmsCode('')
 							}}
 						>
 							{isLoginMode

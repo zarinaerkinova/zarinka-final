@@ -162,13 +162,12 @@ router.post('/custom', auth, async (req, res) => {
   }
 });
 
-// Get user's own orders (only accepted/processed orders)
+// Get user's own orders (all orders including pending)
 router.get('/my-orders', auth, async (req, res) => {
   try {
     const orders = await Order.find({
       user: req.user.id,
-      status: { $ne: 'pending' },
-    }).populate('items.product');
+    }).populate('items.product').sort({ createdAt: -1 });
     res.json(orders);
   } catch (err) {
     console.error(err);
@@ -325,7 +324,38 @@ router.get('/:orderId', auth, async (req, res) => {
   }
 });
 
-// Delete an order
+// Delete user's own order (only for customers)
+router.delete('/user/:orderId', auth, async (req, res) => {
+  try {
+    const { orderId } = req.params;
+    const userId = req.user.id;
+
+    // Find the order and check if it belongs to the current user
+    const order = await Order.findById(orderId);
+
+    if (!order) {
+      return res.status(404).json({ message: 'Order not found' });
+    }
+
+    // Check if the order belongs to the current user
+    if (order.customer.toString() !== userId) {
+      return res.status(403).json({ message: 'Access denied. You can only delete your own orders.' });
+    }
+
+    // Check if order can be deleted (optional: only allow deletion of certain statuses)
+    // if (order.status === 'shipped' || order.status === 'delivered') {
+    //   return res.status(400).json({ message: 'Cannot delete orders that are shipped or delivered' });
+    // }
+
+    await Order.findByIdAndDelete(orderId);
+    res.json({ message: 'Order deleted successfully' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: err.message });
+  }
+});
+
+// Delete an order (only for bakers)
 router.delete('/:orderId', auth, onlyBakers, async (req, res) => {
   try {
     const { orderId } = req.params;

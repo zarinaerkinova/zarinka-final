@@ -6,18 +6,18 @@ import { fileURLToPath } from 'url'
 import { connectDB } from './config/db.js'
 
 // Routes
-import authRoutes from './routes/auth.js'
-import bakerProfileRoutes from './routes/bakerProfile.js' // Import bakerProfileRoutes
 import cartRoutes from './routes/Cart.js'
 import categoryRoutes from './routes/Category.js'
-import contactRoutes from './routes/contact.js'
 import favoriteRoutes from './routes/Favorite.js'
 import notificationRoutes from './routes/Notification.js'
-import availabilityRoutes from './routes/availability.js'
 import orderRoutes from './routes/Order.js'
 import productRoutes from './routes/Product.js'
+import uploadRoute from './routes/Upload.js'
+import authRoutes from './routes/auth.js'
+import availabilityRoutes from './routes/availability.js'
+import bakerProfileRoutes from './routes/bakerProfile.js' // Import bakerProfileRoutes
+import contactRoutes from './routes/contact.js'
 import reviewRoutes from './routes/review.js' // Import reviewRoutes
-import uploadRoute from './routes/upload.js'
 // server.js or app.js
 
 const __filename = fileURLToPath(import.meta.url)
@@ -26,17 +26,22 @@ dotenv.config({ path: path.join(__dirname, '.env') })
 
 const app = express()
 
-// Serve uploads folder
+// Serve uploads folder (with CORS preflight handled globally below)
 app.use('/uploads', express.static(path.join(__dirname, '..', 'uploads')))
 console.log('Serving static files from:', path.join(__dirname, '..', 'uploads'))
 
 // Middleware
-const allowedOrigins = [process.env.FRONTEND_URL || 'http://localhost:5173']
+const allowedOrigins = [
+	process.env.FRONTEND_URL || 'http://localhost:5173',
+	'http://localhost:3000',
+	'http://127.0.0.1:5173',
+	'https://zarinka-final-1.onrender.com',
+]
 app.use(
 	cors({
 		origin: function (origin, callback) {
 			if (!origin) return callback(null, true)
-			if (allowedOrigins.includes(origin)) return callback(null, true)
+			if (allowedOrigins.some(o => o === origin)) return callback(null, true)
 			return callback(new Error('Not allowed by CORS'))
 		},
 		credentials: true,

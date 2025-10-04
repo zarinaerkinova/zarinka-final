@@ -79,7 +79,11 @@ const EditProfile = () => {
 			setUnavailableDates(
 				userInfo.unavailableDates?.map(date => new Date(date)) || []
 			)
-            setGalleryImages(userInfo.gallery ? userInfo.gallery.map(url => ({ id: url, url: url, file: null })) : []);
+            setGalleryImages(userInfo.gallery ? userInfo.gallery.map(url => ({ 
+                id: url, 
+                url: url.startsWith('http') ? url : `${import.meta.env.VITE_BACKEND_BASE_URL}${url}`, 
+                file: null 
+            })) : []);
 			if (userInfo.settings) {
 				setSettings(prev => ({
 					...prev,
@@ -227,7 +231,11 @@ const EditProfile = () => {
 					location: updatedUserInfo.location || '',
 				})
 				setCurrentPhotoUrl(updatedUserInfo.image || '') // Update current photo URL
-				setGalleryImages(updatedUserInfo.gallery ? updatedUserInfo.gallery.map(url => ({ id: url, url: url, file: null })) : [])
+				setGalleryImages(updatedUserInfo.gallery ? updatedUserInfo.gallery.map(url => ({ 
+                    id: url, 
+                    url: url.startsWith('http') ? url : `${import.meta.env.VITE_BACKEND_BASE_URL}${url}`, 
+                    file: null 
+                })) : [])
 				setImageFile(null) // Clear selected new photo after successful upload
 				
 				// Update preview to show the saved image

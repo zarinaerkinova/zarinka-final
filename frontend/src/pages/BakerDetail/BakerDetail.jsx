@@ -141,7 +141,9 @@ const BakerDetail = () => {
         )
     }
 
-    const imageUrl = selectedBaker.image ? `${import.meta.env.VITE_API_URL}${selectedBaker.image}` : null
+    const imageUrl = selectedBaker.image ? 
+        (selectedBaker.image.startsWith('http') ? selectedBaker.image : `${import.meta.env.VITE_BACKEND_BASE_URL}${selectedBaker.image}`) : 
+        null
     const rating = calculateRating()
 
     return (
@@ -154,7 +156,7 @@ const BakerDetail = () => {
                 
                 <div className="hero-content">
                     <div className="baker-profile">
-                        <div className="profile-image-container">
+                        <div className="profile-image-container" onClick={() => setSelectedGalleryImage(imageUrl)}>
                             {imageUrl ? (
                                 <img src={imageUrl} alt={selectedBaker.bakeryName || 'Baker'} className="profile-image" />
                             ) : (
@@ -339,10 +341,10 @@ const BakerDetail = () => {
                                     <div 
                                         key={index} 
                                         className="gallery-item"
-                                        onClick={() => setSelectedGalleryImage(`${import.meta.env.VITE_API_URL}${imgUrl}`)}
+                                        onClick={() => setSelectedGalleryImage(imgUrl.startsWith('http') ? imgUrl : `${import.meta.env.VITE_BACKEND_BASE_URL}${imgUrl}`)}
                                     >
                                         <img
-                                            src={`${import.meta.env.VITE_API_URL}${imgUrl}`}
+                                            src={imgUrl.startsWith('http') ? imgUrl : `${import.meta.env.VITE_BACKEND_BASE_URL}${imgUrl}`}
                                             alt={`Gallery ${index + 1}`}
                                             className="gallery-image"
                                         />

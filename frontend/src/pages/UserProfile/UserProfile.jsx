@@ -2,193 +2,212 @@ import React, { useEffect, useState } from 'react';
 import './UserProfile.scss';
 import { useUserStore } from '../../store/User';
 import { useOrderStore } from '../../store/Order';
+import { useReviewStore } from '../../store/review';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import OrderCard from '../../components/OrderCard/OrderCard';
 import Card from '../../components/Card.jsx';
+import { FaStar } from "react-icons/fa6";
 import './UserProfile.scss';
 
 const UserProfile = () => {
-    const { 
-        user, 
-        userInfo, 
-        errorMessage, 
-        isLoadingProfile, 
-        fetchProfile, 
-        logoutUser, 
-        updateProfile, 
-        favorites, 
-        fetchFavorites, 
-        token 
-    } = useUserStore();
+        const {
+            user,
+            userInfo,
+            errorMessage,
+            isLoadingProfile,
+            fetchProfile,
+            logoutUser,
+            updateUserProfile,
+            favorites,
+            fetchFavorites,
+            token
+        } = useUserStore();
+        
+        const { orders, fetchOrders, deleteUserOrder } = useOrderStore();
+        const { userReviews, fetchUserReviews, deleteUserReview, loading: reviewsLoading } = useReviewStore();
+        const navigate = useNavigate();
     
-    const { orders, fetchOrders } = useOrderStore();
-    const navigate = useNavigate();
+        const [isEditing, setIsEditing] = useState(false);
+        const [editedName, setEditedName] = useState('');
+        const [editedPhone, setEditedPhone] = useState('');
+        const [editedAddress, setEditedAddress] = useState('');
+            const [isUpdating, setIsUpdating] = useState(false);
 
-    const [isEditing, setIsEditing] = useState(false);
-    const [editedName, setEditedName] = useState('');
-    const [editedPhone, setEditedPhone] = useState('');
-    const [editedAddress, setEditedAddress] = useState('');
-        const [isUpdating, setIsUpdating] = useState(false);
-	useEffect(() => {
-		const fetchOrders = async () => {
-			const { data } = await axios.get('/api/order/my-orders', {
-				headers: { Authorization: `Bearer ${token}` },
-			})
-			setOrders(data)
-		}
-		fetchOrders()
-	}, [token])
-
-	const getStatusLabel = status => {
-		switch (status) {
-			case 'pending':
-				return 'Ожидает'
-			case 'accepted':
-				return 'Принят'
-			case 'confirmed':
-				return 'Готовка'
-			case 'shipped':
-				return 'Доставка'
-			case 'delivered':
-				return 'Доставлен'
-			case 'declined':
-				return 'Отклонен'
-			default:
-				return status
-		}
-	}
-
-	const getProgress = status => {
-		switch (status) {
-			case 'accepted':
-				return 25
-			case 'confirmed':
-				return 50
-			case 'shipped':
-				return 75
-			case 'delivered':
-				return 100
-			default:
-				return 0
-		}
-	}
-
-    useEffect(() => {
-        fetchProfile();
-    }, [fetchProfile]);
-
-    useEffect(() => {
-        console.log('User token in UserProfile useEffect:', user?.token);
-        if (user?.token) {
-            fetchOrders(user.token);
-            fetchFavorites();
+    const getStatusLabel = status => {
+        switch (status) {
+            case 'pending':
+                return 'Ожидает'
+            case 'accepted':
+                return 'Принят'
+            case 'confirmed':
+                return 'Готовка'
+            case 'shipped':
+                return 'Доставка'
+            case 'delivered':
+                return 'Доставлен'
+            case 'declined':
+                return 'Отклонен'
+            default:
+                return status
         }
-    }, [user, fetchOrders, fetchFavorites]);
+    }
 
-    useEffect(() => {
-        if (userInfo) {
-            setEditedName(userInfo.name || '');
-            setEditedPhone(userInfo.phone || '');
-            setEditedAddress(userInfo.address || '');
+    const getProgress = status => {
+        switch (status) {
+            case 'accepted':
+                return 25
+            case 'confirmed':
+                return 50
+            case 'shipped':
+                return 75
+            case 'delivered':
+                return 100
+            default:
+                return 0
         }
-    }, [userInfo]);
+    }
 
-    const handleLogout = () => {
-        toast((t) => (
-            <div style={{ textAlign: 'center' }}>
-                <p style={{ margin: '0 0 12px 0', fontWeight: '500' }}>
-                    Вы уверены, что хотите выйти?
-                </p>
-                <div style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}>
-                    <button
-                        style={{
-                            padding: '8px 16px',
-                            border: 'none',
-                            borderRadius: '6px',
-                            background: '#ef4444',
-                            color: 'white',
-                            fontWeight: '500',
-                            cursor: 'pointer'
-                        }}
-                        onClick={() => {
-                            toast.dismiss(t.id);
-                            logoutUser();
-                            navigate('/register');
-                        }}
-                    >
-                        Выйти
-                    </button>
-                    <button
-                        style={{
-                            padding: '8px 16px',
-                            border: '1px solid #d1d5db',
-                            borderRadius: '6px',
-                            background: 'white',
-                            color: '#374151',
-                            fontWeight: '500',
-                            cursor: 'pointer'
-                        }}
-                        onClick={() => toast.dismiss(t.id)}
-                    >
-                        Отмена
-                    </button>
-                </div>
-            </div>
-        ), {
-            duration: 5000,
-        });
-    };
-
-    const handleEditProfile = () => {
-        setIsEditing(true);
-    };
-
-    const handleCancelEdit = () => {
-        setIsEditing(false);
-        // Восстанавливаем исходные значения
-        setEditedName(userInfo?.name || '');
-        setEditedPhone(userInfo?.phone || '');
-        setEditedAddress(userInfo?.address || '');
-    };
-
-    const handleSaveChanges = async () => {
-        if (!editedName.trim()) {
-            toast.error('Имя не может быть пустым');
+    const handleDeleteOrder = async (orderId) => {
+        if (!window.confirm('Вы уверены, что хотите удалить этот заказ? Это действие нельзя отменить.')) {
             return;
         }
 
-        setIsUpdating(true);
-        
-        const result = await updateProfile({
-            name: editedName.trim(),
-            phone: editedPhone.trim(),
-            address: editedAddress.trim(),
-        });
-
-        setIsUpdating(false);
-
-        if (result.success) {
-            toast.success("Профиль успешно обновлен!", {
-                icon: '✅',
-                duration: 3000,
-            });
-            setIsEditing(false);
-            fetchProfile(); // Обновляем данные профиля
-        } else {
-            toast.error(result.message || "Не удалось обновить профиль.", {
-                icon: '❌',
-                duration: 4000,
-            });
+        try {
+            await deleteUserOrder(token, orderId);
+            toast.success('Заказ успешно удален');
+        } catch (error) {
+            console.error('Error deleting order:', error);
+            toast.error('Ошибка при удалении заказа');
         }
-    };
+    }
 
-    const handleAddressSelect = () => {
-        toast('Функция выбора адреса будет добавлена в будущих обновлениях', {
-            icon: '🗺️',
-            duration: 3000,
-        });
-    };
+    const handleDeleteReview = async (reviewId) => {
+        if (!window.confirm('Вы уверены, что хотите удалить этот отзыв? Это действие нельзя отменить.')) {
+            return;
+        }
+
+        try {
+            await deleteUserReview(reviewId, token);
+            toast.success('Отзыв успешно удален');
+        } catch (error) {
+            console.error('Error deleting review:', error);
+            toast.error('Ошибка при удалении отзыва');
+        }
+    }
+    
+        useEffect(() => {
+            fetchProfile();
+        }, [fetchProfile]);
+    
+        useEffect(() => {
+            console.log('Token in UserProfile useEffect:', token);
+            console.log('User in UserProfile useEffect:', user);
+            if (token) {
+                fetchOrders(token);
+                fetchFavorites();
+                fetchUserReviews(token);
+            }
+        }, [token, fetchOrders, fetchFavorites, fetchUserReviews]);
+    
+        useEffect(() => {
+            if (userInfo) {
+                setEditedName(userInfo.name || '');
+                setEditedPhone(userInfo.phone || '');
+                setEditedAddress(userInfo.address || '');
+            }
+        }, [userInfo]);
+    
+        const handleLogout = () => {
+            toast((t) => (
+                <div style={{ textAlign: 'center' }}>
+                    <p style={{ margin: '0 0 12px 0', fontWeight: '500' }}>
+                        Вы уверены, что хотите выйти?
+                    </p>
+                    <div style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}>
+                        <button
+                            style={{
+                                padding: '8px 16px',
+                                border: 'none',
+                                borderRadius: '6px',
+                                background: '#ef4444',
+                                color: 'white',
+                                fontWeight: '500',
+                                cursor: 'pointer'
+                            }}
+                            onClick={() => {
+                                toast.dismiss(t.id);
+                                logoutUser();
+                                navigate('/register');
+                            }}
+                        >
+                            Выйти
+                        </button>
+                        <button
+                            style={{
+                                padding: '8px 16px',
+                                border: '1px solid #d1d5db',
+                                borderRadius: '6px',
+                                background: 'white',
+                                color: '#374151',
+                                fontWeight: '500',
+                                cursor: 'pointer'
+                            }}
+                            onClick={() => toast.dismiss(t.id)}
+                        >
+                            Отмена
+                        </button>
+                    </div>
+                </div>
+            ), {
+                duration: 5000,
+            });
+        };
+    
+        const handleEditProfile = () => {
+            setIsEditing(true);
+        };
+    
+        const handleCancelEdit = () => {
+            setIsEditing(false);
+            // Восстанавливаем исходные значения
+            setEditedName(userInfo?.name || '');
+            setEditedPhone(userInfo?.phone || '');
+            setEditedAddress(userInfo?.address || '');
+        };
+    
+        const handleSaveChanges = async () => {
+            if (!editedName.trim()) {
+                toast.error('Имя не может быть пустым');
+                return;
+            }
+    
+            setIsUpdating(true);
+            
+            const formData = new FormData();
+            formData.append('name', editedName.trim());
+            formData.append('phone', editedPhone.trim());
+            formData.append('address', editedAddress.trim());
+    
+            const result = await updateUserProfile(formData);
+    
+            setIsUpdating(false);
+    
+                    if (result.success) {
+                        toast.success("Профиль успешно обновлен!", {
+                            icon: '✅',
+                            duration: 3000,
+                        });
+                        setIsEditing(false);
+                        // Update the user info in the store
+                        useUserStore.setState({ userInfo: result.userData });
+                    } else {                toast.error(result.message || "Не удалось обновить профиль.", {
+                    icon: '❌',
+                    duration: 4000,
+                });
+            }
+        };
+
 
     if (isLoadingProfile) {
         return (
@@ -271,12 +290,6 @@ const UserProfile = () => {
                             ) : (
                                 <>
                                     <p>{userInfo.address || 'Не указан'}</p>
-                                    <button 
-                                        className="btn-secondary" 
-                                        onClick={handleAddressSelect}
-                                    >
-                                        Выбрать адрес
-                                    </button>
                                 </>
                             )}
                         </div>
@@ -311,83 +324,210 @@ const UserProfile = () => {
                 {/* Секция заказов */}
                 <div className="user-profile__section user-profile__orders">
                     <h3>Ваши заказы</h3>
-                    {orders.map(order => (
-				<div
-					key={order._id}
-					className='order-card'
-					style={{
-						background: '#fff',
-						borderRadius: 12,
-						padding: '1rem 1.25rem',
-						boxShadow: '0 2px 10px rgba(0,0,0,0.06)',
-						marginBottom: '1rem',
-					}}
-				>
-					<h3 style={{ marginTop: 0, marginBottom: 8 }}>Заказ #{order._id}</h3>
-					<p style={{ margin: '4px 0' }}>
-						Статус:{' '}
-						<span
-							style={{
-								display: 'inline-block',
-								padding: '2px 8px',
-								borderRadius: 12,
-								fontSize: 12,
-								background:
-									order.status === 'declined'
-										? '#dc3545'
-										: order.status === 'delivered'
-										? '#28a745'
-										: order.status === 'shipped'
-										? '#17a2b8'
-										: order.status === 'confirmed'
-										? '#ffc107'
-										: order.status === 'accepted'
-										? '#0dcaf0'
-										: '#e0e0e0',
-								color: order.status === 'confirmed' ? '#000' : '#fff',
-							}}
-						>
-							{getStatusLabel(order.status)}
-						</span>
-					</p>
+                    {console.log('Orders in UserProfile render:', orders)}
+                    {console.log('Orders length:', orders?.length)}
+                    {orders && orders.length > 0 ? (
+                        orders.map(order => (
+                            <div
+                                key={order._id}
+                                className='order-card'
+                                style={{
+                                    background: '#fff',
+                                    borderRadius: 12,
+                                    padding: '1rem 1.25rem',
+                                    boxShadow: '0 2px 10px rgba(0,0,0,0.06)',
+                                    marginBottom: '1rem',
+                                }}
+                            >
+                                <h3 style={{ marginTop: 0, marginBottom: 8 }}>Заказ #{order._id}</h3>
+                                <p style={{ margin: '4px 0' }}>
+                                    Статус:{' '}
+                                    <span
+                                        style={{
+                                            display: 'inline-block',
+                                            padding: '2px 8px',
+                                            borderRadius: 12,
+                                            fontSize: 12,
+                                            background:
+                                                order.status === 'declined'
+                                                    ? '#dc3545'
+                                                    : order.status === 'delivered'
+                                                    ? '#28a745'
+                                                    : order.status === 'shipped'
+                                                    ? '#17a2b8'
+                                                    : order.status === 'confirmed'
+                                                    ? '#ffc107'
+                                                    : order.status === 'accepted'
+                                                    ? '#0dcaf0'
+                                                    : '#e0e0e0',
+                                            color: order.status === 'confirmed' ? '#000' : '#fff',
+                                        }}
+                                    >
+                                        {getStatusLabel(order.status)}
+                                    </span>
+                                </p>
 
-					<div
-						style={{
-							height: 8,
-							background: '#eee',
-							borderRadius: 8,
-							overflow: 'hidden',
-							margin: '8px 0 12px',
-						}}
-					>
-						<div
-							style={{
-								width: `${getProgress(order.status)}%`,
-								height: '100%',
-								background: '#28a745',
-								transition: 'width 0.3s ease',
-							}}
-						/>
-					</div>
+                                <div
+                                    style={{
+                                        height: 8,
+                                        background: '#eee',
+                                        borderRadius: 8,
+                                        overflow: 'hidden',
+                                        margin: '8px 0 12px',
+                                    }}
+                                >
+                                    <div
+                                        style={{
+                                            width: `${getProgress(order.status)}%`,
+                                            height: '100%',
+                                            background: '#28a745',
+                                            transition: 'width 0.3s ease',
+                                        }}
+                                    />
+                                </div>
 
-					<ul style={{ paddingLeft: 18, margin: '8px 0 12px' }}>
-						{(order.items || []).map(item => (
-							<li key={item.product?._id}>
-								{item.product?.name} × {item.quantity}
-							</li>
-						))}
-					</ul>
-					<p style={{ margin: 0 }}>Итого: {order.totalPrice} ₽</p>
-				</div>
-			))}
+                                <ul style={{ paddingLeft: 18, margin: '8px 0 12px' }}>
+                                    {(order.items || []).map(item => (
+                                        <li key={item.product?._id}>
+                                            {item.product?.name} × {item.quantity}
+                                        </li>
+                                    ))}
+                                </ul>
+                                
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '12px' }}>
+                                    <p style={{ margin: 0, fontWeight: 'bold', fontSize: '1.1rem' }}>Итого: {order.totalPrice} ₽</p>
+                                    <button
+                                        onClick={() => handleDeleteOrder(order._id)}
+                                        style={{
+                                            background: '#dc3545',
+                                            color: 'white',
+                                            border: 'none',
+                                            borderRadius: '6px',
+                                            padding: '6px 12px',
+                                            fontSize: '12px',
+                                            cursor: 'pointer',
+                                            transition: 'all 0.2s ease',
+                                        }}
+                                        onMouseOver={(e) => {
+                                            e.target.style.background = '#c82333';
+                                            e.target.style.transform = 'translateY(-1px)';
+                                        }}
+                                        onMouseOut={(e) => {
+                                            e.target.style.background = '#dc3545';
+                                            e.target.style.transform = 'translateY(0)';
+                                        }}
+                                    >
+                                        🗑️ Удалить
+                                    </button>
+                                </div>
+                            </div>
+                        ))
+                    ) : (
+                        <div className="empty-message" style={{ '&::before': { content: '"📝"' } }}>
+                            У вас пока нет заказов.
+                        </div>
+                    )}
                 </div>
 
                 {/* Секция отзывов */}
                 <div className="user-profile__section user-profile__reviews">
                     <h3>Ваши отзывы</h3>
-                    <div className="empty-message" style={{ '&::before': { content: '"📝"' } }}>
-                        Отзывы будут отображаться здесь после их добавления.
-                    </div>
+                    {reviewsLoading ? (
+                        <div className="loading-message">Загрузка отзывов...</div>
+                    ) : userReviews && userReviews.length > 0 ? (
+                        <div className="reviews-list">
+                            {userReviews.map((review) => (
+                                <div
+                                    key={review._id}
+                                    className="review-card"
+                                    style={{
+                                        background: '#fff',
+                                        borderRadius: 12,
+                                        padding: '1.5rem',
+                                        boxShadow: '0 2px 10px rgba(0,0,0,0.06)',
+                                        marginBottom: '1rem',
+                                        border: '1px solid #e0e0e0',
+                                    }}
+                                >
+                                    <div className="review-header" style={{ marginBottom: '1rem' }}>
+                                        <h4 style={{ margin: 0, color: '#333', fontSize: '1.1rem' }}>
+                                            {review.product?.name || 'Продукт'}
+                                        </h4>
+                                        <p style={{ margin: '0.25rem 0', color: '#666', fontSize: '0.9rem' }}>
+                                            Пекарь: {review.baker?.bakeryName || review.baker?.name || 'Неизвестно'}
+                                        </p>
+                                        {review.order && (
+                                            <p style={{ margin: 0, color: '#888', fontSize: '0.8rem' }}>
+                                                Заказ на сумму: {review.order.totalPrice} ₽
+                                            </p>
+                                        )}
+                                    </div>
+                                    
+                                    <div className="review-rating" style={{ marginBottom: '0.75rem' }}>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                                            {[...Array(5)].map((_, i) => (
+                                                <FaStar 
+                                                    key={i} 
+                                                    style={{
+                                                        color: i < review.rating ? '#ffc107' : '#e0e0e0',
+                                                        fontSize: '1rem'
+                                                    }}
+                                                />
+                                            ))}
+                                            <span style={{ marginLeft: '0.5rem', fontSize: '0.9rem', color: '#666' }}>
+                                                {review.rating}/5
+                                            </span>
+                                        </div>
+                                    </div>
+                                    
+                                    {review.comment && (
+                                        <div className="review-comment">
+                                            <p style={{ margin: 0, color: '#555', lineHeight: 1.5, fontStyle: 'italic' }}>
+                                                "{review.comment}"
+                                            </p>
+                                        </div>
+                                    )}
+                                    
+                                    <div className="review-date" style={{ marginTop: '1rem', paddingTop: '0.75rem', borderTop: '1px solid #f0f0f0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                        <small style={{ color: '#888' }}>
+                                            {new Date(review.createdAt).toLocaleDateString('ru-RU', {
+                                                year: 'numeric',
+                                                month: 'long',
+                                                day: 'numeric'
+                                            })}
+                                        </small>
+                                        <button
+                                            onClick={() => handleDeleteReview(review._id)}
+                                            style={{
+                                                background: '#dc3545',
+                                                color: 'white',
+                                                border: 'none',
+                                                borderRadius: '4px',
+                                                padding: '4px 8px',
+                                                fontSize: '11px',
+                                                cursor: 'pointer',
+                                                transition: 'all 0.2s ease',
+                                            }}
+                                            onMouseOver={(e) => {
+                                                e.target.style.background = '#c82333';
+                                                e.target.style.transform = 'translateY(-1px)';
+                                            }}
+                                            onMouseOut={(e) => {
+                                                e.target.style.background = '#dc3545';
+                                                e.target.style.transform = 'translateY(0)';
+                                            }}
+                                        >
+                                            🗑️ Удалить
+                                        </button>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    ) : (
+                        <div className="empty-message" style={{ '&::before': { content: '"📝"' } }}>
+                            У вас пока нет отзывов. Оставьте отзыв после получения заказа.
+                        </div>
+                    )}
                 </div>
 
                 {/* Секция избранного */}
