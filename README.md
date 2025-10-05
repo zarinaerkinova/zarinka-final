@@ -55,22 +55,6 @@ Visit our live platform: **[zarinka-bakery-platform.vercel.app](https://v0-zarin
 - **GitHub Actions** - CI/CD pipeline
 - **Git** - Version control system
 
-## 📁 Project Structure
-
-zarinka-final/
-├── 🎨 frontend/ # React frontend application
-│ ├── src/
-│ ├── public/
-│ └── package.json
-├── ⚙️ backend/ # Express.js backend API
-│ ├── models/
-│ ├── routes/
-│ ├── middleware/
-│ └── server.js
-├── 📁 uploads/ # Static file storage
-├── 📄 README.md # Project documentation
-└── 🔧 package.json # Root package configuration
-
 ## 🏃‍♂️ Quick Start
 
 ### Prerequisites
@@ -193,3 +177,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 [![Website](https://img.shields.io/badge/Visit-Website-blue?style=for-the-badge&logo=world)](https://v0-zarinka-bakery-platform.vercel.app/)
 
 </div>
+
