@@ -35,7 +35,10 @@ const aboutImages = [
 	{ src: photo6, alt: "Baker's workspace with ingredients" }
 ]
 
+import { useTranslation } from 'react-i18next';
+
 const Home = () => {
+	const { t } = useTranslation();
 	const [bakers, setBakers] = useState([])
 	const [loading, setLoading] = useState(true)
 	const [error, setError] = useState(null)
@@ -272,20 +275,18 @@ const Home = () => {
 			{/* Hero Section - Promotions & Intro */}
 			<div className='hero'>
 				<div className='container'>
-					<h1>Custom Cakes Made with Love</h1>
+					<h1>{t('home_hero_title')}</h1>
 					<p>
-						Connect with local artisan bakers and create the perfect cake for
-						your special moments. From custom designs to ready-made delights, we
-						bring sweetness to your celebrations.
+						{t('home_hero_subtitle')}
 					</p>
 					<div className='btns'>
 						<Link to='/custom'>
 							<button>
-								<LuCake /> Build Custom Cake
+								<LuCake /> {t('home_build_custom_cake')}
 							</button>
 						</Link>
 						<Link to='/cakes'>
-							<button>Browse Ready-Made</button>
+							<button>{t('home_browse_ready_made')}</button>
 						</Link>
 					</div>
 				</div>
@@ -295,9 +296,9 @@ const Home = () => {
 			<section className='cakes'>
 				<div className='container'>
 					<div className='top'>
-						<h2>Popular Cakes</h2>
+						<h2>{t('home_popular_cakes')}</h2>
 						<Link to={'/cakes'} className='viewAll'>
-							View All Cakes
+							{t('home_view_all_cakes')}
 						</Link>
 					</div>
 
@@ -328,15 +329,13 @@ const Home = () => {
 			{/* Constructor Section */}
 			<section className='constructor-section'>
 				<div className='container'>
-					<h2>Build Your Dream Cake</h2>
+					<h2>{t('home_constructor_title')}</h2>
 					<p>
-						Use our interactive cake constructor to design the perfect cake for
-						your special occasion. Choose flavors, decorations, and personalize
-						every detail with our talented bakers.
+						{t('home_constructor_subtitle')}
 					</p>
 					<Link to='/cakes' className='constructor-link'>
 						<LuCake />
-							Start Building Your Cake
+							{t('home_start_building')}
 					</Link>
 				</div>
 			</section>
@@ -345,9 +344,9 @@ const Home = () => {
 			<section className='bakers_home'>
 				<div className='container'>
 					<div className='top'>
-						<h2>Featured Bakers</h2>
+						<h2>{t('home_featured_bakers')}</h2>
 						<Link to={'/bakers'} className='viewAll'>
-							View All Bakers
+							{t('home_view_all_bakers')}
 						</Link>
 					</div>
 
@@ -382,11 +381,9 @@ const Home = () => {
 			{/* About Section */}
 			<section className='about-section'>
 				<div className='container'>
-					<h2>About Zarinka</h2>
+					<h2>{t('home_about_title')}</h2>
 					<p className='intro-text'>
-						We are passionate about connecting cake lovers with talented local
-						bakers. Our platform brings together creativity, quality, and
-						convenience to make every celebration sweeter and more memorable.
+						{t('home_about_subtitle')}
 					</p>
 
 					<div className='about-images'>
@@ -412,10 +409,9 @@ const Home = () => {
 			{/* Why Choose Us Section */}
 			<section className='why'>
 				<div className='container'>
-					<h2>Why Choose Zarinka?</h2>
+					<h2>{t('home_why_choose_title')}</h2>
 					<p className='context'>
-						We connect you with passionate local bakers who create exceptional
-						custom cakes and baked goods
+						{t('home_why_choose_subtitle')}
 					</p>
 
 					<div className='features'>
@@ -423,60 +419,54 @@ const Home = () => {
 							<div className='img'>
 								<LuChefHat />
 							</div>
-							<h3>Expert Bakers</h3>
+							<h3>{t('home_feature_expert_bakers_title')}</h3>
 							<p>
-								Skilled artisan bakers with years of experience and passion for
-								their craft, ensuring every cake is a masterpiece
+								{t('home_feature_expert_bakers_subtitle')}
 							</p>
 						</div>
 						<div className='feature'>
 							<div className='img'>
 								<LuCake />
 							</div>
-							<h3>Custom Designs</h3>
+							<h3>{t('home_feature_custom_designs_title')}</h3>
 							<p>
-								Create unique cakes tailored to your vision with our interactive
-								cake builder and personalization options
+								{t('home_feature_custom_designs_subtitle')}
 							</p>
 						</div>
 						<div className='feature'>
 							<div className='img'>
 								<MdAccessTime />
 							</div>
-							<h3>Real-time Tracking</h3>
+							<h3>{t('home_feature_real_time_tracking_title')}</h3>
 							<p>
-								Follow your order from preparation to completion with live
-								progress updates and delivery notifications
+								{t('home_feature_real_time_tracking_subtitle')}
 							</p>
 						</div>
 						<div className='feature'>
 							<div className='img'>
 								<LuUsers />
 							</div>
-							<h3>Community Focused</h3>
+							<h3>{t('home_feature_community_focused_title')}</h3>
 							<p>
-								Supporting local businesses while bringing communities together
-								through the joy of exceptional baked goods
+								{t('home_feature_community_focused_subtitle')}
 							</p>
 						</div>
 						<div className='feature'>
 							<div className='img'>
 								<LuAward />
 							</div>
-							<h3>Quality Guaranteed</h3>
+							<h3>{t('home_feature_quality_guaranteed_title')}</h3>
 							<p>
-								Every baker on our platform is vetted for quality, reliability,
-								and commitment to using premium ingredients
+								{t('home_feature_quality_guaranteed_subtitle')}
 							</p>
 						</div>
 						<div className='feature'>
 							<div className='img'>
 								<LuTrendingUp />
 							</div>
-							<h3>Competitive Pricing</h3>
+							<h3>{t('home_feature_competitive_pricing_title')}</h3>
 							<p>
-								Fair, transparent pricing with no hidden fees, plus special
-								offers and loyalty rewards for regular customers
+								{t('home_feature_competitive_pricing_subtitle')}
 							</p>
 						</div>
 					</div>

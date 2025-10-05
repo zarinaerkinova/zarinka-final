@@ -1,9 +1,11 @@
 import React, { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useOrderStore } from '../../store/Order'
 import { useUserStore } from '../../store/User'
 import './DashboardOrderCard.scss'
 
 const DashboardOrderCard = ({ order }) => {
+	const { t } = useTranslation()
 	const { updateOrderStatus, deleteOrder } = useOrderStore()
 	const { token } = useUserStore()
 	const [status, setStatus] = useState(order?.status)
@@ -15,7 +17,7 @@ const DashboardOrderCard = ({ order }) => {
 	}
 
 	const handleDeleteOrder = async () => {
-		if (window.confirm('Are you sure you want to delete this order?')) {
+		if (window.confirm(t('order_card_confirm_delete'))) {
 			await deleteOrder(token, order._id);
 		}
 	};
@@ -54,7 +56,7 @@ const DashboardOrderCard = ({ order }) => {
 							.join(', ') || 'Order'}
 					</h4>
 					<p className='customer-name'>
-						Customer: {order?.deliveryInfo?.name || '—'}
+						{t('order_card_customer')}: {order?.deliveryInfo?.name || '—'}
 					</p>
 					<p className='price'>{order?.totalPrice ?? 0} ₽</p>
 					<p className='order-id'>ID: {order?._id}</p>
@@ -65,16 +67,16 @@ const DashboardOrderCard = ({ order }) => {
 				{order.status === 'pending' ? (
 					<div className='status-buttons'>
 						<button onClick={() => handleStatusChange('accepted')} className='status-btn accept'>
-							Accept
+							{t('order_card_accept')}
 						</button>
 						<button onClick={() => handleStatusChange('declined')} className='status-btn decline'>
-							Decline
+							{t('order_card_decline')}
 						</button>
 					</div>
 				) : order.status === 'declined' || order.status === 'delivered' ? (
 					<div className='status-buttons'>
 						<button onClick={handleDeleteOrder} className='status-btn delete'>
-							Delete
+							{t('order_card_delete')}
 						</button>
 					</div>
 				) : (
@@ -83,25 +85,25 @@ const DashboardOrderCard = ({ order }) => {
 							onClick={() => handleStatusChange('accepted')}
 							className={`status-btn ${status === 'accepted' ? 'active' : ''}`}
 						>
-							Accepted
+							{t('order_card_accepted')}
 						</button>
 						<button
 							onClick={() => handleStatusChange('confirmed')}
 							className={`status-btn ${status === 'confirmed' ? 'active' : ''}`}
 						>
-							Cooking
+							{t('order_card_cooking')}
 						</button>
 						<button
 							onClick={() => handleStatusChange('shipped')}
 							className={`status-btn ${status === 'shipped' ? 'active' : ''}`}
 						>
-							Delivery
+							{t('order_card_delivery')}
 						</button>
 						<button
 							onClick={() => handleStatusChange('delivered')}
 							className={`status-btn ${status === 'delivered' ? 'active' : ''}`}
 						>
-							Completed
+							{t('order_card_completed')}
 						</button>
 					</div>
 				)}

@@ -1,6 +1,7 @@
 import axios from 'axios'
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { useUserStore } from '../../store/User'
 import { useOrderStore } from '../../store/Order'
 import { FaStar } from "react-icons/fa6";
@@ -8,6 +9,7 @@ import toast from 'react-hot-toast'
 import './MyOrders.scss'
 
 const MyOrders = () => {
+	const { t } = useTranslation()
 	const navigate = useNavigate()
 	const { token } = useUserStore()
 	const { deleteUserOrder } = useOrderStore()
@@ -92,7 +94,7 @@ const MyOrders = () => {
 	}
 
 	const handleDeleteOrder = async (orderId) => {
-		if (!window.confirm('Вы уверены, что хотите удалить этот заказ? Это действие нельзя отменить.')) {
+		if (!window.confirm(t('my_orders_confirm_delete') || 'Вы уверены, что хотите удалить этот заказ? Это действие нельзя отменить.')) {
 			return;
 		}
 
@@ -108,23 +110,23 @@ const MyOrders = () => {
 				return newReviews;
 			});
 			
-			toast.success('Заказ успешно удален');
+			toast.success(t('my_orders_order_deleted') || 'Заказ успешно удален');
 		} catch (error) {
 			console.error('Error deleting order:', error);
-			toast.error('Ошибка при удалении заказа');
+			toast.error(t('my_orders_delete_error') || 'Ошибка при удалении заказа');
 		}
 	}
 
 	return (
 		<div className='orders-container'>
 			{loading && <div className='loading-indicator'></div>}
-			<h1>Мои заказы</h1>
+			<h1>{t('my_orders_title') || 'Мои заказы'}</h1>
 			{loading ? (
-				<p>Загрузка...</p>
+				<p>{t('my_orders_loading') || 'Загрузка...'}</p>
 			) : orders.length === 0 ? (
 				<div className='no-orders-message'>
-					<p>У вас пока нет заказов.</p>
-					<span>Здесь будут отображаться ваши заказы.</span>
+					<p>{t('my_orders_no_orders') || 'У вас пока нет заказов.'}</p>
+					<span>{t('my_orders_will_display_here') || 'Здесь будут отображаться ваши заказы.'}</span>
 				</div>
 			) : (
 				orders.map(order => (

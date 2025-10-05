@@ -1,10 +1,12 @@
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useOrderStore } from '../../store/Order';
 import { useUserStore } from '../../store/User';
 import './CompletedOrders.scss';
 
 const CompletedOrders = () => {
+    const { t } = useTranslation();
     const { completedOrders, fetchBakerOrders, deleteOrder } = useOrderStore();
     const { token } = useUserStore();
     const navigate = useNavigate();
@@ -27,7 +29,7 @@ const CompletedOrders = () => {
 
     return (
         <div className='completed-orders-page'>
-            <h1>Завершенные заказы</h1>
+            <h1>{t('baker_dashboard_completed')}</h1>
             {completedOrders.length > 0 ? (
                 completedOrders.map(order => (
                     <div key={order._id} className='order-card'>

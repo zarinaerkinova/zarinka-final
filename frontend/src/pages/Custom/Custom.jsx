@@ -6,7 +6,10 @@ import { useUserStore } from '../../store/User'
 import { ChefHat, ShoppingCart, Plus, Minus } from 'lucide-react'
 import "./Custom.scss"
 
+import { useTranslation } from 'react-i18next';
+
 const Custom = () => {
+	const { t } = useTranslation();
 	const { token } = useUserStore()
 	const location = useLocation()
 	const { addToCart } = useCartStore()
@@ -89,11 +92,11 @@ const Custom = () => {
 	const handleAddToCart = async e => {
 		e.preventDefault()
 		if (!sponge || !cream || !selectedDecor) {
-			setError('Please select all cake options.')
+			setError(t('custom_error_select_all') || 'Please select all cake options.')
 			return
 		}
 		if (!token) {
-			setError('Please log in to add items to your cart.')
+			setError(t('custom_error_login') || 'Please log in to add items to your cart.')
 			return
 		}
 		setError('')
@@ -114,23 +117,23 @@ const Custom = () => {
 					customizedIngredients: customizedIngredientsArray,
 			  }
 			: {
-					name: 'кастомный торт',
+					name: t('custom_cake_name') || 'кастомный торт',
 					price: basePrice + size.price + sponge.price + cream.price + selectedDecor.price,
 					image: '../../assets/CustomCake.png', // A placeholder image for custom cakes
 					customizedIngredients: customizedIngredientsArray,
-					baker: { name: 'индивидуальный заказ' },
+					baker: { name: t('custom_baker_name') || 'индивидуальный заказ' },
 					selectedSize: size,
 			  }
 
 		try {
 			await addToCart(customProduct, token, quantity)
-			toast.success('Added to cart!')
+			toast.success(t('custom_success_added') || 'Added to cart!')
 			setSponge(sponges[0])
 			setCream(creams[0])
 			setSelectedDecor(decorsOptions[0])
 			setQuantity(1)
 		} catch (err) {
-			setError('Failed to add to cart. Please try again.')
+			setError(t('custom_error_failed') || 'Failed to add to cart. Please try again.')
 			console.error(err)
 		}
 	}
@@ -140,8 +143,8 @@ const Custom = () => {
 			<div className="container">
 				{/* Header */}
 				<div className="header">
-					<h1>Cake Constructor</h1>
-					<p>Design your perfect custom cake</p>
+					<h1>{t('custom_page_title')}</h1>
+					<p>{t('custom_page_subtitle')}</p>
 				</div>
 
 				<div className="main-grid">
@@ -150,7 +153,7 @@ const Custom = () => {
 						<form onSubmit={handleAddToCart}>
 							{/* Choose Flavor */}
 							<div className="config-section">
-								<h3 className="section-title">Choose Flavor</h3>
+								<h3 className="section-title">{t('custom_page_choose_flavor')}</h3>
 								<div className="option-grid two-cols">
 									{sponges.map(s => (
 										<label key={s.name} className="option-item">
@@ -163,7 +166,7 @@ const Custom = () => {
 												className="option-input"
 											/>
 											<div className="option-label">
-												<div className="option-text">{s.name} {s.price > 0 && `(+${s.price} ₽)`}</div>
+												<div className="option-text">{t('custom_page_' + s.name.toLowerCase().replace(' ', '_'))} {s.price > 0 && `(+${s.price} ₽)`}</div>
 											</div>
 										</label>
 									))}
@@ -172,7 +175,7 @@ const Custom = () => {
 
 							{/* Choose Size */}
 							<div className="config-section">
-								<h3 className="section-title">Choose Size</h3>
+								<h3 className="section-title">{t('custom_page_choose_size')}</h3>
 								<div className="option-grid two-cols">
 									{sizes.map(s => (
 										<label key={s.name} className="option-item">
@@ -186,8 +189,8 @@ const Custom = () => {
 											/>
 											<div className="option-label">
 												<div style={{display: 'flex', flexDirection: 'column'}}>
-													<span>{s.name} {s.price > 0 && `(+${s.price} ₽)`}</span>
-													<small style={{ opacity: 0.7, fontWeight: 'normal' }}>{s.description}</small>
+													<span>{t('custom_page_' + s.name.toLowerCase().replace(' ', '_'))} {s.price > 0 && `(+${s.price} ₽)`}</span>
+													<small style={{ opacity: 0.7, fontWeight: 'normal' }}>{t('custom_page_' + s.name.toLowerCase().replace(' ', '_') + '_serves')}</small>
 												</div>
 											</div>
 										</label>
@@ -197,7 +200,7 @@ const Custom = () => {
 
 							{/* Choose Frosting */}
 							<div className="config-section">
-								<h3 className="section-title">Choose Frosting</h3>
+								<h3 className="section-title">{t('custom_page_choose_frosting')}</h3>
 								<div className="option-grid three-cols">
 									{creams.map(c => (
 										<label key={c.name} className="option-item">
@@ -210,7 +213,7 @@ const Custom = () => {
 												className="option-input"
 											/>
 											<div className="option-label advanced">
-												<span className="option-text">{c.name} {c.price > 0 && `(+${c.price} ₽)`}</span>
+												<span className="option-text">{t('custom_page_' + c.name.toLowerCase().replace(' ', '_'))} {c.price > 0 && `(+${c.price} ₽)`}</span>
 												<div className="option-indicator">
 													<div className="option-indicator-inner"></div>
 												</div>
@@ -222,7 +225,7 @@ const Custom = () => {
 
 							{/* Choose Decorations */}
 							<div className="config-section">
-								<h3 className="section-title">Choose Decorations (Optional)</h3>
+								<h3 className="section-title">{t('custom_page_choose_decorations')}</h3>
 								<div className="option-grid three-cols">
 									{decorsOptions.map(d => (
 										<label key={d.name} className="option-item">
@@ -235,7 +238,7 @@ const Custom = () => {
 												className="option-input"
 											/>
 											<div className="option-label advanced">
-												<span className="option-text">{d.name} {d.price > 0 && `(+${d.price} ₽)`}</span>
+												<span className="option-text">{t('custom_page_' + d.name.toLowerCase().replace(/\s/g, '_'))} {d.price > 0 && `(+${d.price} ₽)`}</span>
 												<div className="option-indicator">
 													<svg className="checkmark-icon" fill="currentColor" viewBox="0 0 20 20">
 														<path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
@@ -249,30 +252,30 @@ const Custom = () => {
 
 							{/* Custom Message */}
 							<div className="config-section">
-								<h3 className="section-title">Custom Message (Optional)</h3>
+								<h3 className="section-title">{t('custom_page_custom_message')}</h3>
 								<div className="input-group">
 									<label className="input-label">
-										Message on cake
+										{t('custom_page_message_on_cake')}
 									</label>
 									<input
 										type="text"
-										placeholder="e.g., Happy Birthday Sarah!"
+										placeholder={t('custom_page_message_placeholder')}
 										maxLength={50}
 										className="text-input"
 									/>
-									<div className="character-count">0/50 characters</div>
+									<div className="character-count">{t('custom_page_character_count')}</div>
 								</div>
 							</div>
 
 							{/* Special Instructions */}
 							<div className="config-section">
-								<h3 className="section-title">Special Instructions (Optional)</h3>
+								<h3 className="section-title">{t('custom_page_special_instructions')}</h3>
 								<div className="input-group">
 									<label className="input-label">
-										Additional requests
+										{t('custom_page_additional_requests')}
 									</label>
 									<textarea
-										placeholder="Any special requests or dietary requirements..."
+										placeholder={t('custom_page_requests_placeholder')}
 										rows={4}
 										className="textarea-input"
 									/>
@@ -283,7 +286,7 @@ const Custom = () => {
 
 					{/* Order Summary */}
 					<div className="order-summary">
-						<h3 className="summary-title">Order Summary</h3>
+						<h3 className="summary-title">{t('custom_page_order_summary')}</h3>
 						
 						{/* Cake Icon */}
 						<div className="cake-icon-container">
@@ -293,12 +296,12 @@ const Custom = () => {
 						</div>
 						
 						<div className="cake-title">
-							<h4>Custom Cake</h4>
+							<h4>{t('custom_page_custom_cake')}</h4>
 						</div>
 
 						{/* Quantity */}
 						<div className="quantity-control">
-							<span className="quantity-label">Quantity</span>
+							<span className="quantity-label">{t('custom_page_quantity')}</span>
 							<div className="quantity-buttons">
 								<button
 									type="button"
@@ -321,36 +324,36 @@ const Custom = () => {
 						{/* Price Breakdown */}
 						<div className="price-breakdown">
 							<div className="price-item">
-								<span className="price-label">Base Price</span>
+								<span className="price-label">{t('custom_page_base_price')}</span>
 								<span className="price-value">{basePrice} ₽</span>
 							</div>
 							{sponge.price > 0 && (
 								<div className="price-item">
-									<span className="price-label">{sponge.name} Flavor</span>
+									<span className="price-label">{t('custom_page_' + sponge.name.toLowerCase().replace(' ', '_'))} {t('custom_page_flavor')}</span>
 									<span className="price-value">+{sponge.price} ₽</span>
 								</div>
 							)}
 							{size.price > 0 && (
 								<div className="price-item">
-									<span className="price-label">{size.name} Size</span>
+									<span className="price-label">{t('custom_page_' + size.name.toLowerCase().replace(' ', '_'))} {t('custom_page_size')}</span>
 									<span className="price-value">+{size.price} ₽</span>
 								</div>
 							)}
 							{cream.price > 0 && (
 								<div className="price-item">
-									<span className="price-label">{cream.name} Frosting</span>
+									<span className="price-label">{t('custom_page_' + cream.name.toLowerCase().replace(' ', '_'))} {t('custom_page_frosting')}</span>
 									<span className="price-value">+{cream.price} ₽</span>
 								</div>
 							)}
 							{selectedDecor?.price > 0 && (
 								<div className="price-item">
-									<span className="price-label">{selectedDecor.name}</span>
+									<span className="price-label">{t('custom_page_' + selectedDecor.name.toLowerCase().replace(/\s/g, '_'))}</span>
 									<span className="price-value">+{selectedDecor.price} ₽</span>
 								</div>
 							)}
 							<div className="price-divider"></div>
 							<div className="total-price">
-								<span>Total</span>
+								<span>{t('custom_page_total')}</span>
 								<span className="total-amount">{(basePrice + size.price + sponge.price + cream.price + selectedDecor.price) * quantity} ₽</span>
 							</div>
 						</div>
@@ -358,7 +361,7 @@ const Custom = () => {
 						{/* Error Message */}
 						{error && (
 							<div className="error-message">
-								<p className="error-text">{error}</p>
+								<p className="error-text">{t(error)}</p>
 							</div>
 						)}
 
@@ -369,16 +372,16 @@ const Custom = () => {
 								className="btn btn-secondary"
 							>
 								<ShoppingCart />
-								<span>Add to Cart</span>
+								<span>{t('custom_page_add_to_cart')}</span>
 							</button>
 							<button className="btn btn-primary">
-								Place Order
+								{t('custom_page_place_order')}
 							</button>
 						</div>
 
 						{/* Note */}
 						<p className="preparation-note">
-							Custom cakes require 3-7 days preparation time
+							{t('custom_page_preparation_time')}
 						</p>
 					</div>
 				</div>

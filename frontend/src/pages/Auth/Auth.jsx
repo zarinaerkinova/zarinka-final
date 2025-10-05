@@ -2,11 +2,13 @@ import { jwtDecode } from 'jwt-decode'
 import React, { useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import macarons from '../../assets/macarons.png'
 import { useUserStore } from '../../store/User'
 import './Auth.scss'
 
 const Auth = () => {
+	const { t } = useTranslation()
 	const [userData, setUserData] = useState({
 		name: '',
 		bakeryName: '',
@@ -60,12 +62,12 @@ const Auth = () => {
 		try {
 			const code = generateVerificationCode()
 			setSystemCode(code)
-			toast.success(`Код верификации отправлен на ${phoneNumber}`)
-			toast.success(`Демо код: ${code}`, { duration: 5000 })
+			toast.success(`${t('auth_verification_code_sent')} ${phoneNumber}`)
+			toast.success(`${t('auth_demo_code')}: ${code}`, { duration: 5000 })
 			return { success: true, code }
 		} catch (error) {
 			console.error('Ошибка отправки SMS:', error)
-			toast.error('Ошибка при отправке SMS. Попробуйте позже.')
+			toast.error(t('auth_sms_error') || 'Ошибка при отправке SMS. Попробуйте позже.')
 			return { success: false }
 		}
 	}
@@ -88,12 +90,12 @@ const Auth = () => {
 
 	const verifyPhoneNumber = async () => {
 		if (!userData.phone) {
-			setValidationError('Введите номер телефона')
+			setValidationError(t('auth_phone_required') || 'Введите номер телефона')
 			return
 		}
 
 		if (!validatePhoneNumber(userData.phone)) {
-			setValidationError('Введите корректный номер телефона')
+			setValidationError(t('auth_invalid_phone'))
 			return
 		}
 
@@ -116,25 +118,25 @@ const Auth = () => {
 		if (result.success) {
 			setSmsCode('')
 			startResendTimer()
-			toast.success('Код отправлен повторно')
+			toast.success(t('auth_code_resent') || 'Код отправлен повторно')
 		}
 	}
 
 	const checkVerificationCode = () => {
 		if (!smsCode) {
-			setValidationError('Введите код верификации')
+			setValidationError(t('auth_enter_code') || 'Введите код верификации')
 			return
 		}
 
 		if (smsCode === systemCode) {
-			toast.success('Номер телефона успешно верифицирован!')
+			toast.success(t('auth_verification_successful'))
 			setShowVerification(false)
 			setPhoneVerified(true)
 			setSmsCode('')
 			setValidationError('')
 			handleUserAction(true)
 		} else {
-			setValidationError('Неверный код верификации. Попробуйте снова.')
+			setValidationError(t('auth_verification_failed'))
 		}
 	}
 
@@ -163,7 +165,7 @@ const Auth = () => {
 			})
 		} else {
 			if (userData.password !== passwordConfirm) {
-				setValidationError('Пароли не совпадают')
+				setValidationError(t('auth_passwords_not_match'))
 				return
 			}
 
@@ -209,10 +211,10 @@ const Auth = () => {
 			} catch (decodeError) {
 				console.error('JWT Decode failed:', decodeError)
 				localStorage.clear()
-				setValidationError('Ошибка авторизации. Попробуйте снова.')
+				setValidationError(t('auth_error_auth') || 'Ошибка авторизации. Попробуйте снова.')
 			}
 		} else {
-			setValidationError(message || 'Произошла ошибка. Попробуйте снова.')
+			setValidationError(message || t('auth_error_general') || 'Произошла ошибка. Попробуйте снова.')
 		}
 	}
 
@@ -246,12 +248,12 @@ const Auth = () => {
 					<img src={macarons} alt='Logo' className='auth-logo' />
 					<h1 className='auth-title'>
 						{isLoginMode
-							? 'Вход'
+							? t('auth_login_title')
 							: showVerification
-							? 'Верификация телефона'
+							? t('auth_phone_verification_title')
 							: showRoleSelection
-							? 'Выберите роль'
-							: 'Регистрация'}
+							? t('auth_select_role_title')
+							: t('auth_register_title')}
 					</h1>
 
 					{!isLoginMode && showRoleSelection ? (
@@ -261,30 +263,30 @@ const Auth = () => {
 								onClick={() => selectRole('user')}
 							>
 								<div className='role-icon'>🛍️</div>
-								<h3>Покупатель</h3>
-								<p>Заказывайте вкусные сладости от лучших кондитеров</p>
+								<h3>{t('auth_customer_role')}</h3>
+								<p>{t('auth_customer_description')}</p>
 							</button>
 							<button
 								className='role-card baker-role'
 								onClick={() => selectRole('admin')}
 							>
 								<div className='role-icon'>👨‍🍳</div>
-								<h3>Кондитер</h3>
-								<p>Создавайте и продавайте свои кулинарные шедевры</p>
+								<h3>{t('auth_baker_role')}</h3>
+								<p>{t('auth_baker_description')}</p>
 							</button>
 						</div>
 					) : showVerification ? (
 						<>
 							<div className='verification-info-box'>
-								<p>Код верификации отправлен на</p>
+								<p>{t('auth_verification_sent')}</p>
 								<p>
 									<strong>{userData.phone}</strong>
 								</p>
-								<p>Введите 6-значный код из SMS</p>
+								<p>{t('auth_enter_verification_code')}</p>
 							</div>
 							<input
 								type='text'
-								placeholder='Код верификации'
+								placeholder={t('auth_verification_code_placeholder')}
 								value={smsCode}
 								onChange={e =>
 									setSmsCode(e.target.value.replace(/\D/g, '').slice(0, 6))
@@ -297,7 +299,7 @@ const Auth = () => {
 								onClick={checkVerificationCode}
 								disabled={smsCode.length !== 6}
 							>
-								Подтвердить
+								{t('auth_confirm')}
 							</button>
 
 							<div className='resend-wrapper'>
@@ -307,11 +309,11 @@ const Auth = () => {
 										onClick={resendVerificationCode}
 										type='button'
 									>
-										Отправить код повторно
+										{t('auth_resend_code')}
 									</button>
 								) : (
 									<p className='resend-countdown'>
-										Повторная отправка через {countdown} сек
+										{t('auth_resend_countdown').replace('{seconds}', countdown)}
 									</p>
 								)}
 							</div>
@@ -326,7 +328,7 @@ const Auth = () => {
 									setCanResend(true)
 								}}
 							>
-								Назад к регистрации
+								{t('auth_back_to_registration')}
 							</button>
 						</>
 					) : (
@@ -336,7 +338,7 @@ const Auth = () => {
 									className='select-role-button'
 									onClick={() => setShowRoleSelection(true)}
 								>
-									Сначала выберите роль
+									{t('auth_select_role_first')}
 								</button>
 							)}
 
@@ -345,7 +347,7 @@ const Auth = () => {
 									{!isLoginMode && (
 										<input
 											type='text'
-											placeholder='Имя'
+											placeholder={t('auth_name_placeholder')}
 											name='name'
 											value={userData.name}
 											onChange={e =>
@@ -356,7 +358,7 @@ const Auth = () => {
 									)}
 									<input
 										type='email'
-										placeholder='Электронная почта'
+										placeholder={t('auth_email_placeholder')}
 										name='email'
 										value={userData.email}
 										onChange={e =>
@@ -366,7 +368,7 @@ const Auth = () => {
 									/>
 									<input
 										type='password'
-										placeholder='Пароль'
+										placeholder={t('auth_password_placeholder')}
 										name='password'
 										value={userData.password}
 										onChange={e =>
@@ -377,7 +379,7 @@ const Auth = () => {
 									{!isLoginMode && (
 										<input
 											type='password'
-											placeholder='Повторите пароль'
+											placeholder={t('auth_confirm_password_placeholder')}
 											value={passwordConfirm}
 											onChange={e => setPasswordConfirm(e.target.value)}
 											className='auth-input'
@@ -389,7 +391,7 @@ const Auth = () => {
 												<input
 													type='tel'
 													name='phone'
-													placeholder='Номер телефона'
+													placeholder={t('auth_phone_placeholder')}
 													value={userData.phone}
 													onChange={handlePhoneChange}
 													className={`auth-input ${
@@ -398,7 +400,7 @@ const Auth = () => {
 												/>
 												{phoneVerified && (
 													<span className='phone-status-badge verified-badge'>
-														✓ Подтвержден
+														✓ {t('auth_verification_successful')}
 													</span>
 												)}
 											</div>
@@ -407,7 +409,7 @@ const Auth = () => {
 												<>
 													<input
 														type='text'
-														placeholder='Название кондитерской'
+														placeholder={t('auth_bakery_name_placeholder')}
 														name='bakeryName'
 														value={userData.bakeryName}
 														onChange={e =>
@@ -420,7 +422,7 @@ const Auth = () => {
 													/>
 													<input
 														type='text'
-														placeholder='Локация'
+														placeholder={t('auth_location_placeholder')}
 														name='location'
 														value={userData.location}
 														onChange={e =>
@@ -433,7 +435,7 @@ const Auth = () => {
 													/>
 													<input
 														type='number'
-														placeholder='Цена услуги от'
+														placeholder={t('auth_price_range_placeholder')}
 														name='priceRange'
 														value={userData.priceRange}
 														onChange={e =>
@@ -448,7 +450,7 @@ const Auth = () => {
 											)}
 
 											<div className='selected-role-display'>
-												<span className='role-label'>Выбранная роль:</span>
+												<span className='role-label'>{t('auth_selected_role')}:</span>
 												<span
 													className={`role-badge ${
 														userData.role === 'user'
@@ -457,14 +459,14 @@ const Auth = () => {
 													}`}
 												>
 													{userData.role === 'user'
-														? '🛍️ Покупатель'
-														: '👨‍🍳 Кондитер'}
+														? `🛍️ ${t('auth_customer_role')}`
+														: `👨‍🍳 ${t('auth_baker_role')}`}
 												</span>
 												<button
 													className='change-role-link'
 													onClick={() => setShowRoleSelection(true)}
 												>
-													Изменить
+													{t('auth_change_role')}
 												</button>
 											</div>
 
@@ -476,7 +478,7 @@ const Auth = () => {
 											/>
 											<textarea
 												name='bio'
-												placeholder='О себе'
+												placeholder={t('auth_bio_placeholder')}
 												value={userData.bio}
 												onChange={e =>
 													setUserData({ ...userData, bio: e.target.value })
@@ -486,7 +488,7 @@ const Auth = () => {
 										</>
 									)}
 									<button className='primary-button' onClick={handleUserAction}>
-										{isLoginMode ? 'Войти' : 'Зарегистрироваться'}
+										{isLoginMode ? t('auth_login_button') : t('auth_register_button')}
 									</button>
 								</>
 							) : null}
@@ -520,8 +522,8 @@ const Auth = () => {
 							}}
 						>
 							{isLoginMode
-								? 'Нет аккаунта? Зарегистрируйтесь'
-								: 'Уже есть аккаунт? Войти'}
+								? t('auth_no_account')
+								: t('auth_have_account')}
 						</button>
 					)}
 				</div>

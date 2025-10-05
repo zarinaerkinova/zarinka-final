@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import { useTranslation } from 'react-i18next';
 import { useUserStore } from '../../store/User';
 import './BakerReviews.scss';
 
 const BakerReviews = () => {
+    const { t } = useTranslation();
     const { token } = useUserStore();
     const [reviews, setReviews] = useState([]);
 
@@ -38,9 +40,9 @@ const BakerReviews = () => {
 
     return (
         <div className="reviews-container">
-            <h1>Baker Reviews</h1>
+            <h1>{t('baker_dashboard_reviews')}</h1>
             {reviews.length === 0 ? (
-                <p>No reviews found.</p>
+                <p>{t('baker_reviews_no_reviews')}</p>
             ) : (
                 <div className="reviews-list">
                     {reviews.map(review => (

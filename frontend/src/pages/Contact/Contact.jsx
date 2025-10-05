@@ -2,7 +2,10 @@ import React, { useState } from 'react';
 import { Mail, Phone, MapPin, Clock, Send, MessageCircle, ChevronDown } from 'lucide-react';
 import './Contact.scss';
 
+import { useTranslation } from 'react-i18next';
+
 const Contact = () => {
+  const { t } = useTranslation();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -64,24 +67,24 @@ const Contact = () => {
 
   const faqData = [
     {
-      question: "How can I place an order?",
-      answer: "You can place an order directly through our website by adding items to your cart and proceeding to checkout. We also accept phone orders during business hours."
+      question: "contact_faq_question_place_order",
+      answer: "contact_faq_answer_place_order"
     },
     {
-      question: "Do you offer custom cake designs?",
-      answer: "Yes, we specialize in custom cake designs! Please use the contact form below to discuss your requirements with our design team. We recommend placing custom orders at least 3-5 days in advance."
+      question: "contact_faq_question_custom_designs",
+      answer: "contact_faq_answer_custom_designs"
     },
     {
-      question: "What are your delivery options?",
-      answer: "We offer local delivery within a 20-mile radius of our bakery. Delivery fees start at 50000 UZS and vary based on distance. We also provide pickup options if you prefer to collect your order."
+      question: "contact_faq_question_delivery_options",
+      answer: "contact_faq_answer_delivery_options"
     },
     {
-      question: "How far in advance should I order?",
-      answer: "For regular cakes from our menu, we recommend ordering at least 24 hours in advance. For custom designs and special occasions, please allow 3-5 days notice to ensure we can create exactly what you envision."
+      question: "contact_faq_question_advance_order",
+      answer: "contact_faq_answer_advance_order"
     },
     {
-      question: "Do you accommodate dietary restrictions?",
-      answer: "Absolutely! We offer gluten-free, sugar-free, vegan, and other dietary-friendly options. Please mention your specific requirements when placing your order so we can ensure your cake meets your needs."
+      question: "contact_faq_question_dietary_restrictions",
+      answer: "contact_faq_answer_dietary_restrictions"
     }
   ];
 
@@ -90,9 +93,9 @@ const Contact = () => {
       {/* Hero Section */}
       <div className="hero-section">
         <div className="hero-container">
-          <h1 className="hero-title">Get in Touch</h1>
+          <h1 className="hero-title">{t('contact_page_title')}</h1>
           <p className="hero-description">
-            Have questions about our cakes or need a custom design? We'd love to hear from you!
+            {t('contact_page_subtitle')}
           </p>
         </div>
       </div>
@@ -106,14 +109,14 @@ const Contact = () => {
             <div className="contact-info-card">
               <h2 className="card-header">
                 <MessageCircle size={28} />
-                Contact Information
+                {t('contact_page_contact_information')}
               </h2>
              
               <div className="contact-items">
                 <div className="contact-item">
                   <Mail size={20} />
                   <div className="contact-info">
-                    <p className="label">Email</p>
+                    <p className="label">{t('contact_page_email')}</p>
                     <p className="value">info@sweetcakes.com</p>
                   </div>
                 </div>
@@ -121,7 +124,7 @@ const Contact = () => {
                 <div className="contact-item">
                   <Phone size={20} />
                   <div className="contact-info">
-                    <p className="label">Phone</p>
+                    <p className="label">{t('contact_page_phone')}</p>
                     <p className="value">+1 (123) 456-7890</p>
                   </div>
                 </div>
@@ -129,7 +132,7 @@ const Contact = () => {
                 <div className="contact-item">
                   <MapPin size={20} />
                   <div className="contact-info">
-                    <p className="label">Address</p>
+                    <p className="label">{t('contact_page_address')}</p>
                     <p className="value">
                       123 Cake Street<br />
                       Sweet City, CA 90210
@@ -140,11 +143,11 @@ const Contact = () => {
                 <div className="contact-item">
                   <Clock size={20} />
                   <div className="contact-info">
-                    <p className="label">Business Hours</p>
+                    <p className="label">{t('contact_page_business_hours')}</p>
                     <p className="value">
-                      Mon-Fri: 9 AM - 6 PM<br />
-                      Sat: 10 AM - 4 PM<br />
-                      Sun: Closed
+                      {t('contact_page_mon_fri')}<br />
+                      {t('contact_page_sat')}<br />
+                      {t('contact_page_sun')}
                     </p>
                   </div>
                 </div>
@@ -153,7 +156,7 @@ const Contact = () => {
           </div>
           {/* FAQ Accordion */}
           <div className="faq-card">
-            <h2 className="card-header">Frequently Asked Questions</h2>
+            <h2 className="card-header">{t('contact_page_faq')}</h2>
            
             <div className="faq-items">
               {faqData.map((faq, index) => (
@@ -162,7 +165,7 @@ const Contact = () => {
                     onClick={() => toggleFaq(index)}
                     className={`faq-question ${openFaqIndex === index ? 'active' : ''}`}
                   >
-                    {faq.question}
+                    {t(faq.question)}
                     <ChevronDown
                       size={16}
                       className={openFaqIndex === index ? 'rotated' : ''}
@@ -171,7 +174,7 @@ const Contact = () => {
                   {openFaqIndex === index && (
                     <div className="faq-answer">
                       <p className="answer-content">
-                        {faq.answer}
+                        {t(faq.answer)}
                       </p>
                     </div>
                   )}
@@ -186,13 +189,13 @@ const Contact = () => {
           <div className="contact-form-card">
             <h2 className="card-header">
               <Send size={28} />
-              Send us a Message
+              {t('contact_page_send_message_title')}
             </h2>
 
             {submitStatus === 'success' && (
               <div className="success-message">
                 <p>
-                  ✅ Message sent successfully! We'll get back to you soon.
+                  ✅ {t('contact_page_send_message_success')}
                 </p>
               </div>
             )}
@@ -200,7 +203,7 @@ const Contact = () => {
             <form onSubmit={handleSubmit} className="contact-form">
               <div className="form-row">
                 <div className="form-group">
-                  <label htmlFor="name">Full Name</label>
+                  <label htmlFor="name">{t('contact_page_full_name')}</label>
                   <input
                     type="text"
                     id="name"
@@ -208,12 +211,12 @@ const Contact = () => {
                     value={formData.name}
                     onChange={handleInputChange}
                     required
-                    placeholder="Your full name"
+                    placeholder={t('contact_page_full_name_placeholder')}
                   />
                 </div>
 
                 <div className="form-group">
-                  <label htmlFor="email">Email Address</label>
+                  <label htmlFor="email">{t('contact_page_email_address')}</label>
                   <input
                     type="email"
                     id="email"
@@ -221,14 +224,14 @@ const Contact = () => {
                     value={formData.email}
                     onChange={handleInputChange}
                     required
-                    placeholder="your@email.com"
+                    placeholder={t('contact_page_email_placeholder')}
                   />
                 </div>
               </div>
 
               <div className="form-row">
                 <div className="form-group">
-                  <label htmlFor="subject">Subject</label>
+                  <label htmlFor="subject">{t('contact_page_subject')}</label>
                   <input
                     type="text"
                     id="subject"
@@ -236,30 +239,30 @@ const Contact = () => {
                     value={formData.subject}
                     onChange={handleInputChange}
                     required
-                    placeholder="What's this about?"
+                    placeholder={t('contact_page_subject_placeholder')}
                   />
                 </div>
 
                 <div className="form-group">
-                  <label htmlFor="category">Category</label>
+                  <label htmlFor="category">{t('contact_page_category')}</label>
                   <select
                     id="category"
                     name="category"
                     value={formData.category}
                     onChange={handleInputChange}
                   >
-                    <option value="">Select a category</option>
-                    <option value="order">Order Inquiry</option>
-                    <option value="custom">Custom Cake Request</option>
-                    <option value="feedback">Feedback</option>
-                    <option value="delivery">Delivery Question</option>
-                    <option value="other">Other</option>
+                    <option value="">{t('contact_page_select_category')}</option>
+                    <option value="order">{t('contact_page_order_inquiry')}</option>
+                    <option value="custom">{t('contact_page_custom_cake_request')}</option>
+                    <option value="feedback">{t('contact_page_feedback')}</option>
+                    <option value="delivery">{t('contact_page_delivery_question')}</option>
+                    <option value="other">{t('contact_page_other')}</option>
                   </select>
                 </div>
               </div>
 
               <div className="form-group">
-                <label htmlFor="message">Message</label>
+                <label htmlFor="message">{t('contact_page_message')}</label>
                 <textarea
                   id="message"
                   name="message"
@@ -267,7 +270,7 @@ const Contact = () => {
                   onChange={handleInputChange}
                   required
                   rows="6"
-                  placeholder="Tell us more about your inquiry..."
+                  placeholder={t('contact_page_message_placeholder')}
                 />
               </div>
 
@@ -279,12 +282,12 @@ const Contact = () => {
                 {isSubmitting ? (
                   <>
                     <div className="spinner" />
-                    Sending...
+                    {t('contact_page_sending')}
                   </>
                 ) : (
                   <>
                     <Send size={18} />
-                    Send Message
+                    {t('contact_page_send_message')}
                   </>
                 )}
               </button>

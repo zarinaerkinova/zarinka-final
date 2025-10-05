@@ -7,7 +7,10 @@ import { useUserStore } from '../../store/User'
 import { useLoadingStore } from '../../store/Loading' // Import useLoadingStore
 import './Cart.scss'
 
+import { useTranslation } from 'react-i18next';
+
 const Cart = () => {
+	const { t } = useTranslation();
 	const { cart, fetchCart } = useCartStore()
 	const { token } = useUserStore()
 	const { setLoading } = useLoadingStore() // Get setLoading from global store
@@ -31,19 +34,19 @@ const Cart = () => {
 		return (
 			<div className='container'>
 				<div className='cart-page'>
-					<h1 className='cart_h1'>Your Cart</h1>
+					<h1 className='cart_h1'>{t('cart_page_your_cart')}</h1>
 					<div className='empty'>
 						<RiShoppingBag3Line className='shop_icon' />
-						<h3>Your cart is empty</h3>
+						<h3>{t('cart_page_empty_cart')}</h3>
 						<p>
-							Start building your perfect cake or browse our ready-made options
+							{t('cart_page_empty_cart_subtitle')}
 						</p>
 						<div className='btns'>
 							<Link to={'/custom'} className='build'>
-								Build Custom Cake
+								{t('cart_page_build_custom_cake')}
 							</Link>
 							<Link to={'/cakes'} className='browse'>
-								Browse Ready Made
+								{t('cart_page_browse_ready_made')}
 							</Link>
 						</div>
 					</div>
@@ -71,7 +74,7 @@ const Cart = () => {
 					<CartItem key={item._id ?? item.cartItemId} item={item} />
 				))}
 				<div className='order-summary'>
-					<h2>Order Summary</h2>
+					<h2>{t('cart_page_order_summary')}</h2>
 					<div className='summary-items'>
 						{cart.map(item => (
 							<div className='summary-item' key={item._id ?? item.cartItemId}>
@@ -86,22 +89,22 @@ const Cart = () => {
 						))}
 					</div>
 					<div className='summary-delivery'>
-						<span>Delivery</span>
+						<span>{t('cart_page_delivery')}</span>
 						{deliveryPrice === 0 ? (
-							<span className='free-delivery'>FREE</span>
+							<span className='free-delivery'>{t('cart_page_free')}</span>
 						) : (
 							<span>{deliveryPrice} ₽</span>
 						)}
 					</div>
 					<div className='summary-total'>
-						<span>Total</span>
+						<span>{t('cart_page_total')}</span>
 						<span>{total + deliveryPrice} ₽</span>
 					</div>
 					<button className='checkout-btn' onClick={handleCheckout}>
-						Proceed to Checkout
+						{t('cart_page_proceed_to_checkout')}
 					</button>
 					<Link to='/cakes' className='continue-shopping'>
-						Continue Shopping
+						{t('cart_page_continue_shopping')}
 					</Link>
 				</div>
 			</div>

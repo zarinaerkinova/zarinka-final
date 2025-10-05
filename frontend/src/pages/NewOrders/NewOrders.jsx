@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import IngredientsTooltip from '../../components/IngredientsTooltip/IngredientsTooltip.jsx'
 import { useOrderStore } from '../../store/Order'
 import { useUserStore } from '../../store/User'
 import './NewOrders.scss'
 
 const NewOrders = () => {
+	const { t } = useTranslation()
 	const { newOrders, fetchBakerOrders, updateOrderStatus, deleteOrder } = useOrderStore()
 	const { token } = useUserStore()
 	const [isProcessing, setIsProcessing] = useState({})
@@ -62,7 +64,7 @@ const NewOrders = () => {
 
 	return (
 		<div className='new-orders-page'>
-			<h1>Новые заказы</h1>
+			<h1>{t('baker_dashboard_new_orders')}</h1>
 
 			{newOrders.length > 0 ? (
 				newOrders.map(order => (

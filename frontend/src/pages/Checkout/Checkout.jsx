@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import toast from 'react-hot-toast'
 import { useLocation, useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import CheckoutProductCard from '../../components/CheckoutProductCard/CheckoutProductCard'
 import { useOrderStore } from '../../store/Order'
 import { useUserStore } from '../../store/User'
@@ -8,6 +9,7 @@ import { useCartStore } from '../../store/Cart' // Import useCartStore
 import './Checkout.scss'
 
 const Checkout = () => {
+	const { t } = useTranslation()
 	const { token } = useUserStore()
 	const placeOrder = useOrderStore(state => state.placeOrder)
 	const navigate = useNavigate()
@@ -97,18 +99,18 @@ const Checkout = () => {
 
 		try {
 			await placeOrder(token, orderData)
-			toast.success('Order placed!')
+			toast.success(t('checkout_order_placed') || 'Order placed!')
 			clearCart(); // Clear the cart after successful order
 			navigate('/my-orders')
 		} catch (err) {
-			toast.error(err.response?.data?.message || err.message || 'Order failed')
+			toast.error(err.response?.data?.message || err.message || t('checkout_order_failed') || 'Order failed')
 		}
 	}
 
 	return (
 		<div className='checkout-page'>
 			<div className='checkout-form-section'>
-				<h2>Delivery Method</h2>
+				<h2>{t('checkout_delivery_method') || 'Delivery Method'}</h2>
 				<div className='radio-group'>
 					<label>
 						<input
@@ -118,7 +120,7 @@ const Checkout = () => {
 							onChange={e => setDeliveryMethod(e.target.value)}
 
 						/>{' '}
-						Delivered to your address
+						{t('checkout_delivered_to_address') || 'Delivered to your address'}
 					</label>
 					<label>
 						<input
@@ -127,44 +129,44 @@ const Checkout = () => {
 							checked={deliveryMethod === 'pickup'}
 							onChange={e => setDeliveryMethod(e.target.value)}
 						/>{' '}
-						Pickup
+						{t('checkout_pickup') || 'Pickup'}
 					</label>
 				</div>
 
 				{deliveryMethod === 'delivery' && (
 					<>
-						<h2>Delivery Information</h2>
+						<h2>{t('checkout_delivery_information') || 'Delivery Information'}</h2>
 						<div className='form-grid'>
 							<input
 								name='name'
-								placeholder='Full Name'
+								placeholder={t('checkout_name') || 'Full Name'}
 								value={deliveryInfo.name}
 								onChange={handleChange}
 								required
 							/>
 							<input
 								name='phone'
-								placeholder='Phone Number'
+								placeholder={t('checkout_phone') || 'Phone Number'}
 								value={deliveryInfo.phone}
 								onChange={handleChange}
 								required
 							/>
 							<input
 								name='city'
-								placeholder='City'
+								placeholder={t('checkout_city') || 'City'}
 								onChange={handleChange}
 								required
 							/>
 							<input
 								name='streetAddress'
-								placeholder='Street Address'
+								placeholder={t('checkout_street_address') || 'Street Address'}
 								value={deliveryInfo.streetAddress}
 								onChange={handleChange}
 								required
 							/>
 							<textarea
 								name='deliveryNotes'
-								placeholder='Delivery Notes'
+								placeholder={t('checkout_delivery_notes') || 'Delivery Notes'}
 								value={deliveryInfo.deliveryNotes}
 								onChange={handleChange}
 							></textarea>
@@ -174,18 +176,18 @@ const Checkout = () => {
 
 				{deliveryMethod === 'pickup' && (
 					<>
-						<h2>Pickup Information</h2>
+						<h2>{t('checkout_pickup_information') || 'Pickup Information'}</h2>
 						<div className='form-grid'>
 							<input
 								name='name'
-								placeholder='Full Name'
+								placeholder={t('checkout_name') || 'Full Name'}
 								value={deliveryInfo.name}
 								onChange={handleChange}
 								required
 							/>
 							<input
 								name='phone'
-								placeholder='Phone Number'
+								placeholder={t('checkout_phone') || 'Phone Number'}
 								value={deliveryInfo.phone}
 								onChange={handleChange}
 								required
@@ -194,7 +196,7 @@ const Checkout = () => {
 					</>
 				)}
 
-				<h2>Payment Option</h2>
+				<h2>{t('checkout_payment_method') || 'Payment Option'}</h2>
 				<div className='radio-group'>
 					<label>
 						<input
@@ -203,7 +205,7 @@ const Checkout = () => {
 							checked={paymentMethod === 'card'}
 							onChange={e => setPaymentMethod(e.target.value)}
 						/>{' '}
-						Card
+						{t('checkout_card') || 'Card'}
 					</label>
 					<label>
 						<input
@@ -212,19 +214,19 @@ const Checkout = () => {
 							checked={paymentMethod === 'cash'}
 							onChange={e => setPaymentMethod(e.target.value)}
 						/>{' '}
-						Cash
+						{t('checkout_cash') || 'Cash'}
 					</label>
 				</div>
 
-				<h2>Special Instructions</h2>
+				<h2>{t('checkout_special_instructions') || 'Special Instructions'}</h2>
 				<textarea
-					placeholder='Any special instructions for your order?'
+					placeholder={t('checkout_special_instructions_placeholder') || 'Any special instructions for your order?'}
 					value={specialInstructions}
 					onChange={e => setSpecialInstructions(e.target.value)}
 				></textarea>
 			</div>
 			<div className='checkout-summary-section'>
-				<h2>Order Summary</h2>
+				<h2>{t('cart_page_order_summary') || 'Order Summary'}</h2>
 				<div className='summary-product-list'>
 					{cart.map(item => (
 						<CheckoutProductCard key={item.product?._id || item._id} item={item} />
@@ -232,24 +234,24 @@ const Checkout = () => {
 				</div>
 				<div className='summary-costs'>
 					<div className='cost-item'>
-						<span>Subtotal</span>
+						<span>{t('checkout_subtotal') || 'Subtotal'}</span>
 						<span>{subtotal} ₽</span>
 					</div>
 					          <div className='cost-item'>
-					            <span>Delivery Fee</span>
+					            <span>{t('checkout_delivery_fee') || 'Delivery Fee'}</span>
 					            {deliveryFee === 0 ? (
-					              <span className='free-delivery'>FREE</span>
+					              <span className='free-delivery'>{t('checkout_free') || 'FREE'}</span>
 					            ) : (
 					              <span>{deliveryFee} ₽</span>
 					            )}
 					          </div>
 					          <div className='cost-item total'>
-					            <span>Total</span>
+					            <span>{t('cart_page_total') || 'Total'}</span>
 					            <span>{total} ₽</span>
 					          </div>
 					        </div>
 					        <button className='place-order-btn' onClick={handleOrder}>
-					          Place Order
+					          {t('checkout_place_order') || 'Place Order'}
 					        </button>
 					      </div>
 					      <style>

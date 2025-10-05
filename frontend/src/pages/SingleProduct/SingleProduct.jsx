@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import toast from 'react-hot-toast';
 import { useProductStore } from '../store/Product';
 import { useCartStore } from '../store/Cart'; // Import Cart Store
 import { useFavoriteStore } from '../store/Favorite'; // Import Favorite Store
@@ -7,6 +9,7 @@ import './SingleProduct.css';
 import profileImage from '../assets/profile.jpg';
 
 const SingleProduct = () => {
+    const { t } = useTranslation();
     const { productId } = useParams();
     const navigate = useNavigate();
     const [product, setProduct] = useState(null);
@@ -47,11 +50,11 @@ const SingleProduct = () => {
                     setProduct(fetchedProduct);
                     setSelectedServingSize(fetchedProduct.servingSizes[0].size); // Set initial serving size
                 } else {
-                    setError(data.message || 'Продукт не найден');
+                    setError(data.message || t('single_product_not_found'));
                 }
             } catch (err) {
                 console.error('Error fetching product:', err);
-                setError('Ошибка загрузки продукта');
+                setError(t('single_product_loading_error') || 'Ошибка загрузки продукта');
             } finally {
                 setLoading(false);
             }
@@ -63,18 +66,31 @@ const SingleProduct = () => {
     }, [productId]);
 
     const handleAddToCart = () => {
-        const selectedSize = product.servingSizes.find(size => size.size === selectedServingSize);
-        if (product && selectedSize) {
-            addToCart({ ...product, selectedSize });
-            alert(`${product.name} (${selectedSize.size}) добавлен в корзину!`);
+        try {
+            const selectedSize = product.servingSizes.find(size => size.size === selectedServingSize);
+            if (product && selectedSize) {
+                addToCart({ ...product, selectedSize });
+                toast.success(t('single_product_success_add_cart'));
+            }
+        } catch (error) {
+            toast.error(t('single_product_error_add_cart'));
         }
     };
 
     const handleAddToFavorite = () => {
-        if (product) {
-            addToFavorite(product);
-            alert(`${product.name} добавлен в избранное!`);
+        try {
+            if (product) {
+                addToFavorite(product);
+                toast.success(t('single_product_success_add_favorite'));
+            }
+        } catch (error) {
+            toast.error(t('single_product_error_add_favorite'));
         }
+    };
+
+    const handleCustomize = () => {
+        // Navigate to custom page with product data
+        navigate('/custom', { state: { baseProduct: product } });
     };
 
     const handleBuyNow = () => {
@@ -90,7 +106,7 @@ const SingleProduct = () => {
     if (loading) {
         return (
             <div className="single-product-loading">
-                <p>Загрузка продукта...</p>
+                <p>{t('single_product_loading')}</p>
             </div>
         );
     }
@@ -158,7 +174,7 @@ const SingleProduct = () => {
 
                     <div className="product-meta-info">
                         <div className="meta-item">
-                            <strong>Serving Size:</strong>
+                            <strong>{t('single_product_serving_size')}:</strong>
                             <select
                                 value={selectedServingSize}
                                 onChange={(e) => setSelectedServingSize(e.target.value)}
@@ -172,7 +188,7 @@ const SingleProduct = () => {
                             </select>
                         </div>
                         <div className="meta-item">
-                            <strong>Preparation Time:</strong> {product.preparationTime}
+                            <strong>{t('single_product_preparation_time')}:</strong> {product.preparationTime}
                         </div>
                     </div>
 
@@ -183,26 +199,30 @@ const SingleProduct = () => {
                         </div>
                     </div>
 
-                    <Accordion title="Full Description" content={product.fullDescription} />
-                    <Accordion title="Full Ingredients" content={product.fullIngredients} />
+                    <Accordion title={t('single_product_full_description')} content={product.fullDescription} />
+                    <Accordion title={t('single_product_full_ingredients')} content={product.fullIngredients} />
 
                     <div className="product-actions">
+                        <button className="customize-btn" onClick={handleCustomize}>
+                            <span>🎨</span>
+                            {t('single_product_customize')}
+                        </button>
                         <button className="buy-now-btn" onClick={handleBuyNow}>
-                            Купить сейчас
+                            {t('single_product_buy_now')}
                         </button>
                         <button className="add-to-cart-btn" onClick={handleAddToCart}>
                             <span>🛒</span>
-                            Добавить в корзину
+                            {t('single_product_add_to_cart')}
                         </button>
                         <button className="add-to-favorite-btn" onClick={handleAddToFavorite}>
                             <span>❤️</span>
-                            Добавить в избранное
+                            {t('single_product_add_to_favorite')}
                         </button>
                     </div>
 
                     {product.createdBy && (
                         <div className="product-baker">
-                            <h3>Пекарь</h3>
+                            <h3>{t('single_product_baker')}</h3>
                             <div className="baker-info">
                                 <img
                                     src={product.createdBy.image ? `${import.meta.env.VITE_BACKEND_BASE_URL}${product.createdBy.image}` : profileImage}

@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { useUserStore } from '../../store/User';
+import { useTranslation } from 'react-i18next';
 import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 import './ProfileSettings.scss';
 
 const ProfileSettings = () => {
+  const { t } = useTranslation();
   const { userInfo, updateUserProfile, deleteAccount } = useUserStore();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('Profile');
@@ -118,9 +120,9 @@ const ProfileSettings = () => {
   const renderProfileTab = () => (
     <div className="tab-content">
       <div className="settings-section">
-        <h3>Personal Information</h3>
+        <h3>{t('profile_settings_personal_info')}</h3>
         <div className="form-group">
-          <label>Name</label>
+          <label>{t('profile_settings_name')}</label>
           <input
             type="text"
             name="name"
@@ -129,7 +131,7 @@ const ProfileSettings = () => {
           />
         </div>
         <div className="form-group">
-          <label>Email</label>
+          <label>{t('profile_settings_email')}</label>
           <input
             type="email"
             name="email"
@@ -138,7 +140,7 @@ const ProfileSettings = () => {
           />
         </div>
         <div className="form-group">
-          <label>Phone</label>
+          <label>{t('profile_settings_phone')}</label>
           <input
             type="text"
             name="phone"
@@ -149,9 +151,9 @@ const ProfileSettings = () => {
       </div>
       <hr />
       <div className="settings-section">
-        <h3>Change Password</h3>
+        <h3>{t('profile_settings_change_password')}</h3>
         <div className="form-group">
-          <label>Old Password</label>
+          <label>{t('profile_settings_old_password')}</label>
           <input
             type="password"
             name="oldPassword"
@@ -160,7 +162,7 @@ const ProfileSettings = () => {
           />
         </div>
         <div className="form-group">
-          <label>New Password</label>
+          <label>{t('profile_settings_new_password')}</label>
           <input
             type="password"
             name="newPassword"
@@ -169,7 +171,7 @@ const ProfileSettings = () => {
           />
         </div>
         <div className="form-group">
-          <label>Repeat Password</label>
+          <label>{t('profile_settings_repeat_password')}</label>
           <input
             type="password"
             name="repeatPassword"
@@ -194,7 +196,7 @@ const ProfileSettings = () => {
                 checked={notifications.orderStatusUpdates}
                 onChange={handleNotificationChange}
               />
-              <span className="setting-text">Order status updates</span>
+              <span className="setting-text">{t('profile_settings_order_status_updates')}</span>
             </label>
           </div>
           <div className="setting-item">
@@ -205,7 +207,7 @@ const ProfileSettings = () => {
                 checked={notifications.messagesFromBakers}
                 onChange={handleNotificationChange}
               />
-              <span className="setting-text">Messages from bakers</span>
+              <span className="setting-text">{t('profile_settings_messages_from_bakers')}</span>
             </label>
           </div>
         </div>
@@ -222,7 +224,7 @@ const ProfileSettings = () => {
                 checked={notifications.promotionalOffers}
                 onChange={handleNotificationChange}
               />
-              <span className="setting-text">Promotional offers and discounts</span>
+              <span className="setting-text">{t('profile_settings_promotional_offers')}</span>
             </label>
           </div>
           <div className="setting-item">
@@ -233,7 +235,7 @@ const ProfileSettings = () => {
                 checked={notifications.newProductsAndFeatures}
                 onChange={handleNotificationChange}
               />
-              <span className="setting-text">New products and features</span>
+              <span className="setting-text">{t('profile_settings_new_products_features')}</span>
             </label>
           </div>
           <div className="setting-item">
@@ -244,7 +246,7 @@ const ProfileSettings = () => {
                 checked={notifications.weeklyEmailDigest}
                 onChange={handleNotificationChange}
               />
-              <span className="setting-text">Weekly email digest</span>
+              <span className="setting-text">{t('profile_settings_weekly_email_digest')}</span>
             </label>
           </div>
         </div>

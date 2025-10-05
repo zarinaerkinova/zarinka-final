@@ -276,7 +276,7 @@ const EditProfile = () => {
 						</label>
 						<label htmlFor='profileImageUpload' className='upload-icon'></label>
 					</div>
-					{imageFile && <p className="selected-file-info">Selected file: {imageFile.name}</p>}
+					{/* {imageFile && <p className="selected-file-info">Selected file: {imageFile.name}</p>} */}
 				</div>
 				<div className='form-group'>
 					<label>Name</label>

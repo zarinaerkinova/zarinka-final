@@ -4,6 +4,7 @@ import { useUserStore } from '../../store/User';
 import { useOrderStore } from '../../store/Order';
 import { useReviewStore } from '../../store/review';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import toast from 'react-hot-toast';
 import OrderCard from '../../components/OrderCard/OrderCard';
 import Card from '../../components/Card.jsx';
@@ -11,6 +12,7 @@ import { FaStar } from "react-icons/fa6";
 import './UserProfile.scss';
 
 const UserProfile = () => {
+        const { t } = useTranslation();
         const {
             user,
             userInfo,
@@ -37,17 +39,17 @@ const UserProfile = () => {
     const getStatusLabel = status => {
         switch (status) {
             case 'pending':
-                return 'Ожидает'
+                return t('order_status_pending') || 'Ожидает'
             case 'accepted':
-                return 'Принят'
+                return t('order_status_accepted') || 'Принят'
             case 'confirmed':
-                return 'Готовка'
+                return t('order_status_confirmed') || 'Готовка'
             case 'shipped':
-                return 'Доставка'
+                return t('order_status_shipped') || 'Доставка'
             case 'delivered':
-                return 'Доставлен'
+                return t('order_status_delivered') || 'Доставлен'
             case 'declined':
-                return 'Отклонен'
+                return t('order_status_declined') || 'Отклонен'
             default:
                 return status
         }
@@ -69,30 +71,30 @@ const UserProfile = () => {
     }
 
     const handleDeleteOrder = async (orderId) => {
-        if (!window.confirm('Вы уверены, что хотите удалить этот заказ? Это действие нельзя отменить.')) {
+        if (!window.confirm(t('profile_confirm_delete_order') || 'Вы уверены, что хотите удалить этот заказ? Это действие нельзя отменить.')) {
             return;
         }
 
         try {
             await deleteUserOrder(token, orderId);
-            toast.success('Заказ успешно удален');
+            toast.success(t('profile_order_deleted_success') || 'Заказ успешно удален');
         } catch (error) {
             console.error('Error deleting order:', error);
-            toast.error('Ошибка при удалении заказа');
+            toast.error(t('profile_order_delete_error') || 'Ошибка при удалении заказа');
         }
     }
 
     const handleDeleteReview = async (reviewId) => {
-        if (!window.confirm('Вы уверены, что хотите удалить этот отзыв? Это действие нельзя отменить.')) {
+        if (!window.confirm(t('profile_confirm_delete_review') || 'Вы уверены, что хотите удалить этот отзыв? Это действие нельзя отменить.')) {
             return;
         }
 
         try {
             await deleteUserReview(reviewId, token);
-            toast.success('Отзыв успешно удален');
+            toast.success(t('profile_review_deleted_success') || 'Отзыв успешно удален');
         } catch (error) {
             console.error('Error deleting review:', error);
-            toast.error('Ошибка при удалении отзыва');
+            toast.error(t('profile_review_delete_error') || 'Ошибка при удалении отзыва');
         }
     }
     
@@ -119,10 +121,10 @@ const UserProfile = () => {
         }, [userInfo]);
     
         const handleLogout = () => {
-            toast((t) => (
+            toast((toastInstance) => (
                 <div style={{ textAlign: 'center' }}>
                     <p style={{ margin: '0 0 12px 0', fontWeight: '500' }}>
-                        Вы уверены, что хотите выйти?
+                        {t('profile_confirm_logout') || 'Вы уверены, что хотите выйти?'}
                     </p>
                     <div style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}>
                         <button
@@ -136,12 +138,12 @@ const UserProfile = () => {
                                 cursor: 'pointer'
                             }}
                             onClick={() => {
-                                toast.dismiss(t.id);
+                                toast.dismiss(toastInstance.id);
                                 logoutUser();
                                 navigate('/register');
                             }}
                         >
-                            Выйти
+                            {t('profile_logout') || 'Выйти'}
                         </button>
                         <button
                             style={{

@@ -4,7 +4,10 @@ import BakerCard from '../../components/BakerCard.jsx';
 import { useBakerStore } from '../../store/Baker.js';
 import { useLoadingStore } from '../../store/Loading'; // Import useLoadingStore
 
+import { useTranslation } from 'react-i18next';
+
 const BakersPage = () => {
+    const { t } = useTranslation();
     const { bakers, fetchBakers } = useBakerStore();
     const { setLoading } = useLoadingStore(); // Get setLoading from global store
     const [searchTerm, setSearchTerm] = useState('');
@@ -137,12 +140,12 @@ const BakersPage = () => {
     return (
         <main>
             <div className="menu">
-                <h2>Filters</h2>
+                <h2>{t('bakers_page_filters')}</h2>
                 <div className="filter-section">
-                    <h3>Search</h3>
+                    <h3>{t('bakers_page_search')}</h3>
                     <input
                         type="text"
-                        placeholder="Search by name or bakery..."
+                        placeholder={t('bakers_page_search_placeholder')}
                         value={searchTerm}
                         onChange={handleSearchChange}
                         className="search-input"
@@ -150,49 +153,49 @@ const BakersPage = () => {
                 </div>
 
                 <div className="filter-section">
-                    <h3>Location</h3>
+                    <h3>{t('bakers_page_location')}</h3>
                     <select value={location} onChange={handleLocationChange} className="filter-select">
-                        <option value="">All Locations</option>
-                        <option value="Tashkent">Tashkent</option>
-                        <option value="Samarkand">Samarkand</option>
-                        <option value="Bukhara">Bukhara</option>
-                        <option value="Fergana">Fergana</option>
+                        <option value="">{t('bakers_page_all_locations')}</option>
+                        <option value="Tashkent">{t('bakers_page_tashkent')}</option>
+                        <option value="Samarkand">{t('bakers_page_samarkand')}</option>
+                        <option value="Bukhara">{t('bakers_page_bukhara')}</option>
+                        <option value="Fergana">{t('bakers_page_fergana')}</option>
                     </select>
                 </div>
 
                 <div className="filter-section">
-                    <h3>Availability</h3>
+                    <h3>{t('bakers_page_availability')}</h3>
                     <select value={availability} onChange={handleAvailabilityChange} className="filter-select">
-                        <option value="all">All Availability</option>
-                        <option value="available">Available</option>
-                        <option value="unavailable">Unavailable</option>
+                        <option value="all">{t('bakers_page_all_availability')}</option>
+                        <option value="available">{t('bakers_page_available')}</option>
+                        <option value="unavailable">{t('bakers_page_unavailable')}</option>
                     </select>
                 </div>
 
                 <div className="filter-section">
-                    <h3>Rating (from)</h3>
+                    <h3>{t('bakers_page_rating')}</h3>
                     <select value={rating} onChange={handleRatingChange} className="filter-select">
-                        <option value="0">All Ratings</option>
-                        <option value="5">5 Stars & Up</option>
-                        <option value="4">4 Stars & Up</option>
-                        <option value="3">3 Stars & Up</option>
-                        <option value="2">2 Stars & Up</option>
+                        <option value="0">{t('bakers_page_all_ratings')}</option>
+                        <option value="5">{t('bakers_page_5_stars')}</option>
+                        <option value="4">{t('bakers_page_4_stars')}</option>
+                        <option value="3">{t('bakers_page_3_stars')}</option>
+                        <option value="2">{t('bakers_page_2_stars')}</option>
                     </select>
                 </div>
             </div>
             <div className="catalogue">
-                <h2>Find Bakers</h2>
+                <h2>{t('bakers_page_find_bakers')}</h2>
                 <div className="catalogue_content">
                     {currentBakers.length > 0 ? (
                         currentBakers.map(baker => (
                             <BakerCard key={baker._id} baker={baker} />
                         ))
                     ) : (
-                        <p className="no-bakers-message">No bakers found matching your criteria.</p>
+                        <p className="no-bakers-message">{t('bakers_page_no_bakers')}</p>
                     )}
                 </div>
                 {hasMoreBakers && (
-                    <button onClick={loadMoreBakers} className="load-more-button">Load More</button>
+                    <button onClick={loadMoreBakers} className="load-more-button">{t('bakers_page_load_more')}</button>
                 )}
             </div>
         </main>

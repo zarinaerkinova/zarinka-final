@@ -1,5 +1,6 @@
-import { useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import DashboardOrderCard from '../../components/DashboardOrderCard/DashboardOrderCard'
 import DashboardProductCard from '../../components/DashboardProductCard/DashboardProductCard'
 import { useOrderStore } from '../../store/Order'
@@ -8,6 +9,7 @@ import { useUserStore } from '../../store/User'
 import './BakerDashboard.scss'
 
 const BakerDashboard = () => {
+	const { t } = useTranslation()
 	const { userInfo, fetchProfile, logoutUser, token } = useUserStore()
 	const { newOrders, completedOrders, allBakerOrders, fetchBakerOrders } =
 		useOrderStore()
@@ -54,7 +56,7 @@ const BakerDashboard = () => {
 									{userInfo?.image ? (
 										<img
 											src={userInfo.image.startsWith('http') ? userInfo.image : `${import.meta.env.VITE_BACKEND_BASE_URL}${userInfo.image}`}
-											alt='Baker Profile'
+											alt={t('baker_dashboard_baker_profile')}
 											className='baker-profile-image'
 										/>
 									) : (
@@ -94,17 +96,17 @@ const BakerDashboard = () => {
 						<div className='dashboard-button-group'>
 							<Link to='/addproduct' className='btn-group-btn'>
 								<span className='btn-icon'>➕</span>
-								<span className='btn-text'>Add Product</span>
+								<span className='btn-text'>{t('baker_dashboard_add_product')}</span>
 							</Link>
 
 							<Link to='/product-list' className='btn-group-btn'>
 								<span className='btn-icon'>📦</span>
-								<span className='btn-text'>Manage Products</span>
+								<span className='btn-text'>{t('baker_dashboard_manage_products')}</span>
 							</Link>
 
 							<Link to='/edit-profile' className='btn-group-btn'>
 								<span className='btn-icon'>👤</span>
-								<span className='btn-text'>Edit Profile</span>
+								<span className='btn-text'>{t('baker_dashboard_edit_profile')}</span>
 							</Link>
 						</div>
 					</div>
@@ -115,9 +117,9 @@ const BakerDashboard = () => {
 					<Link to='/baker/orders/new' className='stat-card new-orders'>
 						<div className='stat-icon'>📋</div>
 						<div className='stat-content'>
-							<h3>New Orders</h3>
+							<h3>{t('baker_dashboard_new_orders')}</h3>
 							<p className='stat-number'>{newOrders.length}</p>
-							<span className='stat-label'>Pending</span>
+							<span className='stat-label'>{t('baker_dashboard_pending')}</span>
 						</div>
 						<div className='stat-trend'>
 							<span className='trend-up'>↗</span>
@@ -130,9 +132,9 @@ const BakerDashboard = () => {
 					>
 						<div className='stat-icon'>✅</div>
 						<div className='stat-content'>
-							<h3>Completed</h3>
+							<h3>{t('baker_dashboard_completed')}</h3>
 							<p className='stat-number'>{completedOrders.length}</p>
-							<span className='stat-label'>Finished</span>
+							<span className='stat-label'>{t('baker_dashboard_finished')}</span>
 						</div>
 						<div className='stat-trend'>
 							<span className='trend-up'>↗</span>
@@ -142,11 +144,11 @@ const BakerDashboard = () => {
 					<Link to='/baker/reviews' className='stat-card rating-card'>
 						<div className='stat-icon'>⭐</div>
 						<div className='stat-content'>
-							<h3>Rating</h3>
+							<h3>{t('baker_dashboard_rating')}</h3>
 							<p className='stat-number'>
 								{userInfo?.rating?.toFixed(1) || 'N/A'}
 							</p>
-							<span className='stat-label'>Average</span>
+							<span className='stat-label'>{t('baker_dashboard_average')}</span>
 						</div>
 						<div className='stat-trend'>
 							<span className='trend-up'>↗</span>
@@ -159,9 +161,9 @@ const BakerDashboard = () => {
 					{/* Orders Section */}
 					<section className='orders-section'>
 						<div className='section-header'>
-							<h2>Recent Orders</h2>
+							<h2>{t('baker_dashboard_recent_orders')}</h2>
 							<Link to={'/all-orders'} className='view-all-btn'>
-								View All →
+								{t('baker_dashboard_view_all')} →
 							</Link>
 
 						</div>
@@ -175,7 +177,7 @@ const BakerDashboard = () => {
 							) : (
 								<div className='empty-state'>
 									<div className='empty-icon'>📦</div>
-									<p>No orders found.</p>
+									<p>{t('baker_dashboard_no_orders')}</p>
 								</div>
 							)}
 						</div>
