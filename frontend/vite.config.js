@@ -1,18 +1,14 @@
 import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
 
+// ✅ This configuration works for both local dev and production (GitHub Pages or custom domain)
 export default defineConfig({
-  plugins: [react()],
-  base: '/zarinka-final/',
+  base: './', // Important for GitHub Pages and custom domains (fixes blank page / 404 issues)
   server: {
     host: 'localhost',
     port: 5173,
-    hmr: {
-      port: 5173,
-    },
     proxy: {
       '/api': {
-        target: 'http://localhost:5000',
+        target: 'http://localhost:5000', // local backend
         changeOrigin: true,
         secure: false,
       },
@@ -25,5 +21,6 @@ export default defineConfig({
   },
   build: {
     outDir: 'dist',
+    sourcemap: false, // optional, can set true if you want debugging in production
   },
 })
