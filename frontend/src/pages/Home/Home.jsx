@@ -49,7 +49,7 @@ const Home = () => {
 	useEffect(() => {
 		const fetchBakers = async () => {
 			try {
-				const res = await axios.get('/api/auth/bakers')
+				const res = await axios.get(`${API_URL}/api/auth/bakers`)
 				setBakers(res.data)
 				setLoading(false)
 			} catch (err) {

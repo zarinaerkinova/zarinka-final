@@ -1,6 +1,7 @@
 import { create } from 'zustand'
 import api from '../config/axios.js'
-import { useLoadingStore } from './Loading.js' // Import useLoadingStore
+import { useLoadingStore } from './Loading.js'
+const API_URL = import.meta.env.VITE_API_URL;
 
 export const useProductStore = create(set => ({
 	products: [],
@@ -114,7 +115,7 @@ export const useProductStore = create(set => ({
 		const setLoading = useLoadingStore.getState().setLoading;
 		setLoading(true);
 		try {
-			const res = await api.get(`/products/${productId}`, {
+			const res = await api.get(`${API_URL}/products/${productId}`, {
 				timeout: 15000
 			});
 			return res.data || null;
@@ -181,7 +182,7 @@ export const useProductStore = create(set => ({
 
 		set({ error: '' });
 		try {
-			const res = await api.get(`/products/bakers/${bakerId}`, {
+			const res = await api.get(`${API_URL}/products/bakers/${bakerId}`, {
 				timeout: 15000
 			});
 			set({ bakerProducts: res.data || [] });
@@ -201,7 +202,7 @@ export const useProductStore = create(set => ({
 		setLoading(true);
 		set({ error: '' });
 		try {
-			const res = await api.get('/categories', {
+			const res = await api.get(`${API_URL}/categories`, {
 				timeout: 15000
 			});
 
@@ -252,7 +253,7 @@ export const useProductStore = create(set => ({
 		}
 
 		try {
-			const res = await api.delete(`/products/${productId}`, {
+			const res = await api.delete(`${API_URL}/products/${productId}`, {
 				headers: { Authorization: `Bearer ${token}` },
 				timeout: 15000
 			});
@@ -294,7 +295,7 @@ export const useProductStore = create(set => ({
 		}
 
 		try {
-			const res = await api.put(`/products/${productId}`, productData, {
+			const res = await api.put(`${API_URL}/products/${productId}`, productData, {
 				headers: {
 					Authorization: `Bearer ${token}`,
 				},

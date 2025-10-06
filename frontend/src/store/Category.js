@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+const API_URL = import.meta.env.VITE_API_URL;
 
 export const useCategoryStore = create((set) => ({
     categories: [],
@@ -9,7 +10,7 @@ export const useCategoryStore = create((set) => ({
     createCategory: async (categoryData, token) => {
         set({ loading: true, error: '', success: '' });
         try {
-            const res = await fetch('/api/categories', {
+            const res = await fetch(`${API_URL}/api/categories`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -41,7 +42,7 @@ export const useCategoryStore = create((set) => ({
     fetchCategories: async () => {
         set({ loading: true, error: '' });
         try {
-            const res = await fetch('/api/categories');
+            const res = await fetch(`${API_URL}/api/categories`);
             const response = await res.json();
             if (!res.ok) throw new Error(response.message || 'Failed to fetch categories');
 
@@ -56,7 +57,7 @@ export const useCategoryStore = create((set) => ({
     updateCategory: async (categoryId, categoryData, token) => {
         set({ loading: true, error: '', success: '' });
         try {
-            const res = await fetch(`/api/categories/${categoryId}`, {
+            const res = await fetch(`${API_URL}/api/categories/${categoryId}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -90,7 +91,7 @@ export const useCategoryStore = create((set) => ({
     deleteCategory: async (categoryId, token) => {
         set({ loading: true, error: '', success: '' });
         try {
-            const res = await fetch(`/api/categories/${categoryId}`, {
+            const res = await fetch(`${API_URL}/api/categories/${categoryId}`, {
                 method: 'DELETE',
                 headers: {
                     Authorization: `Bearer ${token}`,

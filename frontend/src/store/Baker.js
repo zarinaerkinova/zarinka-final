@@ -1,7 +1,6 @@
 import { create } from 'zustand'
 import { useLoadingStore } from './Loading.js' // Import useLoadingStore
-
-
+const API_URL = import.meta.env.VITE_API_URL;
 
 export const useBakerStore = create(set => ({
 	bakers: [],
@@ -11,7 +10,7 @@ export const useBakerStore = create(set => ({
 		const setLoadingGlobal = useLoadingStore.getState().setLoading; // Get global setLoading
 		setLoadingGlobal(true); // Set global loading to true
 		try {
-			const response = await fetch('/api/auth/bakers');
+			const response = await fetch(`${API_URL}/api/auth/bakers`);
 			if (!response.ok) {
 				const errorData = await response.json();
 				console.error('Failed to fetch bakers:', errorData.msg || response.statusText);
@@ -32,7 +31,7 @@ export const useBakerStore = create(set => ({
 		const setLoadingGlobal = useLoadingStore.getState().setLoading; // Get global setLoading
 		setLoadingGlobal(true); // Set global loading to true
 		try {
-			const response = await fetch(`/api/auth/bakers/${bakerId}`);
+			const response = await fetch(`${API_URL}/api/auth/bakers/${bakerId}`);
 			if (!response.ok) {
 				const errorData = await response.json();
 				console.error(`Failed to fetch baker ${bakerId}:`, errorData.msg || response.statusText);
