@@ -1,11 +1,17 @@
 {
-  "name": "project",
+  "name": "zarinka",
   "version": "1.0.0",
   "description": "Cake bakery application with backend API and frontend",
   "main": "index.js",
   "scripts": {
-    "dev": "nodemon backend/index.js",
-    "start": "node backend/index.js"
+    "server": "nodemon backend/index.js",
+    "start": "node backend/index.js",
+    "dev": "vite",
+    "build": "vite build",
+    "lint": "eslint .",
+    "preview": "vite preview",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d dist"
   },
   "repository": {
     "type": "git",
@@ -18,7 +24,7 @@
   "bugs": {
     "url": "https://github.com/zarinaerkinova/zarinka-final/issues"
   },
-  "homepage": "https://github.com/zarinaerkinova/zarinka-final/blob/main/README.md",
+  "homepage": "https://zarinaerkinova.github.io/zarinka-final",
   "dependencies": {
     "@tailwindcss/vite": "^4.1.11",
     "bcrypt": "^5.1.1",
