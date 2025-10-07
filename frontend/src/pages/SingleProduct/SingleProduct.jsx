@@ -29,26 +29,16 @@ const SingleProduct = () => {
                 const data = await res.json();
                 
                 if (res.ok) {
-                    const fetchedProduct = {
-                        ...data.data,
-                        images: [
-                            data.data.image, // Use the existing image as the first image
+                    const fetchedProduct = data.data;
+                    // Ensure images is an array, and add placeholders if needed for the gallery
+                    if (typeof fetchedProduct.image === 'string') {
+                        fetchedProduct.images = [
+                            fetchedProduct.image,
                             'https://via.placeholder.com/600/FF0000/FFFFFF?text=Product+Image+2',
-                            'https://via.placeholder.com/600/00FF00/FFFFFF?text=Product+Image+3',
-                        ],
-                        rating: (Math.random() * (5 - 3) + 3).toFixed(1), // Random rating between 3 and 5
-                        orderCount: Math.floor(Math.random() * 1000) + 50, // Random order count
-                        preparationTime: `${Math.floor(Math.random() * 3) + 1} hours`,
-                        fullDescription: `This is a much longer and more detailed description of the product. It covers all the amazing features, the quality of ingredients, and the passion that goes into making it. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.`,
-                        fullIngredients: `Flour, Sugar, Eggs, Butter, Milk, Baking Powder, Vanilla Extract, Salt. May contain traces of nuts and other allergens. Please check the label for detailed allergen information.`,
-                        servingSizes: [
-                            { size: 'Small', price: data.data.price },
-                            { size: 'Medium', price: (data.data.price * 1.5).toFixed(2) },
-                            { size: 'Large', price: (data.data.price * 2).toFixed(2) },
-                        ],
-                    };
+                            'https://via.placeholder.com/600/00FF00/FFFFFF?text=Product+Image+3'
+                        ];
+                    }
                     setProduct(fetchedProduct);
-                    setSelectedServingSize(fetchedProduct.servingSizes[0].size); // Set initial serving size
                 } else {
                     setError(data.message || t('single_product_not_found'));
                 }
@@ -63,11 +53,17 @@ const SingleProduct = () => {
         if (productId) {
             fetchProduct();
         }
-    }, [productId]);
+    }, [productId, t]);
+
+    useEffect(() => {
+        if (product && product.sizes && product.sizes.length > 0) {
+            setSelectedServingSize(product.sizes[0].label);
+        }
+    }, [product]);
 
     const handleAddToCart = () => {
         try {
-            const selectedSize = product.servingSizes.find(size => size.size === selectedServingSize);
+            const selectedSize = product.sizes.find(size => size.label === selectedServingSize);
             if (product && selectedSize) {
                 addToCart({ ...product, selectedSize });
                 toast.success(t('single_product_success_add_cart'));
@@ -94,14 +90,17 @@ const SingleProduct = () => {
     };
 
     const handleBuyNow = () => {
-        const selectedSize = product.servingSizes.find(size => size.size === selectedServingSize);
+        const selectedSize = product.sizes.find(size => size.label === selectedServingSize);
         if (product && selectedSize) {
             addToCart({ ...product, selectedSize });
             navigate('/checkout'); // Navigate to checkout page
         }
     };
 
-    const currentPrice = product ? product.servingSizes.find(size => size.size === selectedServingSize)?.price || product.price : 0;
+    const currentPrice = product && product.sizes && product.sizes.length > 0 
+    ? product.sizes.find(size => size.label === selectedServingSize)?.price || product.price 
+    : product?.price || 0;
+
 
     if (loading) {
         return (
@@ -138,7 +137,7 @@ const SingleProduct = () => {
                         alt={product.name}
                         className="product-image"
                     />
-                    {product.images.length > 1 && (
+                    {product.images && product.images.length > 1 && (
                         <div className="image-thumbnails">
                             {product.images.map((img, index) => (
                                 <img
@@ -159,7 +158,7 @@ const SingleProduct = () => {
                         <div className="product-rating-order-count">
                             <div className="product-rating">
                                 <span className="star-icon">⭐</span>
-                                {product.rating} ({product.orderCount} orders)
+                                {product.rating?.average || 0} ({product.orderCount || 0} orders)
                             </div>
                         </div>
                     </div>
@@ -173,24 +172,29 @@ const SingleProduct = () => {
                     </div>
 
                     <div className="product-meta-info">
-                        <div className="meta-item">
-                            <strong>{t('single_product_serving_size')}:</strong>
-                            <select
-                                value={selectedServingSize}
-                                onChange={(e) => setSelectedServingSize(e.target.value)}
-                                className="serving-size-select"
-                            >
-                                {product.servingSizes.map((size, index) => (
-                                    <option key={index} value={size.size}>
-                                        {size.size} - {size.price}₽
-                                    </option>
-                                ))}
-                            </select>
-                        </div>
-                        <div className="meta-item">
-                            <strong>{t('single_product_preparation_time')}:</strong> {product.preparationTime}
-                        </div>
-                    </div>
+    <div className="meta-item">
+        <strong>{t('single_product_serving_size')}:</strong>
+        {product.sizes && product.sizes.length > 0 ? (
+            <select
+                value={selectedServingSize}
+                onChange={(e) => setSelectedServingSize(e.target.value)}
+                className="serving-size-select"
+            >
+                {product.sizes.map((size, index) => (
+                    <option key={index} value={size.label}>
+                        {size.label} - {size.price}₽
+                    </option>
+                ))}
+            </select>
+        ) : (
+            <span>{t('single_product_size_not_available')}</span>
+        )}
+    </div>
+    <div className="meta-item">
+        <strong>{t('single_product_preparation_time')}:</strong> {product.preparationTime}
+    </div>
+</div>
+
 
                     <div className="product-price-section">
                         <div className="product-price">
@@ -199,8 +203,8 @@ const SingleProduct = () => {
                         </div>
                     </div>
 
-                    <Accordion title={t('single_product_full_description')} content={product.fullDescription} />
-                    <Accordion title={t('single_product_full_ingredients')} content={product.fullIngredients} />
+                    <Accordion title={t('single_product_full_description')} content={product.description} />
+                    <Accordion title={t('single_product_full_ingredients')} content={product.ingredients?.join(', ')} />
 
                     <div className="product-actions">
                         <button className="customize-btn" onClick={handleCustomize}>

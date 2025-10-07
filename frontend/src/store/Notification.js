@@ -52,4 +52,28 @@ export const useNotificationStore = create((set, get) => ({
       console.error('Failed to mark all notifications as read:', error);
     }
   },
+
+  deleteNotification: async (notificationId, token) => {
+    try {
+      await api.delete(`/notifications/${notificationId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      set(state => ({
+        notifications: state.notifications.filter(n => n._id !== notificationId),
+      }));
+    } catch (error) {
+      console.error('Failed to delete notification:', error);
+    }
+  },
+
+  deleteAllNotifications: async (token) => {
+    try {
+      await api.delete('/notifications', {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      set({ notifications: [], unreadCount: 0 });
+    } catch (error) {
+      console.error('Failed to delete all notifications:', error);
+    }
+  },
 }));

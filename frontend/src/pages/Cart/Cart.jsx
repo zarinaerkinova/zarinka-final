@@ -60,7 +60,7 @@ const Cart = () => {
 		const price = item.price ?? item.product?.price ?? 0
 		return sum + price * item.quantity
 	}, 0)
-	const deliveryPrice = total > 500 ? 0 : 500 // Placeholder for delivery price
+	const deliveryPrice = total > 50000 ? 0 : 20000 // Placeholder for delivery price
 
 	const handleCheckout = () => {
 		navigate('/checkout', { state: { cart } })

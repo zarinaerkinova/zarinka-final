@@ -5,6 +5,8 @@ import './App.css'
 import Footer from './components/Footer/Footer.jsx'
 import LoadingBar from './components/LoadingBar/LoadingBar.jsx' // Import LoadingBar
 import Navbar from './components/Navbar/Navbar.jsx'
+import ScrollToTop from './components/ScrollToTop/ScrollToTop.jsx'
+import { motion, AnimatePresence } from 'framer-motion';
 import OnlyAdmins from './components/OnlyAdmins.jsx'
 import OnlyAuthorized from './components/OnlyAuthorized/OnlyAuthorized.jsx'
 import AddProduct from './pages/AddProduct/AddProduct.jsx'
@@ -42,136 +44,143 @@ function App() {
 	return (
 		<div className='App'>
 			<Navbar />
+			<ScrollToTop />
 			<LoadingBar /> {/* Add LoadingBar here */}
-			<div key={location.pathname} className='page-transition-container'>
-				{' '}
-				{/* Add key and class */}
-				<Routes>
-					<Route path='/' element={<Home />} />
+			<AnimatePresence mode="wait">
+				<motion.div
+					key={location.pathname}
+					initial={{ opacity: 0, x: -200 }}
+					animate={{ opacity: 1, x: 0 }}
+					exit={{ opacity: 0, x: 200 }}
+					transition={{ duration: 0.5 }}
+				>
+					<Routes location={location}>
+						<Route path='/' element={<Home />} />
 
-					<Route
-						path='/cakes'
-						element={
-							// <OnlyUsers>
-							<Cakes />
-							// </OnlyUsers>
-						}
-					/>
-					<Route path='/cakes/:productId' element={<CakeDetails />} />
-					<Route path='/product/:productId' element={<CakeDetails />} />
-					<Route
-						path='/bakers'
-						element={
-							// <OnlyUsers>
-							<Bakers />
-							// </OnlyUsers>
-						}
-					/>
-					<Route
-						path='/bakers/:bakerId'
-						element={
-							// <OnlyUsers>
-							<BakerDetail />
-							// </OnlyUsers>
-						}
-					/>
-					<Route path='/cart' element={<Cart />} />
-					<Route path='/favorite' element={<Favorite />} />
-					<Route path='/help' element={<Help />} />
-					<Route path='/contact' element={<Contact />} />
-					<Route path='/checkout' element={<Checkout />} />
-					<Route path='/my-orders' element={<MyOrders />} />
-					<Route path='/baker-orders' element={<BakerOrders />} />
-					<Route path='/notifications' element={<Notifications />} />
-					<Route path='/baker/reviews' element={<BakerReviews />} />
-					<Route path='/all-orders' element={<AllOrders />} />
+						<Route
+							path='/cakes'
+							element={
+								// <OnlyUsers>
+								<Cakes />
+								// </OnlyUsers>
+							}
+						/>
+						<Route path='/cakes/:productId' element={<CakeDetails />} />
+						<Route path='/product/:productId' element={<CakeDetails />} />
+						<Route
+							path='/bakers'
+							element={
+								// <OnlyUsers>
+								<Bakers />
+								// </OnlyUsers>
+							}
+						/>
+						<Route
+							path='/bakers/:bakerId'
+							element={
+								// <OnlyUsers>
+								<BakerDetail />
+								// </OnlyUsers>
+							}
+						/>
+						<Route path='/cart' element={<Cart />} />
+						<Route path='/favorite' element={<Favorite />} />
+						<Route path='/help' element={<Help />} />
+						<Route path='/contact' element={<Contact />} />
+						<Route path='/checkout' element={<Checkout />} />
+						<Route path='/my-orders' element={<MyOrders />} />
+						<Route path='/baker-orders' element={<BakerOrders />} />
+						<Route path='/notifications' element={<Notifications />} />
+						<Route path='/baker/reviews' element={<BakerReviews />} />
+						<Route path='/all-orders' element={<AllOrders />} />
 
-					<Route
-						path='/addproduct'
-						element={
-							<OnlyAdmins>
-								<AddProduct />
-							</OnlyAdmins>
-						}
-					/>
-					<Route
-						path='/manage-products'
-						element={
-							<OnlyAdmins>
-								<BakerDashboard />
-							</OnlyAdmins>
-						}
-					/>
-					<Route
-						path='/product-list'
-						element={
-							<OnlyAdmins>
-								<ProductList />
-							</OnlyAdmins>
-						}
-					/>
-					<Route
-						path='/edit-product/:productId'
-						element={
-							<OnlyAdmins>
-								<EditProduct />
-							</OnlyAdmins>
-						}
-					/>
-					<Route
-						path='/baker/orders/new'
-						element={
-							<OnlyAdmins>
-								<NewOrders />
-							</OnlyAdmins>
-						}
-					/>
-					<Route
-						path='/baker/orders/completed'
-						element={
-							<OnlyAdmins>
-								<CompletedOrders />
-							</OnlyAdmins>
-						}
-					/>
+						<Route
+							path='/addproduct'
+							element={
+								<OnlyAdmins>
+									<AddProduct />
+								</OnlyAdmins>
+							}
+						/>
+						<Route
+							path='/manage-products'
+							element={
+								<OnlyAdmins>
+									<BakerDashboard />
+								</OnlyAdmins>
+							}
+						/>
+						<Route
+							path='/product-list'
+							element={
+								<OnlyAdmins>
+									<ProductList />
+								</OnlyAdmins>
+							}
+						/>
+						<Route
+							path='/edit-product/:productId'
+							element={
+								<OnlyAdmins>
+									<EditProduct />
+								</OnlyAdmins>
+							}
+						/>
+						<Route
+							path='/baker/orders/new'
+							element={
+								<OnlyAdmins>
+									<NewOrders />
+								</OnlyAdmins>
+							}
+						/>
+						<Route
+							path='/baker/orders/completed'
+							element={
+								<OnlyAdmins>
+									<CompletedOrders />
+								</OnlyAdmins>
+							}
+						/>
 
-					<Route path='/register' element={<Auth />} />
-					<Route
-						path='/profile'
-						element={
-							<OnlyAuthorized>
-								<Profile />
+						<Route path='/register' element={<Auth />} />
+						<Route
+							path='/profile'
+							element={
+								<OnlyAuthorized>
+									<Profile />
 							</OnlyAuthorized>
-						}
-					/>
-					<Route
-						path='/edit-profile'
-						element={
-							<OnlyAuthorized>
-								<EditProfile />
+							}
+						/>
+						<Route
+							path='/edit-profile'
+							element={
+								<OnlyAuthorized>
+									<EditProfile />
 							</OnlyAuthorized>
-						}
-					/>
-					<Route
-						path='/settings'
-						element={
-							<OnlyAuthorized>
-								<ProfileSettings />
+							}
+						/>
+						<Route
+							path='/settings'
+							element={
+								<OnlyAuthorized>
+									<ProfileSettings />
 							</OnlyAuthorized>
-						}
-					/>
-					<Route
-						path='/availability'
-						element={
-							<OnlyAuthorized>
-								<AvailabilitySettings />
+							}
+						/>
+						<Route
+							path='/availability'
+							element={
+								<OnlyAuthorized>
+									<AvailabilitySettings />
 							</OnlyAuthorized>
-						}
-					/>
-					<Route path='/custom' element={<Custom />} />
-					<Route path='/review/:orderId' element={<ReviewSubmission />} />
-				</Routes>
-			</div>
+							}
+						/>
+						<Route path='/custom' element={<Custom />} />
+						<Route path='/review/:orderId' element={<ReviewSubmission />} />
+					</Routes>
+				</motion.div>
+			</AnimatePresence>
 			<Footer />
 			<Toaster position='top-right' reverseOrder={false} />
 		</div>

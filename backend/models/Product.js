@@ -9,7 +9,7 @@ const productSchema = new mongoose.Schema({
 
     ingredients: {
         type: [String], // list of ingredients
-        required: true
+        required: false
     },
 
     sizes: [
