@@ -30,23 +30,31 @@ const app = express()
 app.use('/uploads', express.static(path.join(__dirname, '..', 'uploads')))
 console.log('Serving static files from:', path.join(__dirname, '..', 'uploads'))
 
-// Middleware
 const allowedOrigins = [
-	process.env.FRONTEND_URL || 'http://localhost:5173',
-	'http://localhost:3000',
-	'http://127.0.0.1:5173',
-	'https://zarinka-final-1.onrender.com',
-]
+	"http://localhost:5173",
+	"http://localhost:3000",
+	"http://127.0.0.1:5173",
+	"https://zarinka.uz",
+	"https://www.zarinka.uz",
+];
+
 app.use(
 	cors({
-		origin: function (origin, callback) {
-			if (!origin) return callback(null, true)
-			if (allowedOrigins.some(o => o === origin)) return callback(null, true)
-			return callback(new Error('Not allowed by CORS'))
+		origin: (origin, callback) => {
+			// Allow requests with no origin (like mobile apps or curl)
+			if (!origin) return callback(null, true);
+
+			if (allowedOrigins.includes(origin)) {
+				return callback(null, true);
+			} else {
+				console.log(`❌ CORS blocked: ${origin}`);
+				return callback(new Error("Not allowed by CORS"));
+			}
 		},
 		credentials: true,
 	})
-)
+);
+
 app.options('*', cors())
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))

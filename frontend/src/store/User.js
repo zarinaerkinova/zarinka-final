@@ -1,6 +1,7 @@
 import axios from 'axios'
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
+const API_URL = import.meta.env.VITE_API_URL;
 
 export const useUserStore = create(
 	persist(
@@ -21,7 +22,7 @@ export const useUserStore = create(
 				set({ loading: true, errorMessage: '' })
 
 				try {
-					const res = await fetch('/api/auth/register', {
+					const res = await fetch(`${API_URL}/auth/register`, {
 						method: 'POST',
 						body: formData,
 					})
@@ -64,7 +65,7 @@ export const useUserStore = create(
 			loginUser: async credentials => {
 				set({ loading: true, errorMessage: '' })
 				try {
-					const res = await fetch('/api/auth/login', {
+					const res = await fetch(`${API_URL}/auth/login`, {
 						method: 'POST',
 						headers: { 'Content-Type': 'application/json' },
 						body: JSON.stringify(credentials),
@@ -119,7 +120,7 @@ export const useUserStore = create(
 				set({ loading: true, errorMessage: '' })
 
 				try {
-					const res = await fetch('/api/auth/profile', {
+					const res = await fetch(`${API_URL}/auth/profile`, {
 						headers: { Authorization: `Bearer ${token}` },
 					})
 					let data
@@ -147,7 +148,7 @@ export const useUserStore = create(
 				}
 
 				try {
-					const res = await fetch('/api/auth/profile', {
+					const res = await fetch(`${API_URL}/auth/profile`, {
 						method: 'PUT',
 						headers: {
 							Authorization: `Bearer ${token}`,
@@ -187,7 +188,7 @@ export const useUserStore = create(
 					const { token } = get()
 					if (!token) return
 
-					const res = await axios.get('/api/favorites', {
+					const res = await axios.get(`${API_URL}/favorites`, {
 						headers: { Authorization: `Bearer ${token}` },
 					})
 
@@ -205,7 +206,7 @@ export const useUserStore = create(
 
 				const { favorites, token } = get()
 				try {
-					const res = await fetch('/api/favorites', {
+					const res = await fetch(`${API_URL}/favorites`, {
 						method: 'POST',
 						headers: {
 							'Content-Type': 'application/json',
@@ -228,7 +229,7 @@ export const useUserStore = create(
 			removeFavorite: async productId => {
 				const { favorites, token } = get()
 				try {
-					const res = await fetch(`/api/favorites/${productId}`, {
+					const res = await fetch(`${API_URL}/favorites/${productId}`, {
 						method: 'DELETE',
 						headers: {
 							Authorization: `Bearer ${token}`,
@@ -248,7 +249,7 @@ export const useUserStore = create(
 					const { token } = get()
 					if (!token) return
 
-					const res = await axios.get('/api/cart', {
+					const res = await axios.get(`${API_URL}/cart`, {
 						headers: { Authorization: `Bearer ${token}` },
 					})
 
@@ -266,7 +267,7 @@ export const useUserStore = create(
 				const { token } = get() // get token from store
 				if (!token) return
 				try {
-					const res = await fetch('/api/favorites/bakers', {
+					const res = await fetch(`${API_URL}/favorites/bakers`, {
 						headers: { Authorization: `Bearer ${token}` },
 					})
 					const data = await res.json()
@@ -280,7 +281,7 @@ export const useUserStore = create(
 				const { token } = get() // get token from store
 				if (!token) return
 				try {
-					await fetch(`/api/favorites/bakers`, {
+					await fetch(`${API_URL}/favorites/bakers`, {
 						method: 'POST',
 						headers: {
 							'Content-Type': 'application/json',
@@ -298,7 +299,7 @@ export const useUserStore = create(
 				const { token } = get() // get token from store
 				if (!token) return
 				try {
-					await fetch(`/api/favorites/bakers/${bakerId}`, {
+					await fetch(`${API_URL}/favorites/bakers/${bakerId}`, {
 						method: 'DELETE',
 						headers: { Authorization: `Bearer ${token}` },
 					})
@@ -319,7 +320,7 @@ export const useUserStore = create(
 				}
 
 				try {
-					const res = await fetch('/api/auth/profile', {
+					const res = await fetch(`${API_URL}/auth/profile`, {
 						method: 'DELETE',
 						headers: {
 							Authorization: `Bearer ${token}`,

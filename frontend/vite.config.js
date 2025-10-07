@@ -1,27 +1,24 @@
 import { defineConfig } from 'vite'
 
 export default defineConfig({
-  plugins: [],
+  base: '/', // ✅ this must be '/' for custom domain
   server: {
     host: 'localhost',
     port: 5173,
-    hmr: {
-      port: 5173,
-    },
     proxy: {
       '/api': {
-        target: 'http://localhost:5000',
+        target: 'https://api.zarinka.uz', // or your Render backend URL
         changeOrigin: true,
-        secure: false,
+        secure: true,
       },
       '/uploads': {
-        target: 'http://localhost:5000',
+        target: 'https://api.zarinka.uz',
         changeOrigin: true,
-        secure: false,
+        secure: true,
       },
     },
   },
   build: {
-    outDir: 'dist'
-  }
+    outDir: 'dist',
+  },
 })

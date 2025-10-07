@@ -2,6 +2,7 @@ import axios from 'axios'
 import debounce from 'lodash.debounce'
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
+const API_URL = import.meta.env.VITE_API_URL;
 
 export const useCartStore = create(
 	persist(
@@ -12,7 +13,7 @@ export const useCartStore = create(
 
 			fetchCart: async token => {
 				try {
-					const res = await axios.get('/api/cart', {
+					const res = await axios.get(`${API_URL}/cart`, {
 						headers: { Authorization: `Bearer ${token}` },
 					})
 					set({ cart: res.data })
@@ -78,7 +79,7 @@ export const useCartStore = create(
 						payload.price = product.price
 					}
 
-					await axios.post('/api/cart', payload, {
+					await axios.post(`${API_URL}/cart`, payload, {
 						headers: { Authorization: `Bearer ${token}` },
 					})
 					// Refresh cart from backend so new items get real _id (not just local cartItemId)
@@ -109,7 +110,7 @@ export const useCartStore = create(
 				if (hasBackendId) {
 					axios
 						.put(
-							`/api/cart/${backendId}`,
+							`${API_URL}/cart/${backendId}`,
 							{ quantity },
 							{ headers: { Authorization: `Bearer ${token}` } }
 						)
@@ -137,7 +138,7 @@ export const useCartStore = create(
 					const backendItem = cart.find(i => i._id === cartItemId)
 					if (backendItem) {
 						axios
-							.delete(`/api/cart/${cartItemId}`, {
+							.delete(`${API_URL}/cart/${cartItemId}`, {
 								headers: { Authorization: `Bearer ${token}` },
 							})
 							.then(() => {
@@ -174,7 +175,7 @@ export const useCartStore = create(
 			debouncedSync: debounce(async (item, quantity, token) => {
 				try {
 					const res = await axios.put(
-						`/api/cart/${item._id}`,
+						`${API_URL}/cart/${item._id}`,
 						{ quantity, selectedSize: item.selectedSize },
 						{ headers: { Authorization: `Bearer ${token}` } }
 					)
