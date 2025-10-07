@@ -3,6 +3,7 @@ import toast from 'react-hot-toast';
 import { useUserStore } from '../../store/User.js';
 import axios from 'axios';
 import './FavoriteCard.scss';
+import { RiHeartFill } from 'react-icons/ri'; // Using react-icons for the heart
 
 export default function FavoriteCard({ product }) {
     const { token, removeFavorite } = useUserStore();
@@ -29,6 +30,13 @@ export default function FavoriteCard({ product }) {
 
     return (
         <div className="favorite-card">
+            <button
+                onClick={handleRemove}
+                className="favorite-card__remove-btn"
+                aria-label="Remove from favorites"
+            >
+                <RiHeartFill />
+            </button>
             {imageUrl ? (
                 <img
                     src={imageUrl}
@@ -40,17 +48,18 @@ export default function FavoriteCard({ product }) {
                     <span>{product.name?.charAt(0) || 'C'}</span>
                 </div>
             )}
-            <h3 className="favorite-card__title">{product.name}</h3>
-            <p className="favorite-card__description">{product.description}</p>
-            <div className="favorite-card__footer">
-                <span className="favorite-card__price">{product.price} UZS</span>
-                <button
-                    onClick={handleRemove}
-                    className="favorite-card__remove"
-                    aria-label="Remove from favorites"
-                >
-                    Remove
-                </button>
+            <div className="favorite-card__content">
+                <h3 className="favorite-card__title">{product.name}</h3>
+                <p className="favorite-card__description">{product.description}</p>
+                <div className="favorite-card__footer">
+                    <span className="favorite-card__price">{product.price} UZS</span>
+                    {product.rating && (
+                        <div className="favorite-card__rating">
+                            <span className="star-icon">⭐</span>
+                            {product.rating.average?.toFixed(1) || 'N/A'}
+                        </div>
+                    )}
+                </div>
             </div>
         </div>
     );

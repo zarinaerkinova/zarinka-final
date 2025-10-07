@@ -218,7 +218,8 @@
   }
   
   .cart-icon,
-  .favorite {
+  .favorite,
+  .notification-icon {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -237,7 +238,8 @@
   }
   
   .cart-icon::before,
-  .favorite::before {
+  .favorite::before,
+  .notification-icon::before {
     content: '';
     position: absolute;
     inset: -2px;
@@ -249,7 +251,8 @@
   }
   
   .cart-icon::after,
-  .favorite::after {
+  .favorite::after,
+  .notification-icon::after {
     content: '';
     position: absolute;
     inset: 0;
@@ -262,7 +265,8 @@
   }
   
   .cart-icon:hover,
-  .favorite:hover {
+  .favorite:hover,
+  .notification-icon:hover {
     color: white;
     transform: translateY(-4px) scale(1.08);
     box-shadow: 0 12px 32px rgba(156, 7, 70, 0.35),
@@ -271,18 +275,21 @@
   }
   
   .cart-icon:hover::before,
-  .favorite:hover::before {
+  .favorite:hover::before,
+  .notification-icon:hover::before {
     opacity: 1;
   }
   
   .cart-icon:hover::after,
-  .favorite:hover::after {
+  .favorite:hover::after,
+  .notification-icon:hover::after {
     opacity: 1;
     transform: scale(1);
   }
   
   .cart-icon svg,
-  .favorite svg {
+  .favorite svg,
+  .notification-icon svg {
     position: relative;
     z-index: 1;
     font-size: 21px;
@@ -914,5 +921,31 @@
   /* Selection Colors */
   ::selection {
     background: rgba(156, 7, 70, 0.2);
-    color: var(--nav-primary-dark);
-  }
+    } 
+
+.notification-icon:hover svg {
+  animation: bellRing 0.6s ease;
+}
+
+@keyframes bellRing {
+  0%, 100% { transform: rotate(0); }
+  10%, 30%, 50%, 70%, 90% { transform: rotate(15deg); }
+  20%, 40%, 60%, 80% { transform: rotate(-15deg); }
+}
+
+.notification-badge {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  background-color: #e91e63;
+  color: white;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid white;
+}

@@ -1,58 +1,88 @@
 .favorite-baker-card {
-    display: flex;
-    align-items: center;
     background: var(--white);
-    border-radius: var(--radius-xl);
-    box-shadow: var(--shadow-lg);
-    padding: 1rem;
-    transition: all 0.3s ease-in-out;
-    border: 1px solid transparent;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow);
+    padding: 1.5rem;
+    transition: var(--transition);
+    display: flex;
+    flex-direction: column;
+    height: 100%;
     position: relative;
-    border-radius: 15px;
+    overflow: hidden;
+
+    &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, var(--primary-color), var(--secondary-color, #667eea));
+        transform: scaleX(0);
+        transition: transform 0.3s ease;
+    }
 
     &:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
-        border-color: var(--primary-color-light);
+        transform: translateY(-6px);
+        box-shadow: 0 12px 24px rgba(0, 0, 0, 0.12);
+
+        &::before {
+            transform: scaleX(1);
+        }
+
+        .baker-photo {
+            transform: scale(1.05);
+        }
     }
 
     .like-btn {
         position: absolute;
         top: 1rem;
         right: 1rem;
-        background: rgba(255, 255, 255, 0.8);
-        border: none;
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border: 2px solid transparent;
         border-radius: 50%;
-        width: 36px;
-        height: 36px;
+        width: 40px;
+        height: 40px;
         display: flex;
         align-items: center;
         justify-content: center;
         cursor: pointer;
-        font-size: 1.2rem;
-        color: var(--text-secondary);
-        transition: all 0.2s ease;
-        backdrop-filter: blur(5px);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        color: var(--primary-color);
+        font-size: 1.4rem;
+        z-index: 10;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 
         &:hover {
-            color: var(--primary-color);
-            transform: scale(1.1);
+            background: var(--primary-color);
+            color: var(--white);
+            transform: scale(1.1) rotate(-10deg);
+            border-color: var(--primary-color);
+            box-shadow: 0 4px 12px rgba(var(--primary-color-rgb, 79, 70, 229), 0.3);
+        }
+
+        &:active {
+            transform: scale(0.95);
         }
     }
 
     .baker-photo {
-        width: 100px;
-        height: 100px;
-        min-width: 100px;
-        border-radius: var(--radius-lg);
+        width: 100%;
+        height: 200px;
+        border-radius: var(--radius);
         overflow: hidden;
-        margin-right: 1.5rem;
-        box-shadow: var(--shadow-md);
+        margin-bottom: 1rem;
+        transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        position: relative;
 
         img {
             width: 100%;
             height: 100%;
             object-fit: cover;
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .baker-initials {
@@ -61,66 +91,166 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 2.5rem;
+            font-size: 4rem;
+            font-weight: 700;
             color: var(--white);
-            background: var(--gradient-primary);
-            font-weight: bold;
+            text-transform: uppercase;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         }
     }
 
     .baker-info {
-        text-align: left;
+        display: flex;
+        flex-direction: column;
         flex-grow: 1;
 
         h3 {
-            font-size: 1.3rem;
+            font-size: 1.25rem;
             font-weight: 700;
-            margin-bottom: 0.1rem;
             color: var(--text-primary);
+            margin-bottom: 0.25rem;
+            line-height: 1.3;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            transition: color 0.2s ease;
+
+            &:hover {
+                color: var(--primary-color);
+            }
         }
 
-        p {
+        > p {
             font-size: 0.9rem;
             color: var(--text-secondary);
-            margin-bottom: 0.8rem;
+            margin-bottom: 1rem;
+            flex-grow: 1;
+            line-height: 1.6;
         }
 
         .baker-details {
             display: flex;
-            align-items: center;
             flex-wrap: wrap;
-            gap: 0.5rem 1rem;
-            font-size: 0.9rem;
-            color: var(--text-secondary);
-
-            .rating, .city {
-                display: flex;
-                align-items: center;
-                gap: 0.3rem;
-            }
+            align-items: center;
+            gap: 0.75rem;
+            margin-top: auto;
+            padding-top: 1rem;
+            border-top: 1px solid rgba(0, 0, 0, 0.06);
 
             .rating {
-                color: var(--text-primary);
+                display: flex;
+                align-items: center;
+                gap: 0.35rem;
+                font-size: 1rem;
                 font-weight: 600;
+                color: #2c3e50;
+                padding: 0.25rem 0.75rem;
+                background: linear-gradient(135deg, #ffeaa7, #fdcb6e);
+                border-radius: 20px;
+                box-shadow: 0 2px 6px rgba(253, 203, 110, 0.3);
 
                 svg {
-                    color: #ffc107; // gold
-                    font-size: 1rem;
+                    font-size: 1.1rem;
+                    animation: pulse 2s ease-in-out infinite;
                 }
             }
 
             .num-reviews {
                 font-size: 0.85rem;
                 color: var(--text-tertiary);
+                font-weight: 500;
             }
 
             .city {
+                display: flex;
+                align-items: center;
+                gap: 0.35rem;
+                font-size: 0.9rem;
                 color: var(--text-secondary);
+                font-weight: 600;
+                padding: 0.25rem 0.75rem;
+                background: linear-gradient(135deg, rgba(var(--primary-color-rgb, 79, 70, 229), 0.08), rgba(var(--secondary-color-rgb, 102, 126, 234), 0.12));
+                border-radius: 20px;
+                transition: all 0.2s ease;
 
                 svg {
                     font-size: 1rem;
+                    color: var(--primary-color);
+                }
+
+                &:hover {
+                    background: linear-gradient(135deg, rgba(var(--primary-color-rgb, 79, 70, 229), 0.15), rgba(var(--secondary-color-rgb, 102, 126, 234), 0.2));
+                    transform: translateY(-2px);
                 }
             }
         }
+    }
+}
+
+@keyframes pulse {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.1);
+    }
+}
+
+// Responsive adjustments
+@media (max-width: 768px) {
+    .favorite-baker-card {
+        padding: 1.25rem;
+
+        .baker-photo {
+            height: 160px;
+        }
+
+        .baker-info {
+            h3 {
+                font-size: 1.1rem;
+            }
+        }
+
+        .like-btn {
+            width: 36px;
+            height: 36px;
+            font-size: 1.2rem;
+        }
+    }
+}
+
+@media (max-width: 480px) {
+    .favorite-baker-card {
+        .baker-photo {
+            height: 140px;
+        }
+
+        .baker-info .baker-details {
+            gap: 0.5rem;
+            font-size: 0.85rem;
+
+            .rating,
+            .city {
+                font-size: 0.85rem;
+            }
+        }
+    }
+}
+
+// Accessibility
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+
+    .favorite-baker-card:hover {
+        transform: none;
+    }
+
+    .baker-photo {
+        transform: none !important;
     }
 }

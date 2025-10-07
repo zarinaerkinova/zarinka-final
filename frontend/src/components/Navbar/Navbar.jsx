@@ -10,11 +10,13 @@ import {
   FaUserCircle,
 } from 'react-icons/fa';
 import { IoCartOutline } from 'react-icons/io5';
+import { FaRegBell } from 'react-icons/fa';
 import { Globe } from 'lucide-react';
 import { Link, NavLink } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import useOutsideAlerter from '../../hooks/useOutsideAlerter';
 import { useUserStore } from '../../store/User.js';
+import { useNotificationStore } from '../../store/Notification.js';
 import './Navbar.css';
 import logo from '/Zarinka_logo.svg';
 
@@ -143,6 +145,7 @@ const ProfileDropdown = ({ user, onLogout, onClose }) => {
 const Navbar = () => {
   const { t } = useTranslation();
   const { user, token, setUserData, logoutUser } = useUserStore();
+  const { unreadCount, fetchNotifications } = useNotificationStore();
   const [showDropdown, setShowDropdown] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const dropdownRef = useRef(null);
@@ -167,6 +170,12 @@ const Navbar = () => {
       }
     }
   }, [user, token, setUserData]);
+
+  useEffect(() => {
+    if (token) {
+        fetchNotifications(token);
+    }
+  }, [token, fetchNotifications]);
 
   // Handle scroll effect
   useEffect(() => {
@@ -232,6 +241,18 @@ const Navbar = () => {
                 title={t('favorites') || 'Favorites'}
               >
                 <FaRegHeart />
+              </Link>
+
+              <Link 
+                className="notification-icon" 
+                to="/notifications" 
+                aria-label={t('notifications') || 'View notifications'}
+                title={t('notifications') || 'Notifications'}
+              >
+                <FaRegBell />
+                {unreadCount > 0 && (
+                    <span className="notification-badge">{unreadCount}</span>
+                )}
               </Link>
             </>
           )}

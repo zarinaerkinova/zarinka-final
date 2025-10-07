@@ -51,7 +51,6 @@ const FavoriteBakerCard = ({ baker }) => {
                     <span className="rating">
                         <FaStar /> {baker.rating ? baker.rating.toFixed(1) : '0.0'}
                     </span>
-                    <span className="num-reviews">({baker.numReviews || 0} reviews)</span>
                     <span className="city">
                         <FaMapMarkerAlt /> {baker.location || 'Unknown City'}
                     </span>

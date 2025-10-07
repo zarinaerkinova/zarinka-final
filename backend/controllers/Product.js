@@ -149,14 +149,18 @@ export const createProduct = async (req, res) => {
 
 		// Parse ingredients and sizes from string to array
 		if (typeof ingredients === 'string') {
-			ingredients = ingredients.split(',').map(item => item.trim());
+			ingredients = ingredients.split(',').map(item => item.trim()).filter(i => i);
 		}
 
 		if (typeof sizes === 'string') {
-			try {
-				sizes = JSON.parse(sizes);
-			} catch (error) {
-				return res.status(400).json({ success: false, message: 'Invalid sizes format' });
+			if (sizes) {
+				try {
+					sizes = JSON.parse(sizes);
+				} catch (error) {
+					return res.status(400).json({ success: false, message: 'Invalid sizes format' });
+				}
+			} else {
+				sizes = [];
 			}
 		}
 
